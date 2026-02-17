@@ -9,6 +9,7 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
 import type { NavItem } from "@/types";
 
@@ -28,6 +29,7 @@ export function Header({ title, logo, version, navs = [] }: HeaderProps) {
         {/* Logo */}
         <Link href="/" className="mr-6 flex items-center space-x-2">
           {logo && (
+            // eslint-disable-next-line @next/next/no-img-element
             <img src={logo} alt={title} className="h-6 w-6" />
           )}
           <span className="font-bold">{title}</span>
@@ -57,7 +59,8 @@ export function Header({ title, logo, version, navs = [] }: HeaderProps) {
         </nav>
 
         <div className="flex flex-1 items-center justify-end space-x-2">
-          {/* Theme Toggle placeholder */}
+          {/* Theme Toggle */}
+          <ThemeToggle />
           
           {/* Mobile Nav */}
           <Sheet>

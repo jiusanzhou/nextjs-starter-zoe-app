@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Header, Footer } from "@/components/layout";
+import { ThemeProvider } from "@/components/theme-provider";
 import { loadZoeConfig, getSiteMetadata } from "@/lib/zoefile";
 import "./globals.css";
 
@@ -46,19 +47,26 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
-        <Header
-          title={config.title}
-          logo={config.logo}
-          version={config.version}
-          navs={config.navs}
-        />
-        <main className="flex-1 container py-6">{children}</main>
-        <Footer
-          organization={config.organization}
-          copyright={config.copyright}
-          socials={config.socials}
-          author={config.author}
-        />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Header
+            title={config.title}
+            logo={config.logo}
+            version={config.version}
+            navs={config.navs}
+          />
+          <main className="flex-1 container py-6">{children}</main>
+          <Footer
+            organization={config.organization}
+            copyright={config.copyright}
+            socials={config.socials}
+            author={config.author}
+          />
+        </ThemeProvider>
       </body>
     </html>
   );
