@@ -104,3 +104,8 @@ comments:
 # Google Analytics
 analytics:
   googleId: ""
+
+# Help/QA 系统 (从 GitHub Issues 获取帮助内容)
+# helpqa:
+#   repo: owner/repo           # GitHub 仓库
+#   labelPrefix: help          # 标签前缀，筛选 help:xxx 格式的标签

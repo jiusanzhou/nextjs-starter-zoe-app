@@ -25,6 +25,15 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     description: site.description,
     metadataBase: site.url ? new URL(site.url) : undefined,
+    manifest: "/manifest.webmanifest",
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: "default",
+      title: site.title,
+    },
+    formatDetection: {
+      telephone: false,
+    },
     openGraph: {
       title: site.title,
       description: site.description,

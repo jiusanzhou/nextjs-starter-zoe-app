@@ -83,6 +83,13 @@ export interface GitContentSource {
   local?: string;
 }
 
+export interface HelpQAConfig {
+  provider?: 'github' | 'gitee';
+  repo: string;
+  labelPrefix?: string;
+  state?: 'open' | 'closed' | 'all';
+}
+
 export interface ZoeSiteConfig {
   title: string;
   description?: string;
@@ -112,4 +119,7 @@ export interface ZoeSiteConfig {
 
   // App Release Configuration
   releaseRepo?: string | ReleaseRepoConfig[];
+
+  // Help/QA System Configuration
+  helpqa?: HelpQAConfig;
 }

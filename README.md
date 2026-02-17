@@ -289,3 +289,25 @@ releaseRepo:
 ```
 
 Access your releases at `/releases`.
+
+### Help Center (QA from GitHub Issues)
+
+Build a help center from GitHub Issues:
+
+```yaml
+helpqa:
+  repo: owner/repo          # GitHub repository
+  labelPrefix: help         # Label prefix (filters help:xxx labels)
+```
+
+- Create labels like `help:常见问题`, `help:使用入门` for categories
+- Create issues and assign these labels
+- Assign issues to someone to mark them as "pinned/hot"
+- Access your help center at `/help`
+
+### PWA Support
+
+The site includes PWA support with web manifest. Add icons to `public/icons/`:
+
+- `icon-192x192.png` - 192×192 icon
+- `icon-512x512.png` - 512×512 icon

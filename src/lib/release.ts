@@ -110,7 +110,7 @@ function adaptGitHubRelease(
     release_note: releaseNote,
     assets,
     urls: meta?.urls,
-    meta,
+    meta: meta ?? undefined,
   };
 }
 
@@ -149,7 +149,7 @@ function adaptGiteeRelease(
     release_note: releaseNote,
     assets,
     urls: meta?.urls,
-    meta,
+    meta: meta ?? undefined,
   };
 }
 

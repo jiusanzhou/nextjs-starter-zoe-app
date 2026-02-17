@@ -10,6 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getAllPosts, getPostBySlug } from "@/lib/content";
 import { loadZoeConfig } from "@/lib/zoefile";
+import { markdownToHtml } from "@/lib/mdx";
 
 interface PostPageProps {
   params: Promise<{ slug: string }>;
@@ -52,6 +53,9 @@ export default async function PostPage({ params }: PostPageProps) {
   if (!post) {
     notFound();
   }
+
+  // 将 Markdown 转换为 HTML
+  const htmlContent = await markdownToHtml(post.content);
 
   return (
     <article className="max-w-3xl mx-auto">
@@ -96,10 +100,10 @@ export default async function PostPage({ params }: PostPageProps) {
       <Separator className="my-8" />
 
       {/* Content */}
-      <div className="prose prose-neutral dark:prose-invert max-w-none">
-        {/* MDX content will be rendered here */}
-        <div dangerouslySetInnerHTML={{ __html: post.content }} />
-      </div>
+      <div 
+        className="prose prose-neutral dark:prose-invert max-w-none prose-headings:scroll-mt-20 prose-a:text-primary prose-pre:bg-muted prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none"
+        dangerouslySetInnerHTML={{ __html: htmlContent }} 
+      />
 
       <Separator className="my-8" />
 

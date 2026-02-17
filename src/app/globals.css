@@ -126,3 +126,15 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Mobile bottom nav safe area padding */
+.safe-area-pb {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+/* Add bottom padding to main content on mobile to account for bottom nav */
+@media (max-width: 767px) {
+  main {
+    padding-bottom: 5rem;
+  }
+}
