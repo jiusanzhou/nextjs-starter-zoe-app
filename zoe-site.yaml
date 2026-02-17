@@ -1,0 +1,95 @@
+# Zoe Site Configuration
+# YAML 驱动的站点配置文件
+
+title: ZoeAPP
+description: A starter template for zoe app.
+url: https://labs.zoe.im/nextjs-starter-zoe-app
+logo: /images/logo.png
+lang: zh-CN
+
+# 显示在 logo 右侧的版本号
+version: alpha
+
+# 作者信息
+author:
+  name: Zoe
+  email: hi@zoe.im
+  homepage: https://zoe.im
+  avatar: https://github.com/jiusanzhou.png
+  minibio: 知行合一，不将有限的生命献给无知、平庸和低俗。
+  github: jiusanzhou
+  twitter: jiusanzhou
+  telegram: noboddyim
+
+# 组织信息（页脚显示）
+organization:
+  name: ZoeAPP
+  url: https://zoe.im
+  logo: /images/logo.png
+
+# 版权信息
+copyright:
+  from: 2011
+  holder: Zoe
+  location: Hangzhou
+
+# 主题色
+primaryColor: purple
+
+# 导航菜单
+navs:
+  - title: 首页
+    href: /
+  - title: 博客
+    href: /blog
+  - title: 项目
+    href: /projects
+  - title: 关于
+    href: /about
+
+# 社交链接（页脚）
+socials:
+  github: https://github.com/jiusanzhou
+  twitter: https://twitter.com/jiusanzhou
+  telegram: https://t.me/noboddyim
+
+# 博客配置
+blog:
+  title: 博客文章
+  description: 写作亦是一种自我学习的方式
+  basePath: /blog
+  postsPerPage: 10
+
+# 内容目录（相对于项目根目录）
+contentDirs:
+  - content
+
+# 自定义节点类型
+contentTypes:
+  - name: post
+    path: posts
+    template: post
+  - name: page
+    path: pages
+    template: page
+  - name: project
+    path: projects
+    template: project
+
+# RSS 配置
+rss:
+  enabled: true
+  path: /rss.xml
+  title: ZoeAPP RSS Feed
+
+# 评论系统
+comments:
+  provider: giscus
+  repo: ""
+  repoId: ""
+  category: ""
+  categoryId: ""
+
+# Google Analytics
+analytics:
+  googleId: ""

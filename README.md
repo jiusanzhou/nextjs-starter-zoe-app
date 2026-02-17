@@ -1,36 +1,129 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# nextjs-starter-zoe-app
 
-## Getting Started
+> 🚀 A modern, YAML-driven site generator based on Next.js + shadcn/ui
 
-First, run the development server:
+## Features
+
+- **YAML Configuration** - Single `zoe-site.yaml` file to configure your entire site
+- **Zero-config Content** - Just add Markdown/MDX files to `content/` directory
+- **Modern Stack** - Next.js 16, React 19, TypeScript, Tailwind CSS
+- **Beautiful UI** - shadcn/ui components (Radix + Tailwind)
+- **SEO Ready** - Automatic metadata generation
+- **Dark Mode** - Built-in theme support
+- **Blog System** - Posts, tags, archives out of the box
+- **Projects Showcase** - Display your projects beautifully
+- **RSS Feed** - Auto-generated RSS support
+- **Type Safe** - Full TypeScript support
+
+## Quick Start
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+# Clone the template
+npx degit jiusanzhou/nextjs-starter-zoe-app my-site
+
+# Install dependencies
+cd my-site
+pnpm install
+
+# Start development
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Configuration
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Edit `zoe-site.yaml` to customize your site:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```yaml
+title: My Site
+description: My awesome site
+url: https://example.com
 
-## Learn More
+author:
+  name: Your Name
+  email: you@example.com
+  avatar: https://github.com/username.png
 
-To learn more about Next.js, take a look at the following resources:
+navs:
+  - title: Home
+    href: /
+  - title: Blog
+    href: /blog
+  - title: Projects
+    href: /projects
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+blog:
+  title: Blog
+  description: My thoughts and ideas
+  basePath: /blog
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Content Structure
 
-## Deploy on Vercel
+```
+content/
+├── posts/          # Blog posts (MDX/MD)
+│   └── hello-world.md
+├── pages/          # Static pages
+│   └── about.md
+└── projects/       # Project showcases
+    └── my-project.md
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Frontmatter
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Posts
+
+```yaml
+---
+title: Post Title
+description: Post description
+date: 2024-01-01
+tags:
+  - tag1
+  - tag2
+banner: /images/banner.jpg
+published: true
+pinned: false
+---
+```
+
+### Pages
+
+```yaml
+---
+title: Page Title
+description: Page description
+layout: default
+---
+```
+
+### Projects
+
+```yaml
+---
+title: Project Name
+description: Project description
+repo: https://github.com/user/repo
+url: https://project.com
+tags:
+  - Next.js
+  - TypeScript
+featured: true
+---
+```
+
+## Migration from Gatsby
+
+This template is the Next.js successor of `gatsby-starter-zoe-app`. Key differences:
+
+| Feature | Gatsby | Next.js |
+|---------|--------|---------|
+| UI Library | Chakra UI | shadcn/ui |
+| Data Layer | GraphQL | TypeScript |
+| Content | MDX 1 | MDX 3 |
+| React | 17 | 19 |
+| Styling | Emotion | Tailwind |
+
+## License
+
+MIT © [Zoe](https://zoe.im)
