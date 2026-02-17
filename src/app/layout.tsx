@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Header, Footer } from "@/components/layout";
 import { ThemeProvider } from "@/components/theme-provider";
+import { GoogleAnalytics, PlausibleAnalytics } from "@/components/analytics";
 import { loadZoeConfig, getSiteMetadata } from "@/lib/zoefile";
 import "./globals.css";
 
@@ -54,6 +55,13 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          {/* Analytics */}
+          {config.analytics?.googleId && (
+            <GoogleAnalytics measurementId={config.analytics.googleId} />
+          )}
+          {config.analytics?.plausibleDomain && (
+            <PlausibleAnalytics domain={config.analytics.plausibleDomain} />
+          )}
           <Header
             title={config.title}
             logo={config.logo}

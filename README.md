@@ -43,6 +43,8 @@ pnpm dev
 - **🗂️ Projects Showcase** - Display your projects beautifully
 - **📡 RSS Feed** - Auto-generated RSS support
 - **📦 Git Content** - Load content from remote Git repositories
+- **📊 Analytics** - Google Analytics and Plausible support
+- **📥 App Releases** - Fetch and display releases from GitHub/Gitee
 - **🔒 Type Safe** - Full TypeScript support
 
 ## Usage
@@ -255,3 +257,35 @@ This template is the Next.js successor of `gatsby-starter-zoe-app`. Key differen
 ## License
 
 MIT © [Zoe](https://zoe.im)
+
+## Additional Configuration
+
+### Analytics
+
+```yaml
+analytics:
+  googleId: G-XXXXXXXXXX    # Google Analytics 4 measurement ID
+  plausibleDomain: example.com  # Plausible Analytics domain
+```
+
+### App Releases
+
+Display releases from GitHub or Gitee:
+
+```yaml
+# Single repo
+releaseRepo: "username/repo"
+
+# Multiple repos with asset matching patterns
+releaseRepo:
+  - provider: github
+    repo: username/repo1
+    assetRegexPatterns:
+      android: ".*\\.apk$"
+      mac: ".*\\.dmg$"
+      windows: ".*\\.exe$"
+  - provider: gitee
+    repo: username/repo2
+```
+
+Access your releases at `/releases`.

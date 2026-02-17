@@ -69,6 +69,12 @@ export interface AnalyticsConfig {
   plausibleDomain?: string;
 }
 
+export interface ReleaseRepoConfig {
+  provider?: 'github' | 'gitee';
+  repo: string;
+  assetRegexPatterns?: Record<string, string>;
+}
+
 export interface GitContentSource {
   name: string;
   remote: string;
@@ -103,4 +109,7 @@ export interface ZoeSiteConfig {
   rss?: RSSConfig;
   comments?: CommentsConfig;
   analytics?: AnalyticsConfig;
+
+  // App Release Configuration
+  releaseRepo?: string | ReleaseRepoConfig[];
 }

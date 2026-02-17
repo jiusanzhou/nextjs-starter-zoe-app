@@ -76,3 +76,12 @@ comments:
 
 analytics:
   googleId: ""
+
+# Example release repository configuration
+# releaseRepo: "jiusanzhou/flutter_automate"
+# Or multiple repos:
+# releaseRepo:
+#   - provider: github
+#     repo: jiusanzhou/flutter_automate
+#   - provider: gitee
+#     repo: jiusanzhou/another-app

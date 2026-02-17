@@ -3,3 +3,4 @@ export * from './content';
 export * from './mdx';
 export * from './rss';
 export * from './git-content';
+export * from './release';
