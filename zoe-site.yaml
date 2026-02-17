@@ -64,6 +64,13 @@ blog:
 contentDirs:
   - content
 
+# Git 远程内容源（构建时自动克隆/更新）
+# gitContent:
+#   - name: my-content        # 内容源名称
+#     remote: https://github.com/user/repo.git  # Git 仓库地址
+#     branch: main            # 分支（默认 main）
+#     local: .cache/git-content/my-content  # 本地缓存路径（可选）
+
 # 自定义节点类型
 contentTypes:
   - name: post

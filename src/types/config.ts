@@ -69,6 +69,14 @@ export interface AnalyticsConfig {
   plausibleDomain?: string;
 }
 
+export interface GitContentSource {
+  name: string;
+  remote: string;
+  branch?: string;
+  patterns?: string[];
+  local?: string;
+}
+
 export interface ZoeSiteConfig {
   title: string;
   description?: string;
@@ -89,6 +97,7 @@ export interface ZoeSiteConfig {
   blog?: BlogConfig;
   contentDirs?: string[];
   contentTypes?: ContentType[];
+  gitContent?: GitContentSource[];
 
   rss?: RSSConfig;
   comments?: CommentsConfig;

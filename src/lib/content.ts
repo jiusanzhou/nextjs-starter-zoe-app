@@ -8,16 +8,46 @@ import path from 'path';
 import matter from 'gray-matter';
 import readingTime from 'reading-time';
 import { loadZoeConfig, getProjectRoot } from './zoefile';
-import type { Post, PostMeta, Page, PageMeta, Project, ProjectMeta } from '@/types';
+import type { Post, PostMeta, Page, PageMeta, Project, ProjectMeta, GitContentSource } from '@/types';
+
+// 缓存 Git 内容目录
+let gitContentDirsCache: string[] | null = null;
 
 /**
- * 获取内容目录路径
+ * 获取 Git 内容目录（同步方式，用于构建时）
+ */
+function getGitContentDirs(): string[] {
+  if (gitContentDirsCache) {
+    return gitContentDirsCache;
+  }
+
+  const config = loadZoeConfig();
+  const root = getProjectRoot();
+  const gitSources = config.gitContent || [];
+  
+  gitContentDirsCache = gitSources
+    .map((source: GitContentSource) => {
+      const localPath = source.local || path.join(root, '.cache/git-content', source.name);
+      return fs.existsSync(localPath) ? localPath : null;
+    })
+    .filter((p): p is string => p !== null);
+
+  return gitContentDirsCache;
+}
+
+/**
+ * 获取内容目录路径（包含 Git 内容）
  */
 function getContentDirs(): string[] {
   const config = loadZoeConfig();
   const root = getProjectRoot();
   const dirs = config.contentDirs || ['content'];
-  return dirs.map(dir => path.join(root, dir));
+  const localDirs = dirs.map(dir => path.join(root, dir));
+  
+  // 合并 Git 内容目录
+  const gitDirs = getGitContentDirs();
+  
+  return [...localDirs, ...gitDirs];
 }
 
 /**
