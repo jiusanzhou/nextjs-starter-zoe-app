@@ -1,0 +1,78 @@
+# Example Configuration
+# 示例站点配置文件
+
+title: Zoe's Lab
+description: 从零开始，构建一个还不错的网站
+url: https://labs.zoe.im
+logo: /images/logo.png
+lang: zh-CN
+
+version: alpha
+
+author:
+  name: Zoe
+  email: hi@zoe.im
+  homepage: https://zoe.im
+  avatar: https://github.com/jiusanzhou.png
+  minibio: 知行合一，不将有限的生命献给无知、平庸和低俗。
+  github: jiusanzhou
+  twitter: jiusanzhou
+  telegram: noboddyim
+
+organization:
+  name: Zoe's Lab
+  url: https://labs.zoe.im
+  logo: /images/logo.png
+
+copyright:
+  from: 2011
+  holder: Zoe
+  location: Hangzhou
+
+primaryColor: purple
+
+navs:
+  - title: 首页
+    href: /
+  - title: 博客
+    href: /blog
+  - title: 项目
+    href: /projects
+  - title: 关于
+    href: /about
+
+socials:
+  github: https://github.com/jiusanzhou
+  twitter: https://twitter.com/jiusanzhou
+  telegram: https://t.me/noboddyim
+
+blog:
+  title: 博客文章
+  description: 写作亦是一种自我学习的方式
+  basePath: /blog
+  postsPerPage: 10
+
+contentDirs:
+  - _example/content
+
+contentTypes:
+  - name: post
+    path: posts
+    template: post
+  - name: page
+    path: pages
+    template: page
+  - name: project
+    path: projects
+    template: project
+
+rss:
+  enabled: true
+  path: /rss.xml
+  title: Zoe's Lab RSS Feed
+
+comments:
+  provider: giscus
+
+analytics:
+  googleId: ""
