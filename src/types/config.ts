@@ -90,6 +90,7 @@ export interface ZoeSiteConfig {
   copyright?: Copyright;
 
   primaryColor?: string;
+  theme?: string; // 主题名称: default, cyber, minimal, apple, github, vercel, stripe
 
   navs?: NavItem[];
   socials?: Record<string, string>;

@@ -33,8 +33,12 @@ copyright:
   holder: Zoe
   location: Hangzhou
 
-# 主题色
-primaryColor: purple
+# 主题色（已废弃，请使用 theme 配置）
+# primaryColor: purple
+
+# 主题风格
+# 可选: default, cyber, minimal, apple, github, vercel, stripe
+theme: default
 
 # 导航菜单
 navs:

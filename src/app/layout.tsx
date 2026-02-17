@@ -41,9 +41,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const config = loadZoeConfig();
+  const themeClass = config.theme ? `theme-${config.theme}` : '';
 
   return (
-    <html lang={config.lang || "en"} suppressHydrationWarning>
+    <html lang={config.lang || "en"} className={themeClass} suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
@@ -59,7 +60,7 @@ export default function RootLayout({
             version={config.version}
             navs={config.navs}
           />
-          <main className="flex-1 container py-6">{children}</main>
+          <main className="flex-1 container py-6 md:py-8 lg:py-10">{children}</main>
           <Footer
             organization={config.organization}
             copyright={config.copyright}

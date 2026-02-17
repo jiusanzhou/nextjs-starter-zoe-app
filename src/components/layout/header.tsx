@@ -10,6 +10,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { ThemeStyleToggle } from "@/components/theme-style-toggle";
 import { cn } from "@/lib/utils";
 import type { NavItem } from "@/types";
 
@@ -58,8 +59,11 @@ export function Header({ title, logo, version, navs = [] }: HeaderProps) {
           ))}
         </nav>
 
-        <div className="flex flex-1 items-center justify-end space-x-2">
-          {/* Theme Toggle */}
+        <div className="flex flex-1 items-center justify-end space-x-1">
+          {/* Theme Style Toggle */}
+          <ThemeStyleToggle />
+          
+          {/* Dark/Light Toggle */}
           <ThemeToggle />
           
           {/* Mobile Nav */}
