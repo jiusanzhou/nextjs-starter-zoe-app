@@ -51,6 +51,7 @@ jobs:
         env:
           USE_EXAMPLE_CONTENT: "true"
           PAGES_BASE_PATH: "/nextjs-starter-zoe-app"
+          NEXT_PUBLIC_BASE_PATH: "/nextjs-starter-zoe-app"
         run: pnpm build
 
       - name: Add .nojekyll

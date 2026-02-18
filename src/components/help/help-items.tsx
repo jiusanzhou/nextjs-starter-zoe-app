@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import type { HelpItem } from "@/lib/helpqa";
 import { cn } from "@/lib/utils";
 
@@ -8,6 +9,7 @@ interface HelpItemsListProps {
   basePath?: string;
   title?: string;
   showAll?: boolean;
+  showBack?: boolean;
   limit?: number;
 }
 
@@ -16,12 +18,25 @@ export function HelpItemsList({
   basePath = "/help",
   title = "常见问题",
   showAll = true,
+  showBack = false,
   limit,
 }: HelpItemsListProps) {
   const displayItems = limit ? items.slice(0, limit) : items;
 
   return (
     <div className="py-4">
+      {/* 返回按钮 */}
+      {showBack && (
+        <div className="mb-4 px-2">
+          <Button variant="ghost" size="sm" asChild>
+            <Link href="/help" className="flex items-center gap-2">
+              <ArrowLeft className="h-4 w-4" />
+              返回帮助中心
+            </Link>
+          </Button>
+        </div>
+      )}
+
       <div className="flex items-center justify-between px-2 mb-4">
         {title && <h2 className="text-lg font-semibold">{title}</h2>}
         {showAll && items.length > (limit || 0) && (

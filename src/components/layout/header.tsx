@@ -52,12 +52,13 @@ export function Header({ title, logo, version, navs = [] }: HeaderProps) {
           <Link href="/" className="flex items-center space-x-2 sm:space-x-3">
             {logo && (
               <div className="relative h-7 w-7 sm:h-8 sm:w-8 overflow-hidden rounded-lg">
-                {logo.startsWith("http") ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={logo} alt={title} className="h-full w-full object-cover" />
-                ) : (
-                  <Image src={logo} alt={title} fill className="object-cover" />
-                )}
+                {/* 使用 img 标签确保 basePath 正确处理 */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img 
+                  src={logo.startsWith("http") ? logo : `${process.env.NEXT_PUBLIC_BASE_PATH || ''}${logo}`} 
+                  alt={title} 
+                  className="h-full w-full object-cover" 
+                />
               </div>
             )}
             <div className="flex items-center space-x-2">

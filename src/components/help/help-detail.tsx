@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { HelpItem } from "@/lib/helpqa";
@@ -17,6 +19,16 @@ export function HelpItemDetail({ item }: HelpItemDetailProps) {
 
   return (
     <article className="py-6">
+      {/* 返回按钮 */}
+      <div className="mb-6">
+        <Button variant="ghost" size="sm" asChild>
+          <Link href="/help" className="flex items-center gap-2">
+            <ArrowLeft className="h-4 w-4" />
+            返回帮助中心
+          </Link>
+        </Button>
+      </div>
+
       {/* 分类标签 */}
       <div className="flex flex-wrap gap-2 mb-4">
         {item.categories.map((cat) => (

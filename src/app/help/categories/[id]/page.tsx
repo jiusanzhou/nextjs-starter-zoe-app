@@ -73,7 +73,7 @@ async function CategoryContent({ categoryId }: { categoryId: string }) {
     <>
       <HelpHeader title={category.name} description={category.description} />
       <div className="container py-6">
-        <HelpItemsList items={items} title={category.name} showAll={false} />
+        <HelpItemsList items={items} title={category.name} showAll={false} showBack={true} />
       </div>
     </>
   );
