@@ -90,6 +90,12 @@ export interface HelpQAConfig {
   state?: 'open' | 'closed' | 'all';
 }
 
+export interface ProjectsConfig {
+  provider?: 'github';
+  tag?: string;
+  owners: string[];
+}
+
 export interface ZoeSiteConfig {
   title: string;
   description?: string;
@@ -122,4 +128,7 @@ export interface ZoeSiteConfig {
 
   // Help/QA System Configuration
   helpqa?: HelpQAConfig;
+
+  // GitHub Projects Configuration
+  projects?: ProjectsConfig;
 }

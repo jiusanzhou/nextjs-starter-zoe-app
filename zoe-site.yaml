@@ -109,3 +109,11 @@ analytics:
 # helpqa:
 #   repo: owner/repo           # GitHub 仓库
 #   labelPrefix: help          # 标签前缀，筛选 help:xxx 格式的标签
+
+# GitHub 项目 (从 GitHub API 自动获取)
+# 配置后会替代 content/projects 目录的手动项目
+# projects:
+#   provider: github
+#   tag: zoe-lab             # 按 topic 筛选（可选）
+#   owners:
+#     - jiusanzhou           # GitHub 用户名/组织名
