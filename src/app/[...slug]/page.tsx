@@ -8,9 +8,6 @@ interface PageProps {
   params: Promise<{ slug: string[] }>;
 }
 
-// 允许动态路由在开发模式下工作
-export const dynamicParams = process.env.NODE_ENV === 'development';
-
 export async function generateStaticParams() {
   const pages = getAllPages();
   return pages.map((page) => ({
