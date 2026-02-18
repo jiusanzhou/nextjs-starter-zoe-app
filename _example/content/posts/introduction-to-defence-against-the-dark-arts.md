@@ -1,11 +1,10 @@
 ---
 title: Introduction to "Defence against the Dark Arts"
 date: 2019-11-07
-description: Defence Against the Dark Arts (abbreviated as DADA) is a subject taught at Hogwarts School of Witchcraft and Wizardry. In this class, students study and learn how to defend themselves against all aspects of the Dark Arts.
+description: Defence Against the Dark Arts (abbreviated as DADA) is a subject taught at Hogwarts School of Witchcraft and Wizardry and Ilvermorny School of Witchcraft and Wizardry. In this class, students study and learn how to defend themselves against all aspects of the Dark Arts, including dark creatures, curses, hexes and jinxes (dark charms), and duelling.
 tags:
   - Tutorial
   - Dark Arts
-  - Magic
 published: true
 pinned: true
 ---

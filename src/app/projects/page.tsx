@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { ProjectCard, GitHubProjectCard } from "@/components/project-card";
+import { GitHubProjectsList, ProjectsList } from "@/components/project-card";
 import { getProjectsMeta } from "@/lib/content";
 import { getGitHubProjects } from "@/lib/github-projects";
 import { loadZoeConfig } from "@/lib/zoefile";
@@ -34,17 +34,8 @@ async function ProjectsContent() {
           </p>
         </div>
 
-        {githubProjects.length > 0 ? (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {githubProjects.map((project) => (
-              <GitHubProjectCard key={project.id} project={project} />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-12 text-muted-foreground">
-            暂无项目
-          </div>
-        )}
+        {/* 使用带语言筛选的列表组件 */}
+        <GitHubProjectsList projects={githubProjects} showFilter />
       </div>
     );
   }
@@ -61,17 +52,7 @@ async function ProjectsContent() {
         </p>
       </div>
 
-      {projects.length > 0 ? (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {projects.map((project) => (
-            <ProjectCard key={project.slug} project={project} />
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-12 text-muted-foreground">
-          暂无项目
-        </div>
-      )}
+      <ProjectsList projects={projects} />
     </div>
   );
 }

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Archive, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { PostCard } from "@/components/post-card";
+import { PostsList } from "@/components/post-card";
 import { loadZoeConfig } from "@/lib/zoefile";
 import { getPostsMeta } from "@/lib/content";
 
@@ -20,7 +20,7 @@ export default function BlogPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-start justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
             {config.blog?.title || "博客"}
@@ -47,17 +47,8 @@ export default function BlogPage() {
         </div>
       </div>
 
-      {posts.length > 0 ? (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {posts.map((post) => (
-            <PostCard key={post.slug} post={post} />
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-12 text-muted-foreground">
-          暂无文章
-        </div>
-      )}
+      {/* 使用 tile 模式展示列表，类似 Gatsby 版本 */}
+      <PostsList posts={posts} mode="tile" />
     </div>
   );
 }

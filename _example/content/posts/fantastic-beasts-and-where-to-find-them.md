@@ -1,7 +1,6 @@
 ---
 title: Fantastic Beasts and Where to Find Them
 date: 2019-11-01
-description: A collection of code examples and demonstrations
 tags:
   - Novel
   - 编程
@@ -11,54 +10,31 @@ tags:
 published: true
 ---
 
-## React Component Example
-
-Here's an example of how you might embed a Spotify player:
-
-```jsx
-<SpotifyPlayer
-  uri="spotify:user:bbcamerica:playlist:3w18u69NplCpXVG4fQG726"
-  size="large"
-  theme="black"
-  view="list"
-/>
-```
-
-## Live Code Example
-
-```js
-const onClick = () => {
-  alert("You opened me");
-};
-
-// Usage: <button onClick={onClick}>Alohomora!</button>
-```
-
-## Normal Code Block
+Here will a normal code block go:
 
 ```js
 (function() {
-  var cache = {};
-  var form = $('form');
-  var minified = true;
 
-  var dependencies = {};
+var cache = {};
+var form = $('form');
+var minified = true;
 
-  var treeURL = 'https://api.github.com/repos/PrismJS/prism/git/trees/gh-pages?recursive=1';
-  var treePromise = new Promise(function(resolve) {
-    $u.xhr({
-      url: treeURL,
-      callback: function(xhr) {
-        if (xhr.status < 400) {
-          resolve(JSON.parse(xhr.responseText).tree);
-        }
-      }
-    });
-  });
-})();
+var dependencies = {};
+
+var treeURL = 'https://api.github.com/repos/PrismJS/prism/git/trees/gh-pages?recursive=1';
+var treePromise = new Promise(function(resolve) {
+	$u.xhr({
+		url: treeURL,
+		callback: function(xhr) {
+			if (xhr.status < 400) {
+				resolve(JSON.parse(xhr.responseText).tree);
+			}
+		}
+	});
+});
 ```
 
-## JSDoc Comment Example
+A code block with a JSDoc comment, short, and long comment:
 
 ```js
 /**
@@ -87,15 +63,15 @@ const getValue = (input, rootFontSize = 16) => {
 // This is a little helper function
 const helper = (a, b) => a + b;
 
-// This is also a little helper function but with a really long one-line comment
+// This is also a little helper function but this time with a really long one-line comment that should show some more details
 const morehelper = (a, b) => a * b;
 
 export { getValue, helper, morehelper };
 ```
 
-## Layout Component
+Normal block without language:
 
-```jsx
+```
 import Test from "../components/test"
 
 const Layout = ({ children }) => (
@@ -107,7 +83,7 @@ const Layout = ({ children }) => (
 export default Layout
 ```
 
-## Code Highlighting Example
+Code block with code highlighting:
 
 ```jsx
 import * as React from "react";
@@ -147,4 +123,56 @@ const Post = ({ data: { post } }) => (
 export default Post;
 ```
 
+Code block without title:
+
+```
+Harry Potter and the Philosopher's Stone
+```
+
+Code block without lineNumbers (but lang):
+
+```text
+Harry Potter and the Chamber of Secrets
+```
+
+Line highlighting example:
+
+```js
+const test = 3;
+const foo = "bar";
+const harry = "potter";
+const hermione = "granger";
+const ron = "weasley";
+```
+
 Here will `inline code` go, just inside the text. Wow!
+
+Code block with TypeScript:
+
+```tsx
+import * as React from "react";
+
+const Blog = ({ posts }: PostsProps) => {
+  const { tagsPath, basePath } = useSiteMetadata();
+
+  return (
+    <Layout>
+      <Flex sx={{ alignItems: `center`, justifyContent: `space-between` }}>
+        <Heading variant="h2" as="h2">
+          Blog
+        </Heading>
+        <Styled.a
+          as={Link}
+          sx={{ variant: `links.secondary` }}
+          to={`/${basePath}/${tagsPath}`.replace(/\/\/+/g, `/`)}
+        >
+          View all tags
+        </Styled.a>
+      </Flex>
+      <Listing posts={posts} sx={{ mt: [4, 5] }} />
+    </Layout>
+  );
+};
+
+export default Blog;
+```

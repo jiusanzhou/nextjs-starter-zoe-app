@@ -2,10 +2,8 @@
 title: "Curses and Counter-curses"
 date: 2019-10-25
 slug: curses-counter-curses-and-more
-description: Thestral dirigible plums, Viktor Krum hexed memory charm Animagus Invisibility Cloak three-headed Dog.
 tags:
   - Test
-  - Demo
 published: true
 banner: "https://res.cloudinary.com/adaface/image/upload/v1627551610/how-chatbots-work.jpg"
 ---

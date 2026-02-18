@@ -1,14 +1,18 @@
-# Example Configuration
-# 示例站点配置文件
+# Zoe Site Example Configuration
+# YAML 驱动的站点配置文件
 
-title: Zoe's Lab
-description: 从零开始，构建一个还不错的网站
-url: https://labs.zoe.im
+primaryColor: black
+
+title: ZoeAPP
+description: A starter template for zoe app.
+url: https://example.com
 logo: /images/logo.png
 lang: zh-CN
 
+# 显示在 logo 右侧的版本号
 version: alpha
 
+# 作者信息
 author:
   name: Zoe
   email: hi@zoe.im
@@ -19,18 +23,23 @@ author:
   twitter: jiusanzhou
   telegram: noboddyim
 
+# 组织信息（页脚显示）
 organization:
-  name: Zoe's Lab
-  url: https://labs.zoe.im
+  name: ZoeAPP
+  url: https://zoe.im
   logo: /images/logo.png
 
+# 版权信息
 copyright:
   from: 2011
   holder: Zoe
   location: Hangzhou
 
-primaryColor: purple
+# 主题风格
+# 可选: default, cyber, minimal, apple, github, vercel, stripe
+theme: default
 
+# 导航菜单
 navs:
   - title: 首页
     href: /
@@ -38,23 +47,61 @@ navs:
     href: /blog
   - title: 项目
     href: /projects
+  - title: 帮助
+    href: /help
   - title: 关于
     href: /about
 
+# 页脚链接
+links:
+  - title: Home
+    category: Company
+    href: /
+  - title: About
+    category: Company
+    href: /about
+  - title: Blog
+    category: Company
+    href: /blog
+  - title: Help Center
+    category: Plugins
+    href: /help
+  - title: App landing
+    category: Plugins
+    href: /app-landing
+  - title: Projects
+    category: Open Source
+    href: /projects
+
+# 社交链接（页脚）
 socials:
+  email: hi@zoe.im
   github: https://github.com/jiusanzhou
   twitter: https://twitter.com/jiusanzhou
-  telegram: https://t.me/noboddyim
+  facebook: https://facebook.com/jiusanzhou
+  telegram: https://t.me/jiusanzhou
+  linkedin: https://linkedin.com/in/johnzoe
+  rss: /rss.xml
 
+# 博客配置
 blog:
   title: 博客文章
   description: 写作亦是一种自我学习的方式
   basePath: /blog
   postsPerPage: 10
 
+# 内容目录（相对于项目根目录）
 contentDirs:
-  - _example/content
+  - content
 
+# Git 远程内容源（构建时自动克隆/更新）
+# gitContent:
+#   - name: my-content
+#     remote: https://github.com/user/repo.git
+#     branch: main
+#     local: .cache/git-content/my-content
+
+# 自定义节点类型
 contentTypes:
   - name: post
     path: posts
@@ -66,22 +113,38 @@ contentTypes:
     path: projects
     template: project
 
+# RSS 配置
 rss:
   enabled: true
   path: /rss.xml
-  title: Zoe's Lab RSS Feed
+  title: ZoeAPP RSS Feed
 
-comments:
-  provider: giscus
-
-analytics:
-  googleId: ""
-
-# Example release repository configuration
-# releaseRepo: "jiusanzhou/flutter_automate"
-# Or multiple repos:
+# App Releases（从 GitHub/Gitee 获取）
 # releaseRepo:
 #   - provider: github
-#     repo: jiusanzhou/flutter_automate
-#   - provider: gitee
-#     repo: jiusanzhou/another-app
+#     repo: moeapp/automate
+
+# GitHub 项目（自动从 API 获取）
+# projects:
+#   provider: github
+#   tag: zoe-lab
+#   owners:
+#     - jiusanzhou
+
+# Help/QA 系统（从 GitHub Issues 获取）
+# helpqa:
+#   provider: github
+#   repo: jiusanzhou/gatsby-starter-zoe-app
+#   labelPrefix: help
+
+# 评论系统
+comments:
+  provider: giscus
+  repo: jiusanzhou/jiusanzhou.github.io
+  repoId: "MDEwOlJlcG9zaXRvcnkxMzQ2MDAzMDM="
+  categoryId: "DIC_kwDOCAXWb84B-qn9"
+  # category: Announcements
+
+# Google Analytics
+analytics:
+  googleId: ""
