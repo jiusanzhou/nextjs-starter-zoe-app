@@ -18,21 +18,68 @@ export function getProjectRoot(): string {
 }
 
 /**
+ * 深度合并两个对象
+ */
+function deepMerge<T extends Record<string, unknown>>(target: T, source: Partial<T>): T {
+  const result = { ...target };
+  
+  for (const key of Object.keys(source) as Array<keyof T>) {
+    const sourceValue = source[key];
+    const targetValue = result[key];
+    
+    if (
+      sourceValue !== undefined &&
+      typeof sourceValue === 'object' &&
+      sourceValue !== null &&
+      !Array.isArray(sourceValue) &&
+      typeof targetValue === 'object' &&
+      targetValue !== null &&
+      !Array.isArray(targetValue)
+    ) {
+      // 递归合并对象
+      result[key] = deepMerge(
+        targetValue as Record<string, unknown>,
+        sourceValue as Record<string, unknown>
+      ) as T[keyof T];
+    } else if (sourceValue !== undefined) {
+      // 直接覆盖（包括数组）
+      result[key] = sourceValue as T[keyof T];
+    }
+  }
+  
+  return result;
+}
+
+/**
  * 加载 zoe-site.yaml 配置文件
+ * 开发模式下会合并 _example/zoe-site.yaml 的配置
  */
 export function loadZoeConfig(): ZoeSiteConfig {
   if (cachedConfig) {
     return cachedConfig;
   }
 
-  const configPath = path.join(getProjectRoot(), 'zoe-site.yaml');
+  const root = getProjectRoot();
+  const configPath = path.join(root, 'zoe-site.yaml');
   
   if (!fs.existsSync(configPath)) {
     throw new Error(`Configuration file not found: ${configPath}`);
   }
 
   const fileContent = fs.readFileSync(configPath, 'utf-8');
-  const config = yaml.load(fileContent) as ZoeSiteConfig;
+  let config = yaml.load(fileContent) as ZoeSiteConfig;
+
+  // 开发模式下合并 _example/zoe-site.yaml
+  const useExample = process.env.NODE_ENV === 'development' || process.env.USE_EXAMPLE_CONTENT === 'true';
+  const exampleConfigPath = path.join(root, '_example/zoe-site.yaml');
+  
+  if (useExample && fs.existsSync(exampleConfigPath)) {
+    const exampleContent = fs.readFileSync(exampleConfigPath, 'utf-8');
+    const exampleConfig = yaml.load(exampleContent) as Partial<ZoeSiteConfig>;
+    
+    // _example 配置作为基础，根目录配置覆盖
+    config = deepMerge(exampleConfig as ZoeSiteConfig, config);
+  }
 
   // 处理变量替换，例如 ${zoe.title}
   cachedConfig = processVariables(config, config);
