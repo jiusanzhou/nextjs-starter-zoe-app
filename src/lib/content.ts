@@ -37,10 +37,31 @@ function getGitContentDirs(): string[] {
 
 /**
  * 获取内容目录路径（包含 Git 内容）
+ * 开发模式下优先使用 _example/content
  */
 function getContentDirs(): string[] {
   const config = loadZoeConfig();
   const root = getProjectRoot();
+  
+  // 检查是否应该使用 _example 目录
+  const useExample = process.env.NODE_ENV === 'development' || process.env.USE_EXAMPLE_CONTENT === 'true';
+  const exampleContentDir = path.join(root, '_example/content');
+  
+  if (useExample && fs.existsSync(exampleContentDir)) {
+    // 检查 _example/content 是否有内容
+    const hasContent = fs.readdirSync(exampleContentDir).some(name => {
+      const subDir = path.join(exampleContentDir, name);
+      return fs.statSync(subDir).isDirectory() && fs.readdirSync(subDir).length > 0;
+    });
+    
+    if (hasContent) {
+      // 合并 Git 内容目录
+      const gitDirs = getGitContentDirs();
+      return [exampleContentDir, ...gitDirs];
+    }
+  }
+  
+  // 默认使用配置的目录
   const dirs = config.contentDirs || ['content'];
   const localDirs = dirs.map(dir => path.join(root, dir));
   
