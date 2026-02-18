@@ -125,11 +125,11 @@ rss:
 #     repo: moeapp/automate
 
 # GitHub 项目（自动从 API 获取）
-# projects:
-#   provider: github
-#   tag: zoe-lab
-#   owners:
-#     - jiusanzhou
+projects:
+  provider: github
+  tag: zoe-lab
+  owners:
+    - jiusanzhou
 
 # Help/QA 系统（从 GitHub Issues 获取）
 # helpqa:

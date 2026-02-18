@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Comments } from "@/components/comments";
 import { getAllPosts, getPostBySlug } from "@/lib/content";
 import { loadZoeConfig } from "@/lib/zoefile";
 import { markdownToHtml } from "@/lib/mdx";
@@ -123,6 +124,23 @@ export default async function PostPage({ params }: PostPageProps) {
             )}
           </div>
         </div>
+      )}
+
+      {/* Comments */}
+      {config.comments?.provider && (
+        <>
+          <Separator className="my-8" />
+          <section className="mt-8">
+            <h2 className="text-xl font-semibold mb-6">评论</h2>
+            <Comments
+              provider={config.comments.provider}
+              repo={config.comments.repo}
+              repoId={config.comments.repoId}
+              category={config.comments.category}
+              categoryId={config.comments.categoryId}
+            />
+          </section>
+        </>
       )}
     </article>
   );
