@@ -167,10 +167,16 @@ export function getAllPosts(): Post[] {
     }
   }
 
-  // 按日期排序（最新在前）
+  // 按日期排序（最新在前），置顶文章优先
   return posts
     .filter(post => post.published)
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    .sort((a, b) => {
+      // 置顶文章优先
+      if (a.pinned && !b.pinned) return -1;
+      if (!a.pinned && b.pinned) return 1;
+      // 同为置顶或同为非置顶，按日期排序
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
+    });
 }
 
 /**
