@@ -1,5 +1,8 @@
 import { generateRSSFeed } from '@/lib/rss';
 
+// 强制静态生成
+export const dynamic = "force-static";
+
 export async function GET() {
   const rss = generateRSSFeed();
 

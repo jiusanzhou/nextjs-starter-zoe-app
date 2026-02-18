@@ -132,10 +132,10 @@ projects:
     - jiusanzhou
 
 # Help/QA 系统（从 GitHub Issues 获取）
-# helpqa:
-#   provider: github
-#   repo: jiusanzhou/gatsby-starter-zoe-app
-#   labelPrefix: help
+helpqa:
+  provider: github
+  repo: jiusanzhou/gatsby-starter-zoe-app
+  labelPrefix: help
 
 # 评论系统
 comments:

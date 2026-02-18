@@ -1,19 +1,40 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { loadZoeConfig } from "@/lib/zoefile";
-import { getHelpItemById } from "@/lib/helpqa";
+import { getHelpItems, getHelpItemById } from "@/lib/helpqa";
 import { markdownToHtml } from "@/lib/mdx";
 import { HelpHeader, HelpItemDetail } from "@/components/help";
 
-export const revalidate = 3600;
+// 强制静态生成
+export const dynamic = "force-static";
+export const dynamicParams = false;
 
 interface Props {
   params: Promise<{ id: string }>;
 }
 
+// 生成所有帮助项目的静态路径
+export async function generateStaticParams() {
+  try {
+    const config = loadZoeConfig();
+    const helpConfig = config.helpqa;
+    
+    if (!helpConfig?.repo) {
+      return [];
+    }
+    
+    const items = await getHelpItems(helpConfig);
+    return items.map((item) => ({
+      id: item.id,
+    }));
+  } catch {
+    return [];
+  }
+}
+
 export async function generateMetadata({ params }: Props) {
   const { id } = await params;
-  const config = await loadZoeConfig();
+  const config = loadZoeConfig();
   const helpConfig = config.helpqa;
 
   if (!helpConfig?.repo) {
@@ -30,7 +51,7 @@ export async function generateMetadata({ params }: Props) {
 }
 
 async function ItemContent({ itemId }: { itemId: string }) {
-  const config = await loadZoeConfig();
+  const config = loadZoeConfig();
   const helpConfig = config.helpqa;
 
   if (!helpConfig?.repo) {

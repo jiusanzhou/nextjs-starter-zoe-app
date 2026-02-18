@@ -4,15 +4,36 @@ import { loadZoeConfig } from "@/lib/zoefile";
 import { getHelpCategories, getHelpItemsByCategory } from "@/lib/helpqa";
 import { HelpHeader, HelpItemsList } from "@/components/help";
 
-export const revalidate = 3600;
+// 强制静态生成
+export const dynamic = "force-static";
+export const dynamicParams = false;
 
 interface Props {
   params: Promise<{ id: string }>;
 }
 
+// 生成所有分类的静态路径
+export async function generateStaticParams() {
+  try {
+    const config = loadZoeConfig();
+    const helpConfig = config.helpqa;
+    
+    if (!helpConfig?.repo) {
+      return [];
+    }
+    
+    const categories = await getHelpCategories(helpConfig);
+    return categories.map((category) => ({
+      id: category.id,
+    }));
+  } catch {
+    return [];
+  }
+}
+
 export async function generateMetadata({ params }: Props) {
   const { id } = await params;
-  const config = await loadZoeConfig();
+  const config = loadZoeConfig();
   const helpConfig = config.helpqa;
 
   if (!helpConfig?.repo) {
@@ -30,7 +51,7 @@ export async function generateMetadata({ params }: Props) {
 }
 
 async function CategoryContent({ categoryId }: { categoryId: string }) {
-  const config = await loadZoeConfig();
+  const config = loadZoeConfig();
   const helpConfig = config.helpqa;
 
   if (!helpConfig?.repo) {

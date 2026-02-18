@@ -1,41 +1,16 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // 输出为纯静态站点
+  output: "export",
+  
+  // 静态导出时禁用图片优化（需要服务端）
   images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'github.com',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: '*.githubusercontent.com',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'avatars.githubusercontent.com',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'raw.githubusercontent.com',
-        pathname: '/**',
-      },
-      // Add common image hosts
-      {
-        protocol: 'https',
-        hostname: '*.gravatar.com',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'images.unsplash.com',
-        pathname: '/**',
-      },
-    ],
+    unoptimized: true,
   },
+  
+  // 添加 trailing slash 以兼容静态托管
+  trailingSlash: true,
 };
 
 export default nextConfig;
