@@ -39,7 +39,14 @@ export default async function DynamicPage({ params }: PageProps) {
     notFound();
   }
 
-  const html = await markdownToHtml(page.content);
+  // 移除 markdown 内容开头的一级标题（避免与 header 重复）
+  let content = page.content;
+  const firstH1Match = content.match(/^#\s+.+\n/);
+  if (firstH1Match && firstH1Match[0].includes(page.title)) {
+    content = content.replace(/^#\s+.+\n/, '');
+  }
+
+  const html = await markdownToHtml(content);
 
   return (
     <article className="max-w-3xl mx-auto">
