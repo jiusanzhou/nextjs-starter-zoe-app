@@ -119,12 +119,12 @@ export function Footer({ organization, copyright, socials, author, links }: Foot
                 <div className="flex items-center gap-3 mb-4">
                   {organization.logo && (
                     <div className="relative h-8 w-8 overflow-hidden rounded-lg">
-                      {organization.logo.startsWith("http") ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={organization.logo} alt={organization.name} className="h-full w-full object-cover" />
-                      ) : (
-                        <Image src={organization.logo} alt={organization.name} fill className="object-cover" />
-                      )}
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img 
+                        src={organization.logo.startsWith("http") ? organization.logo : `${process.env.NEXT_PUBLIC_BASE_PATH || ''}${organization.logo}`} 
+                        alt={organization.name} 
+                        className="h-full w-full object-cover" 
+                      />
                     </div>
                   )}
                   <span className="font-semibold">{organization.name}</span>
