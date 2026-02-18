@@ -130,12 +130,49 @@ export interface ZoeSiteConfig {
   comments?: CommentsConfig;
   analytics?: AnalyticsConfig;
 
-  // App Release Configuration
+  // App Release Configuration (for /releases page)
   releaseRepo?: string | ReleaseRepoConfig[];
+  
+  // App Releases Configuration (for app-landing page, MDX inline use)
+  releases?: ReleaseRepoConfig[];
 
   // Help/QA System Configuration
   helpqa?: HelpQAConfig;
 
   // GitHub Projects Configuration
   projects?: ProjectsConfig;
+  
+  // Pricing Configuration
+  pricing?: PricingConfig;
+}
+
+// Pricing Types
+export interface PricingFeature {
+  name: string;
+  included: boolean | string;
+  tooltip?: string;
+}
+
+export interface PricingPlan {
+  id: string;
+  name: string;
+  description?: string;
+  price: number | string;
+  priceUnit?: string;
+  originalPrice?: number;
+  currency?: string;
+  features: PricingFeature[];
+  cta?: string;
+  ctaLink?: string;
+  popular?: boolean;
+  badge?: string;
+}
+
+export interface PricingConfig {
+  enabled?: boolean;
+  title?: string;
+  description?: string;
+  yearlyDiscount?: number;
+  showToggle?: boolean;
+  plans: PricingPlan[];
 }

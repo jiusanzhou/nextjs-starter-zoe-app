@@ -242,6 +242,9 @@ export function getAllPages(): Page[] {
     for (const file of files) {
       const parsed = parseMarkdownFile(file);
       const { frontmatter, content, slug } = parsed;
+      
+      // 检查文件扩展名是否为 .mdx
+      const isMdx = file.endsWith('.mdx');
 
       pages.push({
         slug,
@@ -249,6 +252,7 @@ export function getAllPages(): Page[] {
         description: frontmatter.description,
         layout: frontmatter.layout || 'default',
         container: frontmatter.container,
+        isMdx,
         content,
       });
     }

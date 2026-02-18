@@ -1,6 +1,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { Section } from "@/components/section";
+import { AuthorCard } from "@/components/author-card";
+import { AppRelease } from "@/components/app-release";
+import { TypingText } from "@/components/typing-text";
+import { Lottie } from "@/components/lottie";
+import { PricingTable, PricingCard } from "@/components/pricing";
 
 /**
  * MDX Components
@@ -296,6 +302,14 @@ export const mdxComponents = {
   tr: Tr,
   th: Th,
   td: Td,
+  // Custom components for MDX
+  Section,
+  AuthorCard,
+  AppRelease,
+  TypingText,
+  Lottie,
+  PricingTable,
+  PricingCard,
 };
 
 export default mdxComponents;

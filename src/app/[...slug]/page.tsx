@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getAllPages, getPageBySlug, markdownToHtml } from "@/lib";
+import { compileMDX } from "next-mdx-remote/rsc";
+import { mdxComponents } from "@/components/mdx";
 
 interface PageProps {
   params: Promise<{ slug: string[] }>;
@@ -46,6 +48,42 @@ export default async function DynamicPage({ params }: PageProps) {
     content = content.replace(/^#\s+.+\n/, '');
   }
 
+  // 检查是否为 MDX 内容（包含 JSX 语法）
+  const isMdx = page.isMdx || content.includes('<') && (
+    content.includes('/>') || 
+    content.includes('</') ||
+    content.includes('import ')
+  );
+
+  if (isMdx) {
+    // 使用 next-mdx-remote 编译 MDX
+    const { content: mdxContent } = await compileMDX({
+      source: content,
+      components: mdxComponents,
+      options: {
+        parseFrontmatter: false,
+      },
+    });
+
+    return (
+      <article className="max-w-3xl mx-auto">
+        <header className="mb-8">
+          <h1 className="text-4xl font-bold tracking-tight">{page.title}</h1>
+          {page.description && (
+            <p className="mt-4 text-xl text-muted-foreground">
+              {page.description}
+            </p>
+          )}
+        </header>
+
+        <div className="prose prose-neutral dark:prose-invert max-w-none prose-headings:scroll-mt-20 prose-a:text-primary prose-pre:bg-muted prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none">
+          {mdxContent}
+        </div>
+      </article>
+    );
+  }
+
+  // 普通 Markdown
   const html = await markdownToHtml(content);
 
   return (

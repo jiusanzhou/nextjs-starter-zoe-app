@@ -33,6 +33,7 @@ export interface PageMeta {
   description?: string;
   layout?: string;
   container?: string;
+  isMdx?: boolean;
 }
 
 export interface Page extends PageMeta {

@@ -47,6 +47,8 @@ navs:
     href: /blog
   - title: 项目
     href: /projects
+  - title: 价格
+    href: /pricing
   - title: 帮助
     href: /help
   - title: 关于
@@ -148,3 +150,80 @@ comments:
 # Google Analytics
 analytics:
   googleId: ""
+
+# 价格页面配置
+pricing:
+  enabled: true
+  title: 选择适合您的方案
+  description: 简单透明的定价，无隐藏费用
+  yearlyDiscount: 20
+  showToggle: true
+  plans:
+    - id: free
+      name: 免费版
+      description: 适合个人用户体验
+      price: 0
+      priceUnit: /月
+      currency: ¥
+      features:
+        - name: 5 个项目
+          included: true
+        - name: 1GB 存储空间
+          included: true
+        - name: 社区支持
+          included: true
+        - name: API 访问
+          included: false
+        - name: 自定义域名
+          included: false
+        - name: 优先支持
+          included: false
+      cta: 免费开始
+      ctaLink: /signup
+
+    - id: pro
+      name: 专业版
+      description: 适合专业开发者和小团队
+      price: 49
+      priceUnit: /月
+      currency: ¥
+      originalPrice: 99
+      popular: true
+      features:
+        - name: 无限项目
+          included: true
+        - name: 10GB 存储空间
+          included: true
+        - name: 邮件支持
+          included: true
+        - name: API 访问
+          included: true
+        - name: 自定义域名
+          included: true
+        - name: 优先支持
+          included: false
+      cta: 立即升级
+      ctaLink: /signup?plan=pro
+      badge: 最受欢迎
+
+    - id: enterprise
+      name: 企业版
+      description: 适合大型团队和企业
+      price: 199
+      priceUnit: /月
+      currency: ¥
+      features:
+        - name: 无限项目
+          included: true
+        - name: 无限存储空间
+          included: true
+        - name: 专属客户经理
+          included: true
+        - name: API 访问
+          included: 无限制
+        - name: 自定义域名
+          included: 多个
+        - name: 24/7 优先支持
+          included: true
+      cta: 联系销售
+      ctaLink: /contact

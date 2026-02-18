@@ -1,0 +1,53 @@
+---
+title: App Landing Page
+slug: app-landing
+layout: default
+description: Create your app landing page without code
+---
+
+import { Section } from '@/components/section'
+import { AppRelease } from '@/components/app-release'
+
+<Section 
+  title="ZoeAPP"
+  description="Create your app landing page **without code**. Static websites and Progressive Web Applications are secure, scalable, SEO-friendly, and even up to 10x faster."
+  position="center"
+  className="min-h-[60vh] flex items-center"
+>
+  <div className="flex justify-center">
+    <img 
+      src="/images/logo.png" 
+      alt="ZoeAPP" 
+      className="w-24 h-24 md:w-32 md:h-32 rounded-2xl shadow-lg"
+    />
+  </div>
+</Section>
+
+## Features
+
+- 🚀 Lightning fast performance
+- 📱 Mobile-first responsive design  
+- 🔒 Secure by default
+- 🌐 SEO optimized
+- 📊 Analytics ready
+
+## Download
+
+<AppRelease 
+  repo="moeapp/automate"
+  provider="github"
+  platforms={["android", "ios", "windows", "macos"]}
+  hideUnsupported={false}
+/>
+
+---
+
+Or download from specific links:
+
+<AppRelease 
+  urls={{
+    android: "https://example.com/app.apk",
+    ios: "https://apps.apple.com/app/example",
+  }}
+  platforms={["android", "ios"]}
+/>
