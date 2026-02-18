@@ -96,6 +96,12 @@ export interface ProjectsConfig {
   owners: string[];
 }
 
+export interface FooterLink {
+  title: string;
+  href: string;
+  category?: string;
+}
+
 export interface ZoeSiteConfig {
   title: string;
   description?: string;
@@ -113,6 +119,7 @@ export interface ZoeSiteConfig {
 
   navs?: NavItem[];
   socials?: Record<string, string>;
+  links?: FooterLink[];
 
   blog?: BlogConfig;
   contentDirs?: string[];

@@ -131,7 +131,7 @@ function parseMarkdownFile(filePath: string) {
 /**
  * 获取所有博客文章
  */
-export function getAllPosts(): Post[] {
+export function getAllPosts(includeDrafts = false): Post[] {
   const contentDirs = getContentDirs();
   const posts: Post[] = [];
 
@@ -168,15 +168,20 @@ export function getAllPosts(): Post[] {
   }
 
   // 按日期排序（最新在前），置顶文章优先
-  return posts
-    .filter(post => post.published)
-    .sort((a, b) => {
-      // 置顶文章优先
-      if (a.pinned && !b.pinned) return -1;
-      if (!a.pinned && b.pinned) return 1;
-      // 同为置顶或同为非置顶，按日期排序
-      return new Date(b.date).getTime() - new Date(a.date).getTime();
-    });
+  const sortedPosts = posts.sort((a, b) => {
+    // 置顶文章优先
+    if (a.pinned && !b.pinned) return -1;
+    if (!a.pinned && b.pinned) return 1;
+    // 同为置顶或同为非置顶，按日期排序
+    return new Date(b.date).getTime() - new Date(a.date).getTime();
+  });
+  
+  // includeDrafts 参数控制是否包含草稿
+  if (includeDrafts) {
+    return sortedPosts;
+  }
+  
+  return sortedPosts.filter(post => post.published);
 }
 
 /**

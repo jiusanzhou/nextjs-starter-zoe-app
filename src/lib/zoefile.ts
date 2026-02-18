@@ -75,10 +75,10 @@ export function loadZoeConfig(): ZoeSiteConfig {
   
   if (useExample && fs.existsSync(exampleConfigPath)) {
     const exampleContent = fs.readFileSync(exampleConfigPath, 'utf-8');
-    const exampleConfig = yaml.load(exampleContent) as Partial<ZoeSiteConfig>;
+    const exampleConfig = yaml.load(exampleContent) as Record<string, unknown>;
     
     // _example 配置作为基础，根目录配置覆盖
-    config = deepMerge(exampleConfig as ZoeSiteConfig, config);
+    config = deepMerge(exampleConfig, config as unknown as Record<string, unknown>) as unknown as ZoeSiteConfig;
   }
 
   // 处理变量替换，例如 ${zoe.title}

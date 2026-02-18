@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Header, Footer } from "@/components/layout";
 import { ThemeProvider } from "@/components/theme-provider";
 import { GoogleAnalytics, PlausibleAnalytics } from "@/components/analytics";
+import { GoTop } from "@/components/go-top";
 import { loadZoeConfig, getSiteMetadata } from "@/lib/zoefile";
 import "./globals.css";
 
@@ -83,7 +84,9 @@ export default function RootLayout({
             copyright={config.copyright}
             socials={config.socials}
             author={config.author}
+            links={config.links}
           />
+          <GoTop />
         </ThemeProvider>
       </body>
     </html>

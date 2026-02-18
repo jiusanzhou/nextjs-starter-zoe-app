@@ -129,7 +129,7 @@ async function HomeContent() {
         description="你可以通过下面任意一种方式与我取得联系 👇️"
       >
         <div className="flex justify-center">
-          <AuthorCard className="max-w-sm" />
+          <AuthorCard author={config.author} className="max-w-sm" />
         </div>
       </Section>
     </div>
