@@ -50,6 +50,7 @@ jobs:
       - name: Build with example content
         env:
           USE_EXAMPLE_CONTENT: "true"
+          PAGES_BASE_PATH: "/nextjs-starter-zoe-app"
         run: pnpm build
 
       - name: Add .nojekyll
