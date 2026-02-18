@@ -24,6 +24,7 @@ export default function PricingPage() {
     <div className="container py-8">
       <PricingTable
         plans={pricingConfig.plans}
+        featureDefinitions={pricingConfig.featureDefinitions}
         title={pricingConfig.title}
         description={pricingConfig.description}
         yearlyDiscount={pricingConfig.yearlyDiscount}

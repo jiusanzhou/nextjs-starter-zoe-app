@@ -1,11 +1,24 @@
 "use client";
 
 import React from "react";
-import { Check, X, Sparkles } from "lucide-react";
+import { Check, X, Sparkles, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-export interface PricingFeature {
+// 全局功能定义
+export interface FeatureDefinition {
+  id: string;
+  name: string;
+  tooltip?: string;
+}
+
+// Plan 中的功能值
+export interface PlanFeatureValue {
+  [featureId: string]: boolean | string | number;
+}
+
+// 旧格式兼容
+export interface LegacyPricingFeature {
   name: string;
   included: boolean | string;
   tooltip?: string;
@@ -16,31 +29,51 @@ export interface PricingPlan {
   name: string;
   description?: string;
   price: number | string;
-  priceUnit?: string; // 默认 "/月"
-  originalPrice?: number; // 原价（显示划线价）
-  currency?: string; // 默认 "¥"
-  features: PricingFeature[];
-  cta?: string; // 按钮文字
+  priceUnit?: string;
+  originalPrice?: number;
+  currency?: string;
+  // 新格式: { featureId: value }
+  features?: PlanFeatureValue | LegacyPricingFeature[];
+  cta?: string;
   ctaLink?: string;
-  popular?: boolean; // 推荐标签
-  badge?: string; // 自定义标签
+  popular?: boolean;
+  badge?: string;
 }
 
 interface PricingTableProps {
+  // 全局功能定义列表
+  featureDefinitions?: FeatureDefinition[];
   plans: PricingPlan[];
   title?: string;
   description?: string;
-  yearlyDiscount?: number; // 年付折扣百分比
-  showToggle?: boolean; // 显示月付/年付切换
+  yearlyDiscount?: number;
+  showToggle?: boolean;
   className?: string;
+}
+
+// 渲染功能值
+function renderFeatureValue(value: boolean | string | number | undefined) {
+  if (value === true) {
+    return <Check className="h-5 w-5 text-green-500" />;
+  }
+  if (value === false) {
+    return <X className="h-5 w-5 text-muted-foreground/50" />;
+  }
+  if (value === undefined || value === null || value === "") {
+    return <Minus className="h-5 w-5 text-muted-foreground/30" />;
+  }
+  // 字符串或数字
+  return <span className="text-sm font-medium">{value}</span>;
 }
 
 export function PricingCard({
   plan,
+  featureDefinitions,
   yearly = false,
   yearlyDiscount = 0,
 }: {
   plan: PricingPlan;
+  featureDefinitions?: FeatureDefinition[];
   yearly?: boolean;
   yearlyDiscount?: number;
 }) {
@@ -56,6 +89,11 @@ export function PricingCard({
     displayPrice = Math.round(yearlyPrice);
     displayUnit = "/年";
   }
+
+  // 判断 features 格式
+  const isLegacyFormat = Array.isArray(plan.features);
+  const legacyFeatures = isLegacyFormat ? (plan.features as LegacyPricingFeature[]) : [];
+  const featureMap = !isLegacyFormat ? (plan.features as PlanFeatureValue || {}) : {};
 
   return (
     <div
@@ -113,7 +151,25 @@ export function PricingCard({
 
       {/* 功能列表 */}
       <ul className="space-y-3 text-sm">
-        {plan.features.map((feature, idx) => (
+        {/* 新格式：使用全局 featureDefinitions */}
+        {featureDefinitions && featureDefinitions.length > 0 && !isLegacyFormat && (
+          featureDefinitions.map((feature) => {
+            const value = featureMap[feature.id];
+            const isIncluded = value !== false && value !== undefined && value !== null && value !== "";
+            
+            return (
+              <li key={feature.id} className="flex items-center justify-between gap-3">
+                <span className={cn(!isIncluded && "text-muted-foreground/50")}>
+                  {feature.name}
+                </span>
+                {renderFeatureValue(value)}
+              </li>
+            );
+          })
+        )}
+
+        {/* 旧格式兼容 */}
+        {isLegacyFormat && legacyFeatures.map((feature, idx) => (
           <li key={idx} className="flex items-start gap-3">
             {feature.included === true ? (
               <Check className="h-5 w-5 shrink-0 text-green-500" />
@@ -136,6 +192,7 @@ export function PricingCard({
 }
 
 export function PricingTable({
+  featureDefinitions,
   plans,
   title,
   description,
@@ -195,6 +252,7 @@ export function PricingTable({
           <PricingCard
             key={plan.id}
             plan={plan}
+            featureDefinitions={featureDefinitions}
             yearly={yearly}
             yearlyDiscount={yearlyDiscount}
           />

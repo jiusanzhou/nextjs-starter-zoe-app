@@ -147,9 +147,9 @@ export interface ZoeSiteConfig {
 }
 
 // Pricing Types
-export interface PricingFeature {
+export interface FeatureDefinition {
+  id: string;
   name: string;
-  included: boolean | string;
   tooltip?: string;
 }
 
@@ -161,7 +161,8 @@ export interface PricingPlan {
   priceUnit?: string;
   originalPrice?: number;
   currency?: string;
-  features: PricingFeature[];
+  // 新格式: { featureId: value } 或旧格式数组
+  features?: Record<string, boolean | string | number> | Array<{ name: string; included: boolean | string }>;
   cta?: string;
   ctaLink?: string;
   popular?: boolean;
@@ -174,5 +175,7 @@ export interface PricingConfig {
   description?: string;
   yearlyDiscount?: number;
   showToggle?: boolean;
+  // 全局功能定义
+  featureDefinitions?: FeatureDefinition[];
   plans: PricingPlan[];
 }

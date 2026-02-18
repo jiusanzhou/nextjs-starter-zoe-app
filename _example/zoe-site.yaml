@@ -158,6 +158,22 @@ pricing:
   description: 简单透明的定价，无隐藏费用
   yearlyDiscount: 20
   showToggle: true
+  
+  # 全局功能定义
+  featureDefinitions:
+    - id: projects
+      name: 项目数量
+    - id: storage
+      name: 存储空间
+    - id: support
+      name: 技术支持
+    - id: api
+      name: API 访问
+    - id: domain
+      name: 自定义域名
+    - id: priority
+      name: 优先支持
+  
   plans:
     - id: free
       name: 免费版
@@ -166,20 +182,14 @@ pricing:
       priceUnit: /月
       currency: ¥
       features:
-        - name: 5 个项目
-          included: true
-        - name: 1GB 存储空间
-          included: true
-        - name: 社区支持
-          included: true
-        - name: API 访问
-          included: false
-        - name: 自定义域名
-          included: false
-        - name: 优先支持
-          included: false
+        projects: "5 个"
+        storage: "1GB"
+        support: "社区"
+        api: false
+        domain: false
+        priority: false
       cta: 免费开始
-      ctaLink: /signup
+      ctaLink: "#free"
 
     - id: pro
       name: 专业版
@@ -190,20 +200,14 @@ pricing:
       originalPrice: 99
       popular: true
       features:
-        - name: 无限项目
-          included: true
-        - name: 10GB 存储空间
-          included: true
-        - name: 邮件支持
-          included: true
-        - name: API 访问
-          included: true
-        - name: 自定义域名
-          included: true
-        - name: 优先支持
-          included: false
+        projects: "无限"
+        storage: "10GB"
+        support: "邮件"
+        api: true
+        domain: true
+        priority: false
       cta: 立即升级
-      ctaLink: /signup?plan=pro
+      ctaLink: "#pro"
       badge: 最受欢迎
 
     - id: enterprise
@@ -213,17 +217,11 @@ pricing:
       priceUnit: /月
       currency: ¥
       features:
-        - name: 无限项目
-          included: true
-        - name: 无限存储空间
-          included: true
-        - name: 专属客户经理
-          included: true
-        - name: API 访问
-          included: 无限制
-        - name: 自定义域名
-          included: 多个
-        - name: 24/7 优先支持
-          included: true
+        projects: "无限"
+        storage: "无限"
+        support: "专属客户经理"
+        api: "无限制"
+        domain: "多个"
+        priority: true
       cta: 联系销售
-      ctaLink: /contact
+      ctaLink: "#enterprise"

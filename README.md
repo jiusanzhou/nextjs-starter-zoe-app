@@ -1,70 +1,75 @@
 # nextjs-starter-zoe-app
 
-> 🚀 A modern, YAML-driven site generator based on Next.js + shadcn/ui
+> 🚀 A modern, YAML-driven static site generator based on Next.js + shadcn/ui
 
 <div align="center">
 
 **Just care about your content. No need to fork or clone this repository!**
 
+[![Next.js](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19-blue)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)](https://typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38bdf8)](https://tailwindcss.com/)
+[![License](https://img.shields.io/badge/License-MIT-green)](./LICENSE)
+
 </div>
 
-## Quick Install
+## ✨ Features
 
-**One command to start:**
-
-```bash
-# Create new project
-curl -sSL https://raw.githubusercontent.com/jiusanzhou/nextjs-starter-zoe-app/main/scripts/zoe-site.sh | bash -s new my-site
-
-# Or run in existing content directory
-curl -sSL https://raw.githubusercontent.com/jiusanzhou/nextjs-starter-zoe-app/main/scripts/zoe-site.sh | bash
-```
-
-**Or use npx:**
-
-```bash
-# Clone the template
-npx degit jiusanzhou/nextjs-starter-zoe-app my-site
-cd my-site
-pnpm install
-pnpm dev
-```
-
-## Features
-
-- **🎨 7 Built-in Themes** - default, cyber, minimal, apple, github, vercel, stripe
+### Core
+- **📄 Static Export** - Pure static HTML output, deploy anywhere (Vercel, Netlify, GitHub Pages, CDN)
 - **📝 YAML Configuration** - Single `zoe-site.yaml` file to configure your entire site
 - **📂 Zero-config Content** - Just add Markdown/MDX files to `content/` directory
-- **🚀 Modern Stack** - Next.js 16, React 19, TypeScript, Tailwind CSS 4
-- **💎 Beautiful UI** - shadcn/ui components (Radix + Tailwind)
-- **🔍 SEO Ready** - Automatic metadata generation
-- **🌙 Dark Mode** - Built-in light/dark theme toggle
-- **📰 Blog System** - Posts, tags, archives out of the box
-- **🗂️ Projects Showcase** - Display your projects beautifully
-- **📡 RSS Feed** - Auto-generated RSS support
-- **📦 Git Content** - Load content from remote Git repositories
-- **📊 Analytics** - Google Analytics and Plausible support
-- **📥 App Releases** - Fetch and display releases from GitHub/Gitee
+- **🎨 7 Built-in Themes** - default, cyber, minimal, apple, github, vercel, stripe
+- **🌙 Dark Mode** - Built-in light/dark theme toggle with system detection
+- **🔍 SEO Ready** - Automatic metadata, Open Graph, and sitemap generation
+- **📱 PWA Support** - Web manifest and app icons for installable experience
 - **🔒 Type Safe** - Full TypeScript support
 
-## Usage
+### Content
+- **📰 Blog System** - Posts with tags, archives, pinned posts, drafts
+- **🗂️ Projects Showcase** - Display projects from local content or GitHub API
+- **📄 Dynamic Pages** - MDX pages with custom components
+- **📡 RSS Feed** - Auto-generated RSS support
+- **📦 Git Content** - Load content from remote Git repositories
+- **💬 Comments** - Giscus, Utterances, Disqus integration
+- **✨ Syntax Highlighting** - Shiki with dual theme (light/dark)
+
+### Pages
+- **💰 Pricing Page** - Configurable pricing table with monthly/yearly toggle
+- **📱 App Landing** - App download page with GitHub/Gitee releases
+- **❓ Help Center** - Q&A system powered by GitHub Issues
+- **📥 Releases Page** - Display app releases from GitHub/Gitee
+
+### UI/UX
+- **📊 Analytics** - Google Analytics and Plausible support
+- **⬆️ Go to Top** - Floating back-to-top button
+- **📱 Mobile Nav** - Bottom navigation bar on mobile
+- **🦶 Enhanced Footer** - Link groups, social icons, author card popover
+- **🎬 Lottie Animation** - Support for Lottie animations in MDX
+- **📲 WeChat Guide** - Browser compatibility prompt for WeChat
+
+### Tech Stack
+- **Next.js 16** - App Router, React Server Components
+- **React 19** - Latest React with concurrent features
+- **Tailwind CSS 4** - Utility-first CSS framework
+- **shadcn/ui** - Beautiful, accessible components (Radix + Tailwind)
+- **MDX 3** - Markdown with JSX components
+
+---
+
+## 🚀 Quick Start
 
 ### Method 1: Quick Script (Recommended)
 
 No need to clone! Just create your content and run:
 
 ```bash
-# 1. Create your content directory
-mkdir my-site && cd my-site
+# Create new project
+curl -sSL https://raw.githubusercontent.com/jiusanzhou/nextjs-starter-zoe-app/main/scripts/zoe-site.sh | bash -s new my-site
+cd my-site
 
-# 2. Create your config file
-cat > zoe-site.yaml << EOF
-title: My Site
-description: My awesome site
-theme: default
-EOF
-
-# 3. Run the script
+# Or run in existing content directory
 curl -sSL https://raw.githubusercontent.com/jiusanzhou/nextjs-starter-zoe-app/main/scripts/zoe-site.sh | bash
 ```
 
@@ -81,15 +86,40 @@ pnpm dev
 
 Fork this repository and customize to your needs.
 
-## Configuration
+---
+
+## 📁 Project Structure
+
+```
+my-site/
+├── zoe-site.yaml          # Site configuration
+├── content/
+│   ├── posts/             # Blog posts (MDX/MD)
+│   │   └── hello-world.md
+│   ├── pages/             # Static pages
+│   │   ├── about.md
+│   │   └── app-landing.mdx
+│   └── projects/          # Project showcases
+│       └── my-project.md
+├── public/
+│   └── icons/             # PWA icons
+└── out/                   # Static export output
+```
+
+---
+
+## ⚙️ Configuration
 
 Edit `zoe-site.yaml` to customize your site:
+
+### Basic
 
 ```yaml
 title: My Site
 description: My awesome site
 url: https://example.com
 lang: zh-CN
+version: v1.0
 
 # Theme: default, cyber, minimal, apple, github, vercel, stripe
 theme: default
@@ -99,7 +129,23 @@ author:
   email: you@example.com
   avatar: https://github.com/username.png
   minibio: A short bio about yourself
+  github: username
+  twitter: username
+  telegram: username
 
+organization:
+  name: Company Name
+  logo: /images/logo.png
+
+copyright:
+  from: 2020
+  holder: Your Name
+  location: City
+```
+
+### Navigation
+
+```yaml
 navs:
   - title: Home
     href: /
@@ -107,45 +153,205 @@ navs:
     href: /blog
   - title: Projects
     href: /projects
+  - title: Pricing
+    href: /pricing
+  - title: Help
+    href: /help
   - title: About
     href: /about
+```
 
+### Footer Links
+
+```yaml
+links:
+  - title: Home
+    category: Company
+    href: /
+  - title: About
+    category: Company
+    href: /about
+  - title: GitHub
+    category: Open Source
+    href: https://github.com/username
+```
+
+### Social Links
+
+```yaml
 socials:
-  github: https://github.com/username
-  twitter: https://twitter.com/username
+  github: username              # Auto-expands to https://github.com/username
+  twitter: username
+  telegram: username
+  email: you@example.com
+  linkedin: username
+  youtube: "@channel"
+  rss: /rss.xml
+```
 
+### Blog
+
+```yaml
 blog:
   title: Blog
   description: My thoughts and ideas
   basePath: /blog
+  postsPerPage: 10
 
 contentDirs:
   - content
+```
 
-# Load content from remote Git repos
+### Git Remote Content
+
+```yaml
 gitContent:
   - name: my-blog
     remote: https://github.com/user/blog-content.git
     branch: main
+    patterns:
+      - "posts/**/*.md"
+```
 
+### Analytics
+
+```yaml
+analytics:
+  googleId: G-XXXXXXXXXX
+  plausibleDomain: example.com
+```
+
+### Comments
+
+```yaml
+comments:
+  provider: giscus              # giscus | utterances | disqus
+  repo: username/repo
+  repoId: "R_xxx"
+  categoryId: "DIC_xxx"
+```
+
+### RSS
+
+```yaml
 rss:
   enabled: true
   path: /rss.xml
+  title: My Site RSS Feed
 ```
 
-## Content Structure
+### GitHub Projects
 
-```
-content/
-├── posts/          # Blog posts (MDX/MD)
-│   └── hello-world.md
-├── pages/          # Static pages
-│   └── about.md
-└── projects/       # Project showcases
-    └── my-project.md
+Auto-fetch projects from GitHub API:
+
+```yaml
+projects:
+  provider: github
+  tag: my-tag                   # Filter by topic
+  owners:
+    - username
 ```
 
-## Frontmatter
+### Help Center
+
+Build a help center from GitHub Issues:
+
+```yaml
+helpqa:
+  provider: github
+  repo: owner/repo
+  labelPrefix: help             # Filters help:xxx labels
+```
+
+- Create labels like `help:常见问题`, `help:使用入门` for categories
+- Create issues and assign these labels
+- Assign issues to someone to mark them as "pinned/hot"
+
+### App Releases
+
+Display releases from GitHub or Gitee:
+
+```yaml
+releaseRepo:
+  - provider: github
+    repo: username/repo
+    assetRegexPatterns:
+      android: ".*\\.apk$"
+      windows: ".*\\.exe$"
+      macos: ".*\\.dmg$"
+```
+
+### Pricing Page
+
+Configurable pricing table:
+
+```yaml
+pricing:
+  enabled: true
+  title: Choose Your Plan
+  description: Simple, transparent pricing
+  yearlyDiscount: 20
+  showToggle: true
+  
+  # Global feature definitions
+  featureDefinitions:
+    - id: projects
+      name: Projects
+    - id: storage
+      name: Storage
+    - id: api
+      name: API Access
+    - id: support
+      name: Support
+  
+  plans:
+    - id: free
+      name: Free
+      price: 0
+      currency: $
+      priceUnit: /mo
+      features:
+        projects: "5"
+        storage: "1GB"
+        api: false
+        support: "Community"
+      cta: Get Started
+      ctaLink: "#"
+
+    - id: pro
+      name: Pro
+      price: 29
+      originalPrice: 49       # Strikethrough price
+      popular: true           # "Recommended" badge
+      badge: Most Popular
+      features:
+        projects: "Unlimited"
+        storage: "10GB"
+        api: true
+        support: "Email"
+      cta: Upgrade Now
+      ctaLink: "#"
+
+    - id: enterprise
+      name: Enterprise
+      price: 99
+      features:
+        projects: "Unlimited"
+        storage: "Unlimited"
+        api: "Unlimited"
+        support: "Dedicated"
+      cta: Contact Sales
+      ctaLink: "#"
+```
+
+Feature values:
+- `true` → ✓ (green check)
+- `false` → ✗ (gray X)
+- `"string"` → Display text value
+
+---
+
+## 📝 Frontmatter
 
 ### Posts
 
@@ -158,8 +364,8 @@ tags:
   - tag1
   - tag2
 banner: /images/banner.jpg
-published: true
-pinned: false
+published: true           # false = draft
+pinned: true              # Show at top of list
 ---
 ```
 
@@ -171,6 +377,21 @@ title: Page Title
 description: Page description
 layout: default
 ---
+```
+
+MDX pages can use custom components:
+
+```mdx
+---
+title: App Landing
+---
+
+import { Section } from '@/components/section'
+import { AppRelease } from '@/components/app-release'
+
+<Section title="My App" description="Download now">
+  <AppRelease repo="user/repo" />
+</Section>
 ```
 
 ### Projects
@@ -188,126 +409,115 @@ featured: true
 ---
 ```
 
-## Themes
+---
+
+## 🎨 Themes
 
 7 built-in themes available:
 
 | Theme | Description |
 |-------|-------------|
-| `default` | 简洁优雅紫色调 |
-| `cyber` | 未来科技感青色 |
-| `minimal` | 黑白极简主义 |
-| `apple` | Apple 设计风格 |
-| `github` | GitHub 绿色调 |
-| `vercel` | Vercel 纯黑白 |
-| `stripe` | Stripe 紫蓝渐变 |
+| `default` | Elegant purple tones |
+| `cyber` | Futuristic cyan |
+| `minimal` | Black & white minimalism |
+| `apple` | Apple design style |
+| `github` | GitHub green tones |
+| `vercel` | Pure black & white |
+| `stripe` | Purple-blue gradient |
 
 Switch theme in config or use the palette icon in header.
 
-## Commands
+---
+
+## 🛠️ Commands
 
 ```bash
-# Development
+# Development (with hot reload)
 pnpm dev
 
-# Build
+# Build static site (outputs to /out)
 pnpm build
 
-# Production
-pnpm start
-
-# Sync git content
+# Sync git content before build
 pnpm sync-git
 
 # Lint
 pnpm lint
 ```
 
-## Script Commands
-
-When using the quick install script:
+### Script Commands
 
 ```bash
 # Start dev server
-curl -sSL https://raw.githubusercontent.com/jiusanzhou/nextjs-starter-zoe-app/main/scripts/zoe-site.sh | bash -s dev
+curl -sSL .../zoe-site.sh | bash -s dev
 
 # Build for production
-curl -sSL https://raw.githubusercontent.com/jiusanzhou/nextjs-starter-zoe-app/main/scripts/zoe-site.sh | bash -s build
+curl -sSL .../zoe-site.sh | bash -s build
 
 # Create new project
-curl -sSL https://raw.githubusercontent.com/jiusanzhou/nextjs-starter-zoe-app/main/scripts/zoe-site.sh | bash -s new my-site
+curl -sSL .../zoe-site.sh | bash -s new my-site
 
 # Show help
-curl -sSL https://raw.githubusercontent.com/jiusanzhou/nextjs-starter-zoe-app/main/scripts/zoe-site.sh | bash -s help
+curl -sSL .../zoe-site.sh | bash -s help
 ```
 
-## Migration from Gatsby
+---
 
-This template is the Next.js successor of `gatsby-starter-zoe-app`. Key differences:
+## 📦 MDX Components
+
+Available components in MDX pages:
+
+| Component | Description |
+|-----------|-------------|
+| `Section` | Content section with title/description |
+| `AuthorCard` | Author info card with socials |
+| `AppRelease` | App download buttons from GitHub/Gitee |
+| `PricingTable` | Pricing comparison table |
+| `PricingCard` | Single pricing card |
+| `TypingText` | Typewriter animation text |
+| `Lottie` | Lottie animation player |
+
+Example:
+
+```mdx
+<Section title="Features" position="center">
+  <PricingCard plan={{
+    id: "pro",
+    name: "Pro",
+    price: 29,
+    features: { api: true, support: "Email" }
+  }} />
+</Section>
+```
+
+---
+
+## 🔄 Migration from Gatsby
+
+This template is the Next.js successor of `gatsby-starter-zoe-app`:
 
 | Feature | Gatsby | Next.js |
 |---------|--------|---------|
 | UI Library | Chakra UI | shadcn/ui |
 | Data Layer | GraphQL | TypeScript |
-| Content | MDX 1 | MDX 3 / remark |
+| Content | MDX 1 | MDX 3 |
 | React | 17 | 19 |
 | Styling | Emotion | Tailwind CSS 4 |
 | Themes | 1 | 7 built-in |
+| Output | SSR/SSG | Static Export |
+| Mobile Nav | ❌ | ✅ Bottom bar |
+| Pricing Page | ❌ | ✅ Configurable |
 
-## License
+---
+
+## 📄 License
 
 MIT © [Zoe](https://zoe.im)
 
-## Additional Configuration
+---
 
-### Analytics
+## 🔗 Links
 
-```yaml
-analytics:
-  googleId: G-XXXXXXXXXX    # Google Analytics 4 measurement ID
-  plausibleDomain: example.com  # Plausible Analytics domain
-```
-
-### App Releases
-
-Display releases from GitHub or Gitee:
-
-```yaml
-# Single repo
-releaseRepo: "username/repo"
-
-# Multiple repos with asset matching patterns
-releaseRepo:
-  - provider: github
-    repo: username/repo1
-    assetRegexPatterns:
-      android: ".*\\.apk$"
-      mac: ".*\\.dmg$"
-      windows: ".*\\.exe$"
-  - provider: gitee
-    repo: username/repo2
-```
-
-Access your releases at `/releases`.
-
-### Help Center (QA from GitHub Issues)
-
-Build a help center from GitHub Issues:
-
-```yaml
-helpqa:
-  repo: owner/repo          # GitHub repository
-  labelPrefix: help         # Label prefix (filters help:xxx labels)
-```
-
-- Create labels like `help:常见问题`, `help:使用入门` for categories
-- Create issues and assign these labels
-- Assign issues to someone to mark them as "pinned/hot"
-- Access your help center at `/help`
-
-### PWA Support
-
-The site includes PWA support with web manifest. Add icons to `public/icons/`:
-
-- `icon-192x192.png` - 192×192 icon
-- `icon-512x512.png` - 512×512 icon
+- [GitHub Repository](https://github.com/jiusanzhou/nextjs-starter-zoe-app)
+- [Gatsby Version](https://github.com/jiusanzhou/gatsby-starter-zoe-app)
+- [Author](https://zoe.im)
