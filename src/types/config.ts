@@ -144,6 +144,19 @@ export interface ZoeSiteConfig {
   
   // Pricing Configuration
   pricing?: PricingConfig;
+  
+  // Changelog Configuration
+  changelog?: ChangelogSiteConfig;
+}
+
+// Changelog Config (site-level)
+export interface ChangelogSiteConfig {
+  title?: string;
+  description?: string;
+  github?: {
+    repo: string;
+    includePrerelease?: boolean;
+  };
 }
 
 // Pricing Types

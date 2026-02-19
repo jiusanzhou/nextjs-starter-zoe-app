@@ -31,7 +31,7 @@ export function PostCard({ post, basePath = "/blog" }: PostCardProps) {
             />
           </div>
         )}
-        <CardHeader className={cn(!post.banner && "pt-6")}>
+        <CardHeader className={cn(!post.banner && "pt-6", "text-left")}>
           <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
             {post.pinned && <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />}
             <time dateTime={post.date}>
@@ -44,18 +44,18 @@ export function PostCard({ post, basePath = "/blog" }: PostCardProps) {
               </>
             )}
           </div>
-          <CardTitle className="line-clamp-2 group-hover:text-primary transition-colors">
+          <CardTitle className="line-clamp-2 group-hover:text-primary transition-colors text-left">
             {post.title}
           </CardTitle>
           {post.description && (
-            <CardDescription className="line-clamp-2">
+            <CardDescription className="line-clamp-2 text-left">
               {post.description}
             </CardDescription>
           )}
         </CardHeader>
         {(post.tags && post.tags.length > 0) && (
           <CardContent className="pt-0">
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 justify-start">
               {post.tags.slice(0, 3).map((tag) => (
                 <Badge key={tag.slug} variant="secondary" className="text-xs">
                   {tag.name}

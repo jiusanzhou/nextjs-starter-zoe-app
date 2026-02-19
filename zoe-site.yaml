@@ -48,6 +48,10 @@ navs:
     href: /blog
   - title: 项目
     href: /projects
+  - title: 价格
+    href: /pricing
+  - title: 更新日志
+    href: /changelog
   - title: 关于
     href: /about
 
@@ -56,6 +60,30 @@ socials:
   github: https://github.com/jiusanzhou
   twitter: https://twitter.com/jiusanzhou
   telegram: https://t.me/noboddyim
+
+# 页脚链接
+links:
+  - title: Home
+    category: Company
+    href: /
+  - title: About
+    category: Company
+    href: /about
+  - title: Blog
+    category: Company
+    href: /blog
+  - title: Help Center
+    category: Plugins
+    href: /help
+  - title: App landing
+    category: Plugins
+    href: /app-landing
+  - title: 更新日志
+    category: Plugins
+    href: /changelog
+  - title: Projects
+    category: Open Source
+    href: /projects
 
 # 博客配置
 blog:

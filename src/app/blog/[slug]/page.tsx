@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Comments } from "@/components/comments";
+import { CodeBlockEnhancer } from "@/components/code-block-enhancer";
 import { getAllPosts, getPostBySlug } from "@/lib/content";
 import { loadZoeConfig } from "@/lib/zoefile";
 import { markdownToHtml } from "@/lib/mdx";
@@ -101,8 +102,9 @@ export default async function PostPage({ params }: PostPageProps) {
       <Separator className="my-8" />
 
       {/* Content */}
+      <CodeBlockEnhancer />
       <div 
-        className="prose prose-neutral dark:prose-invert max-w-none prose-headings:scroll-mt-20 prose-a:text-primary prose-pre:bg-muted prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none"
+        className="prose prose-neutral dark:prose-invert max-w-none prose-headings:scroll-mt-20 prose-a:text-primary prose-pre:bg-transparent prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none"
         dangerouslySetInnerHTML={{ __html: htmlContent }} 
       />
 

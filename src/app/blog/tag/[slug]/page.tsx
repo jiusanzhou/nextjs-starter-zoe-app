@@ -7,9 +7,17 @@ interface TagPageProps {
   params: Promise<{ slug: string }>;
 }
 
-export async function generateStaticParams() {
-  const tags = getAllTags();
-  return tags.map((tag) => ({ slug: tag.slug }));
+export const dynamic = "force-static";
+export const dynamicParams = false;
+
+export async function generateStaticParams(): Promise<{ slug: string }[]> {
+  try {
+    const tags = getAllTags();
+    return tags.map((tag) => ({ slug: tag.slug }));
+  } catch (error) {
+    console.warn('[blog/tag] Failed to generate static params:', error);
+    return [];
+  }
 }
 
 export async function generateMetadata({

@@ -163,12 +163,41 @@
 
 /* Shiki code block container */
 .prose .shiki {
-  @apply rounded-lg p-4 my-4 overflow-x-auto text-sm;
+  @apply rounded-lg my-6 overflow-x-auto text-sm;
   background-color: #f6f8fa !important;
+  padding: 1rem 1.25rem;
 }
 
 .dark .prose .shiki {
   background-color: #161b22 !important;
+}
+
+/* Code block wrapper with copy button */
+.code-block-wrapper {
+  position: relative;
+}
+
+.code-block-wrapper:hover .copy-button {
+  opacity: 1;
+}
+
+.code-block-wrapper .copy-button {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  opacity: 0;
+  transition: opacity 0.2s;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  border-radius: 0.25rem;
+  background-color: hsl(var(--muted));
+  color: hsl(var(--muted-foreground));
+  border: 1px solid hsl(var(--border));
+  cursor: pointer;
+}
+
+.code-block-wrapper .copy-button:hover {
+  background-color: hsl(var(--muted) / 0.8);
 }
 
 /* Line numbers and highlighting (optional) */
