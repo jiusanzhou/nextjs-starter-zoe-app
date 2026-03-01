@@ -200,7 +200,8 @@ export function getPostsMeta(): PostMeta[] {
  * 根据 slug 获取单篇文章
  */
 export function getPostBySlug(slug: string): Post | undefined {
-  return getAllPosts().find(post => post.slug === slug);
+  const decoded = decodeURIComponent(slug);
+  return getAllPosts().find(post => post.slug === decoded);
 }
 
 /**

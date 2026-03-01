@@ -42,7 +42,7 @@ export default async function DynamicPage({ params }: PageProps) {
   }
 
   // 移除 markdown 内容开头的一级标题（避免与 header 重复）
-  let content = page.content;
+  let content = page.content.replace(/^\s+/, '');
   const firstH1Match = content.match(/^#\s+.+\n/);
   if (firstH1Match && firstH1Match[0].includes(page.title)) {
     content = content.replace(/^#\s+.+\n/, '');

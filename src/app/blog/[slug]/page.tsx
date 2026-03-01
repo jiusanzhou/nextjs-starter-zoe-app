@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { AuthorCard } from "@/components/author-card";
 import { Comments } from "@/components/comments";
 import { CodeBlockEnhancer } from "@/components/code-block-enhancer";
 import { getAllPosts, getPostBySlug } from "@/lib/content";
@@ -112,20 +113,7 @@ export default async function PostPage({ params }: PostPageProps) {
 
       {/* Author Card */}
       {config.author && (
-        <div className="flex items-center gap-4 p-4 rounded-lg bg-muted">
-          <Avatar className="h-16 w-16">
-            <AvatarImage src={config.author.avatar} alt={config.author.name} />
-            <AvatarFallback>{config.author.name[0]}</AvatarFallback>
-          </Avatar>
-          <div>
-            <div className="font-semibold">{config.author.name}</div>
-            {config.author.minibio && (
-              <p className="text-sm text-muted-foreground">
-                {config.author.minibio}
-              </p>
-            )}
-          </div>
-        </div>
+        <AuthorCard author={config.author} />
       )}
 
       {/* Comments */}

@@ -59,8 +59,7 @@ function findConfig(contextDir) {
 
 function cloneOrPull(theme, target) {
   if (dirExists(target)) {
-    print(`📦 Updating theme: git pull`);
-    execSync(`cd ${target} && git checkout . && git pull`, { stdio: "inherit" });
+    print(`📦 Theme exists, skipping pull to preserve local changes`);
   } else {
     let url = theme;
     if (!url.includes("://")) {
@@ -74,11 +73,32 @@ function cloneOrPull(theme, target) {
   }
 }
 
+function copyDirRecursive(src, dest) {
+  if (!fs.existsSync(dest)) {
+    fs.mkdirSync(dest, { recursive: true });
+  }
+  for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
+    const srcPath = path.join(src, entry.name);
+    const destPath = path.join(dest, entry.name);
+    if (entry.isDirectory()) {
+      copyDirRecursive(srcPath, destPath);
+    } else {
+      fs.copyFileSync(srcPath, destPath);
+    }
+  }
+}
+
 function symlink(src, dest) {
   // remove existing
   try { fs.rmSync(dest, { recursive: true, force: true }); } catch {}
-  fs.symlinkSync(src, dest);
-  print(`🔗 Linked: ${src} → ${dest}`);
+  // Use copy instead of symlink to avoid Turbopack filesystem root issues
+  if (fs.statSync(src).isDirectory()) {
+    copyDirRecursive(src, dest);
+    print(`📁 Copied: ${src} → ${dest}`);
+  } else {
+    fs.copyFileSync(src, dest);
+    print(`📋 Copied: ${src} → ${dest}`);
+  }
 }
 
 function main() {

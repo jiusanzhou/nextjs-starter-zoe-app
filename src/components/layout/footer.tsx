@@ -138,6 +138,28 @@ export function Footer({ organization, copyright, socials, author, links }: Foot
                     const Icon = socialIcons[name.toLowerCase()] || Globe;
                     const url = getSocialUrl(name, value);
                     
+                    // 微信特殊处理：hover 显示二维码
+                    if (name.toLowerCase() === "wechat" && value.startsWith("http")) {
+                      return (
+                        <div key={name} className="relative group">
+                          <span
+                            className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer inline-block"
+                            title={name}
+                          >
+                            <Icon className="h-5 w-5" />
+                          </span>
+                          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-50">
+                            <div className="bg-card border rounded-xl shadow-lg p-3 w-48">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img src={value} alt="微信二维码" width={168} height={168} className="w-full h-auto rounded-lg" />
+                              <p className="text-xs text-center text-muted-foreground mt-2">扫码添加微信</p>
+                            </div>
+                            <div className="absolute left-1/2 -translate-x-1/2 -bottom-1.5 w-3 h-3 bg-card border-b border-r rotate-45 shadow-sm" />
+                          </div>
+                        </div>
+                      );
+                    }
+                    
                     return (
                       <Link
                         key={name}

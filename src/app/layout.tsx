@@ -35,6 +35,10 @@ export async function generateMetadata(): Promise<Metadata> {
     formatDetection: {
       telephone: false,
     },
+    icons: site.logo ? {
+      icon: site.logo,
+      apple: site.logo,
+    } : undefined,
     openGraph: {
       title: site.title,
       description: site.description,
@@ -80,9 +84,16 @@ export default function RootLayout({
           />
           <main className="flex-1 container py-6 md:py-8 lg:py-10">{children}</main>
           <Footer
-            organization={config.organization}
+            organization={{
+              ...config.organization,
+              logo: config.logo || config.organization?.logo,
+            }}
             copyright={config.copyright}
-            socials={config.socials}
+            socials={{
+              ...config.socials,
+              ...(config.author?.email ? { email: config.author.email } : {}),
+              ...(config.author?.wechat ? { wechat: config.author.wechat } : {}),
+            }}
             author={config.author}
             links={config.links}
           />
