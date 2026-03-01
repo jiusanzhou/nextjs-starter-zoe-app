@@ -37,38 +37,35 @@ function getGitContentDirs(): string[] {
 
 /**
  * 获取内容目录路径（包含 Git 内容）
- * 开发模式下优先使用 _example/content
+ * 开发模式下使用 _example/content 作为 fallback（用户内容优先）
  */
 function getContentDirs(): string[] {
   const config = loadZoeConfig();
   const root = getProjectRoot();
   
-  // 检查是否应该使用 _example 目录
-  const useExample = process.env.NODE_ENV === 'development' || process.env.USE_EXAMPLE_CONTENT === 'true';
-  const exampleContentDir = path.join(root, '_example/content');
-  
-  if (useExample && fs.existsSync(exampleContentDir)) {
-    // 检查 _example/content 是否有内容
-    const hasContent = fs.readdirSync(exampleContentDir).some(name => {
-      const subDir = path.join(exampleContentDir, name);
-      return fs.statSync(subDir).isDirectory() && fs.readdirSync(subDir).length > 0;
-    });
-    
-    if (hasContent) {
-      // 合并 Git 内容目录
-      const gitDirs = getGitContentDirs();
-      return [exampleContentDir, ...gitDirs];
-    }
-  }
-  
-  // 默认使用配置的目录
+  // 默认使用配置的目录（优先级最高）
   const dirs = config.contentDirs || ['content'];
   const localDirs = dirs.map(dir => path.join(root, dir));
   
   // 合并 Git 内容目录
   const gitDirs = getGitContentDirs();
   
-  return [...localDirs, ...gitDirs];
+  // 开发模式下，_example 作为 fallback（排在最后）
+  const useExample = process.env.NODE_ENV === 'development' || process.env.USE_EXAMPLE_CONTENT === 'true';
+  const exampleContentDir = path.join(root, '_example/content');
+  
+  const fallbackDirs: string[] = [];
+  if (useExample && fs.existsSync(exampleContentDir)) {
+    const hasContent = fs.readdirSync(exampleContentDir).some(name => {
+      const subDir = path.join(exampleContentDir, name);
+      return fs.statSync(subDir).isDirectory() && fs.readdirSync(subDir).length > 0;
+    });
+    if (hasContent) {
+      fallbackDirs.push(exampleContentDir);
+    }
+  }
+  
+  return [...localDirs, ...gitDirs, ...fallbackDirs];
 }
 
 /**
@@ -168,7 +165,15 @@ export function getAllPosts(includeDrafts = false): Post[] {
   }
 
   // 按日期排序（最新在前），置顶文章优先
-  const sortedPosts = posts.sort((a, b) => {
+  // 去重：同 slug 只保留第一个（用户内容目录排在 _example 前面，所以优先）
+  const seen = new Set<string>();
+  const uniquePosts = posts.filter(post => {
+    if (seen.has(post.slug)) return false;
+    seen.add(post.slug);
+    return true;
+  });
+
+  const sortedPosts = uniquePosts.sort((a, b) => {
     // 置顶文章优先
     if (a.pinned && !b.pinned) return -1;
     if (!a.pinned && b.pinned) return 1;
@@ -258,7 +263,13 @@ export function getAllPages(): Page[] {
     }
   }
 
-  return pages;
+  // 去重：同 slug 只保留第一个（用户内容优先于 _example）
+  const seen = new Set<string>();
+  return pages.filter(page => {
+    if (seen.has(page.slug)) return false;
+    seen.add(page.slug);
+    return true;
+  });
 }
 
 /**
@@ -304,8 +315,16 @@ export function getAllProjects(): Project[] {
     }
   }
 
+  // 去重：同 slug 只保留第一个（用户内容优先于 _example）
+  const seen = new Set<string>();
+  const uniqueProjects = projects.filter(project => {
+    if (seen.has(project.slug)) return false;
+    seen.add(project.slug);
+    return true;
+  });
+
   // 置顶项目排在前面
-  return projects.sort((a, b) => {
+  return uniqueProjects.sort((a, b) => {
     if (a.featured && !b.featured) return -1;
     if (!a.featured && b.featured) return 1;
     return 0;

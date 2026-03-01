@@ -1,0 +1,20 @@
+{
+  "name": "zoe-site",
+  "version": "0.1.0",
+  "description": "CLI for building sites with nextjs-starter-zoe-app theme",
+  "bin": {
+    "zoe-site": "./bin/zoe-site.js"
+  },
+  "keywords": ["zoe", "site", "nextjs", "blog", "cli"],
+  "author": "Zoe <hi@zoe.im>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jiusanzhou/nextjs-starter-zoe-app",
+    "directory": "packages/zoe-site"
+  },
+  "homepage": "https://github.com/jiusanzhou/nextjs-starter-zoe-app",
+  "files": [
+    "bin/"
+  ]
+}
