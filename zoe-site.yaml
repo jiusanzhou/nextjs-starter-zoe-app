@@ -3,7 +3,7 @@
 title: Zoe
 description: 全栈开发 · AI 工具制造者 · 用代码和 AI 搭建被动收入系统
 url: https://zoe.im
-logo: /images/logo.png
+logo: /images/avatar-v2.jpg
 lang: zh-CN
 
 # 作者信息
@@ -16,12 +16,12 @@ author:
   github: jiusanzhou
   twitter: jiusanzhou
   telegram: noboddyim
+  linkedin: johnzoe
 
-# 组织信息（页脚显示）
+# 组织信息
 organization:
   name: Zoe
   url: https://zoe.im
-  logo: /images/logo.png
 
 # 版权信息
 copyright:
@@ -43,7 +43,7 @@ navs:
   - title: 关于
     href: /about
 
-# 社交链接（页脚）
+# 社交链接
 socials:
   github: https://github.com/jiusanzhou
   twitter: https://twitter.com/jiusanzhou
@@ -92,30 +92,27 @@ contentTypes:
   - name: page
     path: pages
     template: page
-  - name: project
-    path: projects
-    template: project
 
-# GitHub 项目（自动拉取）
+# GitHub 项目
 projects:
   provider: github
+  tag: zoe-lab
   owners:
     - jiusanzhou
 
-# RSS 配置
+# RSS
 rss:
   enabled: true
   path: /rss.xml
   title: Zoe's Blog
 
-# 评论系统
+# 评论
 comments:
   provider: giscus
-  repo: ""
-  repoId: ""
-  category: ""
-  categoryId: ""
+  repo: jiusanzhou/jiusanzhou.github.io
+  repoId: MDEwOlJlcG9zaXRvcnkxMzQ2MDAzMDM=
+  categoryId: DIC_kwDOCAXWb84B-qn9
 
-# Google Analytics
+# Analytics
 analytics:
-  googleId: ""
+  googleId: G-5LM10G1ZPK
