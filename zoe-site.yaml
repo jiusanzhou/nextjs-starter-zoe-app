@@ -1,14 +1,10 @@
 # Zoe Site Configuration
-# YAML 驱动的站点配置文件
 
-title: ZoeAPP
-description: A starter template for zoe app.
-url: https://labs.zoe.im/nextjs-starter-zoe-app
+title: Zoe
+description: 全栈开发 · AI 工具制造者 · 用代码和 AI 搭建被动收入系统
+url: https://zoe.im
 logo: /images/logo.png
 lang: zh-CN
-
-# 显示在 logo 右侧的版本号
-version: alpha
 
 # 作者信息
 author:
@@ -16,14 +12,14 @@ author:
   email: hi@zoe.im
   homepage: https://zoe.im
   avatar: https://github.com/jiusanzhou.png
-  minibio: 知行合一，不将有限的生命献给无知、平庸和低俗。
+  minibio: 全栈开发 · AI 工具制造者 · Go / Flutter / Rust · 开源偏执狂
   github: jiusanzhou
-  twitter: jiusanzhou
+  twitter: wellwellwork
   telegram: noboddyim
 
 # 组织信息（页脚显示）
 organization:
-  name: ZoeAPP
+  name: Zoe
   url: https://zoe.im
   logo: /images/logo.png
 
@@ -33,11 +29,7 @@ copyright:
   holder: Zoe
   location: Hangzhou
 
-# 主题色（已废弃，请使用 theme 配置）
-# primaryColor: purple
-
 # 主题风格
-# 可选: default, cyber, minimal, apple, github, vercel, stripe
 theme: default
 
 # 导航菜单
@@ -48,60 +40,49 @@ navs:
     href: /blog
   - title: 项目
     href: /projects
-  - title: 价格
-    href: /pricing
-  - title: 更新日志
-    href: /changelog
   - title: 关于
     href: /about
 
 # 社交链接（页脚）
 socials:
   github: https://github.com/jiusanzhou
-  twitter: https://twitter.com/jiusanzhou
+  twitter: https://twitter.com/wellwellwork
   telegram: https://t.me/noboddyim
 
 # 页脚链接
 links:
-  - title: Home
-    category: Company
+  - title: 首页
+    category: 导航
     href: /
-  - title: About
-    category: Company
-    href: /about
-  - title: Blog
-    category: Company
+  - title: 博客
+    category: 导航
     href: /blog
-  - title: Help Center
-    category: Plugins
-    href: /help
-  - title: App landing
-    category: Plugins
-    href: /app-landing
-  - title: 更新日志
-    category: Plugins
-    href: /changelog
-  - title: Projects
-    category: Open Source
+  - title: 项目
+    category: 导航
     href: /projects
+  - title: 关于
+    category: 导航
+    href: /about
+  - title: GitHub
+    category: 开源
+    href: https://github.com/jiusanzhou
+  - title: distro
+    category: 开源
+    href: https://github.com/jiusanzhou/distro
+  - title: RSS
+    category: 订阅
+    href: /rss.xml
 
 # 博客配置
 blog:
-  title: 博客文章
-  description: 写作亦是一种自我学习的方式
+  title: 博客
+  description: 写代码、造工具、记录过程
   basePath: /blog
   postsPerPage: 10
 
-# 内容目录（相对于项目根目录）
+# 内容目录
 contentDirs:
   - content
-
-# Git 远程内容源（构建时自动克隆/更新）
-# gitContent:
-#   - name: my-content        # 内容源名称
-#     remote: https://github.com/user/repo.git  # Git 仓库地址
-#     branch: main            # 分支（默认 main）
-#     local: .cache/git-content/my-content  # 本地缓存路径（可选）
 
 # 自定义节点类型
 contentTypes:
@@ -115,11 +96,17 @@ contentTypes:
     path: projects
     template: project
 
+# GitHub 项目（自动拉取）
+projects:
+  provider: github
+  owners:
+    - jiusanzhou
+
 # RSS 配置
 rss:
   enabled: true
   path: /rss.xml
-  title: ZoeAPP RSS Feed
+  title: Zoe's Blog
 
 # 评论系统
 comments:
@@ -132,16 +119,3 @@ comments:
 # Google Analytics
 analytics:
   googleId: ""
-
-# Help/QA 系统 (从 GitHub Issues 获取帮助内容)
-# helpqa:
-#   repo: owner/repo           # GitHub 仓库
-#   labelPrefix: help          # 标签前缀，筛选 help:xxx 格式的标签
-
-# GitHub 项目 (从 GitHub API 自动获取)
-# 配置后会替代 content/projects 目录的手动项目
-# projects:
-#   provider: github
-#   tag: zoe-lab             # 按 topic 筛选（可选）
-#   owners:
-#     - jiusanzhou           # GitHub 用户名/组织名
