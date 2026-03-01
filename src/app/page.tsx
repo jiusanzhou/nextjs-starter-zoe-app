@@ -122,7 +122,7 @@ async function HomeContent() {
         description="任何一种方式都可以 👇"
       >
         <div className="flex justify-center">
-          <AuthorCard author={config.author} className="max-w-sm" />
+          <AuthorCard author={config.author} className="max-w-lg" />
         </div>
       </Section>
     </div>

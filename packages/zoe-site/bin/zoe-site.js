@@ -56,7 +56,7 @@ function cloneOrPull(theme, target) {
   if (dirExists(target)) {
     print("📦 Updating theme...");
     try {
-      execSync(`cd "${target}" && git checkout . && git pull`, { stdio: "pipe" });
+      execSync(`cd "${target}" && git pull --autostash`, { stdio: "pipe" });
     } catch (e) {
       print("⚠️  git pull failed, using existing version");
     }

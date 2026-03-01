@@ -33,13 +33,13 @@ export function AuthorCard({ author, simple = false, className }: AuthorCardProp
   const { avatar, name, minibio, homepage } = author;
 
   // Collect social links from author object
-  const socials: { key: string; url: string }[] = [];
-  if (author.github) socials.push({ key: "github", url: `https://github.com/${author.github}` });
-  if (author.twitter) socials.push({ key: "twitter", url: `https://twitter.com/${author.twitter}` });
-  if (author.email) socials.push({ key: "email", url: `mailto:${author.email}` });
-  if (author.linkedin) socials.push({ key: "linkedin", url: `https://linkedin.com/in/${author.linkedin}` });
-  if (author.telegram) socials.push({ key: "telegram", url: `https://t.me/${author.telegram}` });
-  if (homepage) socials.push({ key: "homepage", url: homepage });
+  const socials: { key: string; url: string; label: string }[] = [];
+  if (author.email) socials.push({ key: "email", url: `mailto:${author.email}`, label: author.email });
+  if (author.github) socials.push({ key: "github", url: `https://github.com/${author.github}`, label: author.github });
+  if (author.twitter) socials.push({ key: "twitter", url: `https://twitter.com/${author.twitter}`, label: author.twitter });
+  if (author.telegram) socials.push({ key: "telegram", url: `https://t.me/${author.telegram}`, label: author.telegram });
+  if (author.linkedin) socials.push({ key: "linkedin", url: `https://linkedin.com/in/${author.linkedin}`, label: author.linkedin });
+  if (author.wechat) socials.push({ key: "wechat", url: author.wechat, label: "微信" });
 
   if (simple) {
     return (
@@ -63,49 +63,92 @@ export function AuthorCard({ author, simple = false, className }: AuthorCardProp
   }
 
   return (
-    <div className={cn("p-6 rounded-xl border bg-card shadow-sm", className)}>
-      {/* 居中布局 */}
-      <div className="flex flex-col items-center text-center">
+    <div className={cn("p-6 sm:p-8 rounded-xl border bg-card shadow-sm", className)}>
+      <div className="flex flex-col sm:flex-row gap-6">
         {/* 头像 */}
         {avatar && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={avatar}
-            alt={name || "Author"}
-            width={80}
-            height={80}
-            className="rounded-full w-20 h-20 object-cover mb-4"
-          />
-        )}
-        
-        {/* 名字 */}
-        <h3 className="font-bold text-lg">{name}</h3>
-        
-        {/* 简介 */}
-        {minibio && (
-          <p className="mt-2 text-sm text-muted-foreground max-w-xs">{minibio}</p>
-        )}
-        
-        {/* 社交链接 */}
-        {socials.length > 0 && (
-          <div className="flex items-center justify-center gap-3 mt-4">
-            {socials.map(({ key, url }) => {
-              const Icon = socialIcons[key];
-              if (!Icon) return null;
-              return (
-                <Link
-                  key={key}
-                  href={url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2 rounded-full bg-muted text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-                >
-                  <Icon className="h-4 w-4" />
-                </Link>
-              );
-            })}
+          <div className="flex-shrink-0">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={avatar}
+              alt={name || "Author"}
+              width={112}
+              height={112}
+              className="rounded-full w-24 h-24 sm:w-28 sm:h-28 object-cover ring-2 ring-border"
+            />
           </div>
         )}
+        
+        {/* 信息 */}
+        <div className="flex-1 min-w-0 space-y-3">
+          <div>
+            <h3 className="text-xl font-bold tracking-tight">{name}</h3>
+            {minibio && (
+              <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{minibio}</p>
+            )}
+          </div>
+          
+          {/* 社交链接 - pill 标签风格 */}
+          {socials.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {socials.map(({ key, url, label }) => {
+                const Icon = socialIcons[key];
+                if (!Icon) return null;
+                
+                // 微信特殊处理：hover 显示二维码
+                if (key === "wechat") {
+                  return (
+                    <div key={key} className="relative group">
+                      <span
+                        className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border bg-background hover:bg-accent transition-colors cursor-pointer"
+                      >
+                        <Icon className="h-3.5 w-3.5" />
+                        <span>{label}</span>
+                      </span>
+                      {/* 二维码弹出层 */}
+                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-50">
+                        <div className="bg-card border rounded-xl shadow-lg p-3 w-48">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={url}
+                            alt="微信二维码"
+                            width={168}
+                            height={168}
+                            className="w-full h-auto rounded-lg"
+                          />
+                          <p className="text-xs text-center text-muted-foreground mt-2">扫码添加微信</p>
+                        </div>
+                        {/* 小三角 */}
+                        <div className="absolute left-1/2 -translate-x-1/2 -bottom-1.5 w-3 h-3 bg-card border-b border-r rotate-45 shadow-sm" />
+                      </div>
+                    </div>
+                  );
+                }
+                
+                return (
+                  <Link
+                    key={key}
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border bg-background hover:bg-accent transition-colors"
+                    title={label}
+                  >
+                    <Icon className="h-3.5 w-3.5" />
+                    <span>{label}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+          
+          {/* 个人主页 */}
+          {homepage && (
+            <Link href={homepage} target="_blank" rel="noopener noreferrer" className="inline-block text-xs text-primary hover:underline">
+              {homepage}
+            </Link>
+          )}
+        </div>
       </div>
     </div>
   );
