@@ -17,9 +17,9 @@ interface ProjectCardProps {
 // 本地项目卡片
 export function ProjectCard({ project }: ProjectCardProps) {
   return (
-    <Card className="hover:shadow-lg transition-shadow group">
+    <Card className="hover:shadow-lg transition-shadow overflow-hidden group">
       <CardHeader>
-        <div className="flex items-start justify-between">
+        <div className="flex items-start justify-between gap-2 overflow-hidden min-w-0">
           <CardTitle className="line-clamp-1 group-hover:text-primary transition-colors">
             {project.title}
           </CardTitle>
@@ -46,10 +46,12 @@ export function ProjectCard({ project }: ProjectCardProps) {
             )}
           </div>
         </div>
-        {project.description && (
+        {project.description ? (
           <CardDescription className="line-clamp-2">
             {project.description}
           </CardDescription>
+        ) : (
+          <div className="min-h-[1.25rem]" />
         )}
         {project.tags && project.tags.length > 0 && (
           <div className="flex flex-wrap gap-2 pt-2">
@@ -73,9 +75,9 @@ interface GitHubProjectCardProps {
 export function GitHubProjectCard({ project }: GitHubProjectCardProps) {
   return (
     <Card className="hover:shadow-lg transition-shadow group">
-      <CardHeader className="space-y-3">
+      <CardHeader className="space-y-3 overflow-hidden !block">
         <div className="flex items-start justify-between">
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 overflow-hidden">
             <CardTitle className="line-clamp-1 text-base">
               <Link
                 href={project.url}
@@ -90,7 +92,7 @@ export function GitHubProjectCard({ project }: GitHubProjectCardProps) {
               {project.owner}
             </p>
           </div>
-          <div className="flex items-center gap-3 text-sm text-muted-foreground">
+          <div className="flex items-center gap-3 text-sm text-muted-foreground flex-shrink-0">
             <span className="flex items-center gap-1">
               <Star className="h-3.5 w-3.5" />
               {project.stars}
@@ -102,14 +104,16 @@ export function GitHubProjectCard({ project }: GitHubProjectCardProps) {
           </div>
         </div>
         
-        {project.description && (
+        {project.description ? (
           <CardDescription className="line-clamp-2 text-sm">
             {project.description}
           </CardDescription>
+        ) : (
+          <div className="min-h-[1.25rem]" />
         )}
         
-        <div className="flex items-center justify-between pt-1">
-          <div className="flex flex-wrap gap-1.5">
+        <div className="flex items-center justify-between pt-1 overflow-hidden">
+          <div className="flex flex-wrap gap-1.5 min-w-0 flex-1 overflow-hidden">
             {project.language && (
               <Badge variant="secondary" className="text-xs">
                 {project.language}

@@ -31,7 +31,7 @@ export function PostCard({ post, basePath = "/blog" }: PostCardProps) {
             />
           </div>
         )}
-        <CardHeader className={cn(!post.banner && "pt-6", "text-left")}>
+        <CardHeader className={cn(!post.banner && "pt-6", "text-left overflow-hidden")}>
           <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
             {post.pinned && <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />}
             <time dateTime={post.date}>
@@ -47,14 +47,16 @@ export function PostCard({ post, basePath = "/blog" }: PostCardProps) {
           <CardTitle className="line-clamp-2 group-hover:text-primary transition-colors text-left">
             {post.title}
           </CardTitle>
-          {post.description && (
+          {post.description ? (
             <CardDescription className="line-clamp-2 text-left">
               {post.description}
             </CardDescription>
+          ) : (
+            <div className="min-h-[0.5rem]" />
           )}
         </CardHeader>
         {(post.tags && post.tags.length > 0) && (
-          <CardContent className="pt-0">
+          <CardContent className="pt-0 overflow-hidden">
             <div className="flex flex-wrap gap-2 justify-start">
               {post.tags.slice(0, 3).map((tag) => (
                 <Badge key={tag.slug} variant="secondary" className="text-xs">
@@ -102,10 +104,12 @@ export function PostTile({ post, basePath = "/blog" }: PostTileProps) {
         <h3 className="font-semibold truncate group-hover:text-primary transition-colors">
           {post.title}
         </h3>
-        {post.description && (
+        {post.description ? (
           <p className="text-sm text-muted-foreground truncate">
             {post.description}
           </p>
+        ) : (
+          <div className="min-h-[0.25rem]" />
         )}
         {/* Tags */}
         {post.tags && post.tags.length > 0 && (
