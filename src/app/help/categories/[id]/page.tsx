@@ -4,35 +4,40 @@ import { loadZoeConfig } from "@/lib/zoefile";
 import { getHelpCategories, getHelpItemsByCategory } from "@/lib/helpqa";
 import { HelpHeader, HelpItemsList } from "@/components/help";
 
-// 强制静态生成
-export const dynamic = "force-static";
 export const dynamicParams = false;
 
 interface Props {
   params: Promise<{ id: string }>;
 }
 
-// 生成所有分类的静态路径
+const PLACEHOLDER_ID = "__placeholder__";
+
 export async function generateStaticParams() {
   try {
     const config = loadZoeConfig();
     const helpConfig = config.helpqa;
-    
+
     if (!helpConfig?.repo) {
-      return [];
+      return [{ id: PLACEHOLDER_ID }];
     }
-    
+
     const categories = await getHelpCategories(helpConfig);
+    if (categories.length === 0) {
+      return [{ id: PLACEHOLDER_ID }];
+    }
+
     return categories.map((category) => ({
       id: category.id,
     }));
   } catch {
-    return [];
+    return [{ id: PLACEHOLDER_ID }];
   }
 }
 
 export async function generateMetadata({ params }: Props) {
   const { id } = await params;
+  if (id === PLACEHOLDER_ID) return { title: "帮助分类" };
+
   const config = loadZoeConfig();
   const helpConfig = config.helpqa;
 
@@ -51,6 +56,8 @@ export async function generateMetadata({ params }: Props) {
 }
 
 async function CategoryContent({ categoryId }: { categoryId: string }) {
+  if (categoryId === PLACEHOLDER_ID) notFound();
+
   const config = loadZoeConfig();
   const helpConfig = config.helpqa;
 
@@ -81,7 +88,7 @@ async function CategoryContent({ categoryId }: { categoryId: string }) {
 
 export default async function HelpCategoryPage({ params }: Props) {
   const { id } = await params;
-  
+
   return (
     <Suspense
       fallback={
