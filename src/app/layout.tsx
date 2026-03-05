@@ -85,6 +85,7 @@ export default function RootLayout({
           <main className="flex-1 container py-6 md:py-8 lg:py-10">{children}</main>
           <Footer
             organization={{
+              name: config.title || "",
               ...config.organization,
               logo: config.logo || config.organization?.logo,
             }}
