@@ -2,21 +2,27 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { getAllTags } from "@/lib/content";
+import { loadZoeConfig } from "@/lib/zoefile";
+import { getLabel } from "@/lib/i18n";
 
-export const metadata: Metadata = {
-  title: "标签",
-  description: "按标签浏览文章",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const config = loadZoeConfig();
+  return {
+    title: getLabel(config, 'blog.tags'),
+    description: getLabel(config, 'blog.browseTags'),
+  };
+}
 
 export default function TagsPage() {
+  const config = loadZoeConfig();
   const tags = getAllTags();
 
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">标签</h1>
+        <h1 className="text-3xl font-bold tracking-tight">{getLabel(config, 'blog.tags')}</h1>
         <p className="mt-2 text-muted-foreground">
-          按标签浏览文章
+          {getLabel(config, 'blog.browseTags')}
         </p>
       </div>
 
@@ -36,7 +42,7 @@ export default function TagsPage() {
         </div>
       ) : (
         <div className="text-center py-12 text-muted-foreground">
-          暂无标签
+          {getLabel(config, 'blog.noTags')}
         </div>
       )}
     </div>

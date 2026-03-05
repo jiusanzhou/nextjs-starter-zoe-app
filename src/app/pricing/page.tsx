@@ -2,12 +2,13 @@ import type { Metadata } from "next";
 import { loadZoeConfig } from "@/lib/zoefile";
 import { PricingTable } from "@/components/pricing";
 import { notFound } from "next/navigation";
+import { getLabel } from "@/lib/i18n";
 
 export async function generateMetadata(): Promise<Metadata> {
   const config = loadZoeConfig();
   return {
-    title: config.pricing?.title || "价格",
-    description: config.pricing?.description || "选择适合您的方案",
+    title: config.pricing?.title || getLabel(config, 'pricing'),
+    description: config.pricing?.description || getLabel(config, 'pricing.description'),
   };
 }
 
@@ -15,7 +16,6 @@ export default function PricingPage() {
   const config = loadZoeConfig();
   const pricingConfig = config.pricing;
 
-  // 如果没有配置 pricing，返回 404
   if (!pricingConfig?.enabled || !pricingConfig.plans?.length) {
     notFound();
   }

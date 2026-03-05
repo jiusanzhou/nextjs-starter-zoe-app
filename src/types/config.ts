@@ -147,6 +147,34 @@ export interface ZoeSiteConfig {
   
   // Changelog Configuration
   changelog?: ChangelogSiteConfig;
+
+  // Homepage Hero Configuration
+  hero?: HeroConfig;
+
+  // Homepage Sections
+  sections?: SectionConfig[];
+
+  // UI Labels (i18n override)
+  labels?: Record<string, string>;
+}
+
+export interface HeroConfig {
+  greeting?: string;
+  typingTexts?: string[];
+  description?: string;
+  cta?: { text: string; href: string }[];
+}
+
+export interface SectionConfig {
+  title: string;
+  description?: string;
+  items?: SectionItem[];
+}
+
+export interface SectionItem {
+  icon?: string;
+  title: string;
+  description: string;
 }
 
 // Changelog Config (site-level)

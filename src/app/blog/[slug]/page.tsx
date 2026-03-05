@@ -14,6 +14,7 @@ import { CodeBlockEnhancer } from "@/components/code-block-enhancer";
 import { getAllPosts, getPostBySlug } from "@/lib/content";
 import { loadZoeConfig } from "@/lib/zoefile";
 import { markdownToHtml } from "@/lib/mdx";
+import { getLabel } from "@/lib/i18n";
 
 interface PostPageProps {
   params: Promise<{ slug: string }>;
@@ -31,7 +32,7 @@ export async function generateMetadata({
   const post = getPostBySlug(slug);
 
   if (!post) {
-    return { title: "文章未找到" };
+    return { title: getLabel(loadZoeConfig(), 'blog.postNotFound') };
   }
 
   return {
@@ -66,7 +67,7 @@ export default async function PostPage({ params }: PostPageProps) {
       <Button variant="ghost" asChild className="mb-6">
         <Link href="/blog" className="flex items-center gap-2">
           <ArrowLeft className="h-4 w-4" />
-          返回博客
+          {getLabel(config, 'blog.back')}
         </Link>
       </Button>
 
@@ -84,7 +85,7 @@ export default async function PostPage({ params }: PostPageProps) {
           {post.readingTime && (
             <div className="flex items-center gap-1">
               <Clock className="h-4 w-4" />
-              <span>{post.readingTime} 分钟阅读</span>
+              <span>{post.readingTime} {getLabel(config, 'blog.minRead')}</span>
             </div>
           )}
         </div>
@@ -121,7 +122,7 @@ export default async function PostPage({ params }: PostPageProps) {
         <>
           <Separator className="my-8" />
           <section className="mt-8">
-            <h2 className="text-xl font-semibold mb-6">评论</h2>
+            <h2 className="text-xl font-semibold mb-6">{getLabel(config, 'blog.comments')}</h2>
             <Comments
               provider={config.comments.provider}
               repo={config.comments.repo}

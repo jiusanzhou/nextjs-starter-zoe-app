@@ -1,13 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { format } from "date-fns";
-import { zhCN } from "date-fns/locale";
 import { getAllPosts } from "@/lib/content";
+import { loadZoeConfig } from "@/lib/zoefile";
+import { getLabel } from "@/lib/i18n";
 
-export const metadata: Metadata = {
-  title: "归档",
-  description: "按时间浏览所有文章",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const config = loadZoeConfig();
+  return {
+    title: getLabel(config, 'blog.archives'),
+    description: getLabel(config, 'blog.browseTags'),
+  };
+}
 
 interface YearGroup {
   year: number;
@@ -19,9 +23,9 @@ interface YearGroup {
 }
 
 export default function ArchivesPage() {
+  const config = loadZoeConfig();
   const posts = getAllPosts();
 
-  // 按年份分组
   const yearGroups: YearGroup[] = [];
   const yearMap = new Map<number, YearGroup>();
 
@@ -40,15 +44,14 @@ export default function ArchivesPage() {
     });
   }
 
-  // 按年份倒序
   yearGroups.sort((a, b) => b.year - a.year);
 
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">归档</h1>
+        <h1 className="text-3xl font-bold tracking-tight">{getLabel(config, 'blog.archives')}</h1>
         <p className="mt-2 text-muted-foreground">
-          共 {posts.length} 篇文章
+          {getLabel(config, 'blog.totalPosts', { count: posts.length })}
         </p>
       </div>
 
@@ -69,7 +72,7 @@ export default function ArchivesPage() {
                       dateTime={post.date}
                       className="text-sm text-muted-foreground w-24 flex-shrink-0"
                     >
-                      {format(new Date(post.date), "MM-dd", { locale: zhCN })}
+                      {format(new Date(post.date), getLabel(config, 'blog.archiveDateFormat'))}
                     </time>
                     <Link
                       href={`/blog/${post.slug}`}
@@ -85,7 +88,7 @@ export default function ArchivesPage() {
         </div>
       ) : (
         <div className="text-center py-12 text-muted-foreground">
-          暂无文章
+          {getLabel(config, 'blog.noPosts')}
         </div>
       )}
     </div>

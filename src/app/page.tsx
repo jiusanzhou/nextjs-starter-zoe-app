@@ -9,6 +9,7 @@ import { TypingText } from "@/components/typing-text";
 import { loadZoeConfig } from "@/lib/zoefile";
 import { getPostsMeta } from "@/lib/content";
 import { getGitHubProjects } from "@/lib/github-projects";
+import { getLabel } from "@/lib/i18n";
 
 export const revalidate = 3600;
 
@@ -23,83 +24,101 @@ async function HomeContent() {
     githubProjects = await getGitHubProjects(projectsConfig);
   }
 
+  // Hero config with fallbacks
+  const hero = config.hero;
+  const greeting = hero?.greeting || `Hey, I'm ${config.author?.name || config.title}`;
+  const typingTexts = hero?.typingTexts;
+  const description = hero?.description || config.description;
+  const ctaButtons = hero?.cta || [
+    { text: getLabel(config, 'blog'), href: '/blog' },
+  ];
+
+  // GitHub link from config
+  const githubUrl = config.socials?.github
+    || (config.author?.github ? `https://github.com/${config.author.github}` : null);
+
+  // Add GitHub button if not already in cta and url exists
+  const allCta = [...ctaButtons];
+  if (githubUrl && !allCta.some(b => b.href.includes('github'))) {
+    allCta.push({ text: 'GitHub', href: githubUrl });
+  }
+
+  // Sections config
+  const sections = config.sections;
+
   return (
     <div className="space-y-8 md:space-y-16">
       {/* Hero */}
       <Section className="py-16 md:py-24 lg:py-32">
         <div className="text-center">
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
-            👋 Hey，我是 Zoe
+            {greeting}
           </h1>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mt-4">
-            <TypingText
-              texts={[
-                "造 AI 工具",
-                "写开源项目",
-                "搭被动收入系统",
-                "全程公开记录",
-              ]}
-              gradient="linear-gradient(to left, #7928CA, #FF0080)"
-              underline
-              className="px-2"
-            />
-          </h2>
-          <p className="mt-6 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-            全栈开发 · Go / Flutter / Rust · 用代码和 AI 搭建可持续的收入系统
-          </p>
+          {typingTexts && typingTexts.length > 0 && (
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mt-4">
+              <TypingText
+                texts={typingTexts}
+                gradient="linear-gradient(to left, #7928CA, #FF0080)"
+                underline
+                className="px-2"
+              />
+            </h2>
+          )}
+          {description && (
+            <p className="mt-6 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+              {description}
+            </p>
+          )}
           <div className="mt-8 flex flex-wrap justify-center gap-4">
-            <Button asChild size="lg">
-              <Link href="/blog">读博客</Link>
-            </Button>
-            <Button variant="outline" asChild size="lg">
-              <Link
-                href="https://github.com/jiusanzhou"
-                target="_blank"
-                rel="noopener noreferrer"
+            {allCta.map((btn, i) => (
+              <Button
+                key={btn.href}
+                variant={i === 0 ? "default" : "outline"}
+                asChild
+                size="lg"
               >
-                GitHub
-              </Link>
-            </Button>
+                {btn.href.startsWith('http') ? (
+                  <Link href={btn.href} target="_blank" rel="noopener noreferrer">
+                    {btn.text}
+                  </Link>
+                ) : (
+                  <Link href={btn.href}>{btn.text}</Link>
+                )}
+              </Button>
+            ))}
           </div>
         </div>
       </Section>
 
-      {/* What I'm Doing */}
-      <Section
-        position="left"
-        title="在做什么"
-        description="当前聚焦的方向"
-        wrapperClassName="bg-muted/50"
-      >
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="p-6 rounded-lg border bg-background">
-            <div className="text-2xl mb-3">🛠</div>
-            <h3 className="font-semibold text-lg mb-2">AI 开发工具</h3>
-            <p className="text-muted-foreground text-sm">
-              多 Agent 系统、内容分发 CLI、手机端 AI
-              Agent。解决自己的问题，然后开源。
-            </p>
-          </div>
-          <div className="p-6 rounded-lg border bg-background">
-            <div className="text-2xl mb-3">✍️</div>
-            <h3 className="font-semibold text-lg mb-2">技术写作</h3>
-            <p className="text-muted-foreground text-sm">
-              AI + 开发者工具方向。中文写原稿，工具自动分发到各平台。
-            </p>
-          </div>
-          <div className="p-6 rounded-lg border bg-background">
-            <div className="text-2xl mb-3">💰</div>
-            <h3 className="font-semibold text-lg mb-2">被动收入实验</h3>
-            <p className="text-muted-foreground text-sm">
-              从零开始搭建被动收入系统，每月公开数据报告。
-            </p>
-          </div>
-        </div>
-      </Section>
+      {/* Custom Sections from config */}
+      {sections && sections.length > 0 && sections.map((section, idx) => (
+        <Section
+          key={idx}
+          position="left"
+          title={section.title}
+          description={section.description}
+          wrapperClassName={idx === 0 ? "bg-muted/50" : undefined}
+        >
+          {section.items && section.items.length > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {section.items.map((item, j) => (
+                <div key={j} className="p-6 rounded-lg border bg-background">
+                  {item.icon && <div className="text-2xl mb-3">{item.icon}</div>}
+                  <h3 className="font-semibold text-lg mb-2">{item.title}</h3>
+                  <p className="text-muted-foreground text-sm">{item.description}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </Section>
+      ))}
 
       {/* Projects */}
       {githubProjects && githubProjects.length > 0 && (
-        <Section title="开源项目" description="造轮子是最好的学习方式">
+        <Section
+          title={getLabel(config, 'home.projects')}
+          description={getLabel(config, 'home.projects.description')}
+        >
           <GitHubProjectsList
             projects={githubProjects}
             preview
@@ -111,15 +130,18 @@ async function HomeContent() {
 
       {/* Blog */}
       {posts.length > 0 && (
-        <Section title="最新文章" description="写代码、造工具、记录过程">
+        <Section
+          title={getLabel(config, 'home.latestPosts')}
+          description={getLabel(config, 'home.latestPosts.description')}
+        >
           <PostsList posts={posts} mode="grid" preview limit={6} />
         </Section>
       )}
 
       {/* Contact */}
       <Section
-        title="联系我"
-        description="任何一种方式都可以 👇"
+        title={getLabel(config, 'contact')}
+        description={getLabel(config, 'contact.description')}
       >
         <div className="flex justify-center">
           <AuthorCard author={config.author} className="max-w-lg" />
@@ -137,7 +159,7 @@ export default function HomePage() {
           <Section className="py-16 md:py-24 lg:py-32">
             <div className="text-center">
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
-                加载中...
+                Loading...
               </h1>
             </div>
           </Section>

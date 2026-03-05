@@ -225,3 +225,32 @@ pricing:
         priority: true
       cta: 联系销售
       ctaLink: "#enterprise"
+
+# Homepage Hero (example)
+hero:
+  greeting: '👋 Hey, I am Zoe'
+  typingTexts:
+    - Building AI tools
+    - Open source projects
+    - Passive income systems
+  description: 'Full-stack developer · Building sustainable income systems with code and AI'
+  cta:
+    - text: Read Blog
+      href: /blog
+    - text: GitHub
+      href: https://github.com/jiusanzhou
+
+# Homepage Sections (example)
+sections:
+  - title: What I'm Doing
+    description: Current focus areas
+    items:
+      - icon: '🛠'
+        title: AI Dev Tools
+        description: Multi-agent systems, content distribution CLI, mobile AI agents.
+      - icon: '✍️'
+        title: Technical Writing
+        description: AI + developer tools. Write drafts, auto-distribute to platforms.
+      - icon: '💰'
+        title: Passive Income
+        description: Building passive income systems from scratch, with monthly public reports.
