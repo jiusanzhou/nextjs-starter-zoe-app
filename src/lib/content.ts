@@ -155,7 +155,7 @@ export function getAllPosts(includeDrafts = false): Post[] {
         modifiedDate: modifiedAt,
         tags,
         banner: frontmatter.banner,
-        published: frontmatter.published !== false,
+        published: frontmatter.published === true,
         pinned: frontmatter.pinned || false,
         readingTime,
         content,

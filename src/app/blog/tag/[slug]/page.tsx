@@ -7,16 +7,20 @@ interface TagPageProps {
   params: Promise<{ slug: string }>;
 }
 
-export const dynamic = "force-static";
 export const dynamicParams = false;
+
+const PLACEHOLDER_SLUG = "__placeholder__";
 
 export async function generateStaticParams(): Promise<{ slug: string }[]> {
   try {
     const tags = getAllTags();
+    if (tags.length === 0) {
+      return [{ slug: PLACEHOLDER_SLUG }];
+    }
     return tags.map((tag) => ({ slug: tag.slug }));
   } catch (error) {
     console.warn('[blog/tag] Failed to generate static params:', error);
-    return [];
+    return [{ slug: PLACEHOLDER_SLUG }];
   }
 }
 
@@ -42,7 +46,7 @@ export default async function TagPage({ params }: TagPageProps) {
   const tags = getAllTags();
   const tag = tags.find((t) => t.slug === slug);
 
-  if (!tag) {
+  if (!tag || slug === PLACEHOLDER_SLUG) {
     notFound();
   }
 
