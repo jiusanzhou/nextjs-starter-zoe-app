@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { loadZoeConfig } from "@/lib/zoefile";
 import { getHelpCategories, getHelpItemsByCategory } from "@/lib/helpqa";
 import { HelpHeader, HelpItemsList } from "@/components/help";
+import { getLabel } from "@/lib/i18n";
 
 export const dynamicParams = false;
 
@@ -36,13 +37,14 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props) {
   const { id } = await params;
-  if (id === PLACEHOLDER_ID) return { title: "帮助分类" };
-
   const config = loadZoeConfig();
+
+  if (id === PLACEHOLDER_ID) return { title: getLabel(config, 'help.category') };
+
   const helpConfig = config.helpqa;
 
   if (!helpConfig?.repo) {
-    return { title: "帮助分类" };
+    return { title: getLabel(config, 'help.category') };
   }
 
   const categories = await getHelpCategories(helpConfig);
@@ -50,8 +52,8 @@ export async function generateMetadata({ params }: Props) {
 
   return {
     title: category
-      ? `${category.name} - 帮助中心 - ${config.title}`
-      : "帮助分类",
+      ? `${category.name} - ${getLabel(config, 'help')} - ${config.title}`
+      : getLabel(config, 'help.category'),
   };
 }
 
@@ -77,12 +79,23 @@ async function CategoryContent({ categoryId }: { categoryId: string }) {
   }
 
   return (
-    <>
-      <HelpHeader title={category.name} description={category.description} />
-      <div className="container py-6">
-        <HelpItemsList items={items} title={category.name} showAll={false} showBack={true} />
+    <div className="page-help">
+      <HelpHeader
+        title={category.name}
+        description={category.description}
+        searchPlaceholder={getLabel(config, 'help.searchPlaceholder')}
+      />
+      <div className="py-6">
+        <HelpItemsList
+          items={items}
+          title={category.name}
+          showAll={false}
+          showBack={true}
+          backLabel={getLabel(config, 'help.back')}
+          emptyLabel={getLabel(config, 'help.noContent')}
+        />
       </div>
-    </>
+    </div>
   );
 }
 
@@ -93,7 +106,7 @@ export default async function HelpCategoryPage({ params }: Props) {
     <Suspense
       fallback={
         <div className="container py-12 text-center">
-          <p className="text-muted-foreground">加载中...</p>
+          <p className="text-muted-foreground">{getLabel(loadZoeConfig(), 'loading')}</p>
         </div>
       }
     >

@@ -24,7 +24,7 @@ async function HelpContent() {
 
   if (!helpConfig?.repo) {
     return (
-      <div className="container py-12 text-center">
+      <div className="page-help container py-12 text-center">
         <p className="text-muted-foreground">
           {getLabel(config, 'help.notConfigured')}
         </p>
@@ -44,15 +44,27 @@ helpqa:
   ]);
 
   return (
-    <>
-      <HelpHeader />
-      <div className="container py-6">
+    <div className="page-help">
+      <HelpHeader
+        title={getLabel(config, 'help.title')}
+        searchPlaceholder={getLabel(config, 'help.searchPlaceholder')}
+      />
+      <div className="py-8">
         {pinnedItems.length > 0 && (
-          <HelpItemsList items={pinnedItems} title={getLabel(config, 'help.pinned')} limit={6} />
+          <HelpItemsList
+            items={pinnedItems}
+            title={getLabel(config, 'help.pinned')}
+            limit={6}
+            viewAllLabel={getLabel(config, 'help.viewAll')}
+            emptyLabel={getLabel(config, 'help.noContent')}
+          />
         )}
-        <HelpCategoriesList categories={categories} />
+        <HelpCategoriesList
+          categories={categories}
+          title={getLabel(config, 'help.categories')}
+        />
       </div>
-    </>
+    </div>
   );
 }
 

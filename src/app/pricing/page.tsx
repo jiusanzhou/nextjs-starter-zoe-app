@@ -21,12 +21,20 @@ export default function PricingPage() {
   }
 
   return (
-    <div className="container py-8">
+    <div className="page-pricing">
+      {/* Hero */}
+      <div className="text-center py-8 md:py-12">
+        <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-3">
+          {pricingConfig.title || getLabel(config, 'pricing')}
+        </h1>
+        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          {pricingConfig.description || getLabel(config, 'pricing.description')}
+        </p>
+      </div>
+
       <PricingTable
         plans={pricingConfig.plans}
         featureDefinitions={pricingConfig.featureDefinitions}
-        title={pricingConfig.title}
-        description={pricingConfig.description}
         yearlyDiscount={pricingConfig.yearlyDiscount}
         showToggle={pricingConfig.showToggle}
       />

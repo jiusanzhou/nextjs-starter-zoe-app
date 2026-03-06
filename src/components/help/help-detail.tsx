@@ -10,26 +10,34 @@ import { cn } from "@/lib/utils";
 
 interface HelpItemDetailProps {
   item: HelpItem;
+  backLabel?: string;
+  feedbackLabel?: string;
+  feedbackThanksLabel?: string;
 }
 
-export function HelpItemDetail({ item }: HelpItemDetailProps) {
+export function HelpItemDetail({
+  item,
+  backLabel = "Back to Help Center",
+  feedbackLabel = "Was this helpful?",
+  feedbackThanksLabel = "Thanks for your feedback!",
+}: HelpItemDetailProps) {
   const [voted, setVoted] = useState<number | null>(null);
 
-  const emojis = ["😞", "😐", "😃"];
+  const emojis = ["\u{1F61E}", "\u{1F610}", "\u{1F603}"];
 
   return (
     <article className="py-6">
-      {/* 返回按钮 */}
+      {/* Back */}
       <div className="mb-6">
         <Button variant="ghost" size="sm" asChild>
           <Link href="/help" className="flex items-center gap-2">
             <ArrowLeft className="h-4 w-4" />
-            返回帮助中心
+            {backLabel}
           </Link>
         </Button>
       </div>
 
-      {/* 分类标签 */}
+      {/* Category tags */}
       <div className="flex flex-wrap gap-2 mb-4">
         {item.categories.map((cat) => (
           <Badge
@@ -45,30 +53,30 @@ export function HelpItemDetail({ item }: HelpItemDetailProps) {
         ))}
       </div>
 
-      {/* 标题 */}
-      <h1 className="text-xl md:text-2xl font-bold mb-4">{item.title}</h1>
+      {/* Title */}
+      <h1 className="text-xl md:text-2xl font-bold mb-6">{item.title}</h1>
 
-      {/* 分隔线 */}
+      {/* Divider */}
       <hr className="my-4" />
 
-      {/* 内容 */}
+      {/* Content */}
       <div
         className="prose prose-sm md:prose dark:prose-invert max-w-none"
         dangerouslySetInnerHTML={{ __html: item.body }}
       />
 
-      {/* 反馈部分 */}
-      <div className="mt-8 md:mt-12 p-6 md:p-8 bg-muted/50 rounded-lg text-center">
-        <p className="text-muted-foreground mb-4">是否解决了您的问题？</p>
-        <div className="flex justify-center gap-6">
+      {/* Feedback */}
+      <div className="mt-10 md:mt-14 p-6 md:p-8 bg-muted/30 rounded-xl border text-center">
+        <p className="text-muted-foreground mb-4">{feedbackLabel}</p>
+        <div className="flex justify-center gap-4">
           {emojis.map((emoji, index) => (
             <Button
               key={index}
               variant="ghost"
               size="lg"
               className={cn(
-                "text-2xl md:text-3xl transition-all",
-                voted !== null && voted !== index && "grayscale opacity-50",
+                "text-2xl md:text-3xl transition-all hover:scale-110",
+                voted !== null && voted !== index && "grayscale opacity-40",
                 voted === index && "scale-125"
               )}
               onClick={() => setVoted(index)}
@@ -79,7 +87,7 @@ export function HelpItemDetail({ item }: HelpItemDetailProps) {
         </div>
         {voted !== null && (
           <p className="mt-4 text-sm text-muted-foreground">
-            感谢您的反馈！
+            {feedbackThanksLabel}
           </p>
         )}
       </div>

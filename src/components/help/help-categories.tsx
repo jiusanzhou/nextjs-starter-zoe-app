@@ -9,7 +9,6 @@ interface HelpCategoriesListProps {
   title?: string;
 }
 
-// 生成基于索引的颜色（如果没有颜色）
 const colorPalette = [
   "#ef4444", "#f97316", "#eab308", "#22c55e", "#14b8a6",
   "#3b82f6", "#8b5cf6", "#ec4899", "#f43f5e", "#6366f1",
@@ -23,54 +22,48 @@ function getColor(color: string | undefined, index: number): string {
 export function HelpCategoriesList({
   categories,
   basePath = "/help",
-  title = "帮助类别",
+  title,
 }: HelpCategoriesListProps) {
-  // 补齐到 3 的倍数
-  const columnCount = 3;
-  const fixed = categories.length % columnCount;
-  const paddedCategories = [...categories];
-  if (fixed > 0) {
-    for (let i = 0; i < columnCount - fixed; i++) {
-      paddedCategories.push({} as HelpCategory);
-    }
-  }
-
   return (
-    <div className="py-4">
+    <div className="py-6">
       {title && (
-        <h2 className="text-lg font-semibold mb-4 px-2">{title}</h2>
+        <h2 className="text-lg font-semibold mb-5 px-1">{title}</h2>
       )}
-      <div className="bg-muted/50 rounded-lg overflow-hidden">
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-px">
-          {paddedCategories.map((category, index) => {
-            if (!category.name) {
-              return (
-                <div key={`empty-${index}`} className="bg-background" />
-              );
-            }
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        {categories.map((category, index) => {
+          if (!category.name) return null;
 
-            const color = getColor(category.color, index);
+          const color = getColor(category.color, index);
 
-            return (
-              <Link
-                key={category.id}
-                href={`${basePath}/categories/${category.id}`}
-                className={cn(
-                  "flex flex-col items-center justify-center p-6 md:p-10 bg-background",
-                  "hover:bg-accent/50 transition-colors"
-                )}
+          return (
+            <Link
+              key={category.id}
+              href={`${basePath}/categories/${category.id}`}
+              className={cn(
+                "help-category-card flex flex-col items-center justify-center p-6 md:p-8 rounded-xl border bg-card",
+                "hover:shadow-md hover:-translate-y-0.5 transition-all"
+              )}
+            >
+              <div
+                className="flex items-center justify-center w-12 h-12 rounded-xl mb-3"
+                style={{ backgroundColor: color + "15" }}
               >
                 <HelpCircle
-                  className="h-6 w-6 md:h-8 md:w-8 mb-2 md:mb-4"
+                  className="h-6 w-6"
                   style={{ color }}
                 />
-                <span className="text-sm md:text-base text-center truncate max-w-full">
-                  {category.name}
+              </div>
+              <span className="text-sm md:text-base font-medium text-center truncate max-w-full">
+                {category.name}
+              </span>
+              {category.description && (
+                <span className="text-xs text-muted-foreground mt-1 text-center line-clamp-2">
+                  {category.description}
                 </span>
-              </Link>
-            );
-          })}
-        </div>
+              )}
+            </Link>
+          );
+        })}
       </div>
     </div>
   );

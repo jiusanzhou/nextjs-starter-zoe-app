@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { getAllPages, getPageBySlug, markdownToHtml } from "@/lib";
 import { compileMDX } from "next-mdx-remote/rsc";
 import { mdxComponents } from "@/components/mdx";
+import { loadZoeConfig } from "@/lib/zoefile";
+import { getLabel } from "@/lib/i18n";
 
 interface PageProps {
   params: Promise<{ slug: string[] }>;
@@ -21,9 +23,10 @@ export async function generateMetadata({
   const { slug } = await params;
   const slugPath = slug.join("/");
   const page = getPageBySlug(slugPath);
+  const config = loadZoeConfig();
 
   if (!page) {
-    return { title: "页面未找到" };
+    return { title: getLabel(config, 'page.notFound') };
   }
 
   return {
@@ -31,6 +34,8 @@ export async function generateMetadata({
     description: page.description,
   };
 }
+
+const proseClasses = "prose prose-neutral dark:prose-invert max-w-none prose-headings:scroll-mt-20 prose-a:text-primary prose-pre:bg-muted prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none";
 
 export default async function DynamicPage({ params }: PageProps) {
   const { slug } = await params;
@@ -41,22 +46,19 @@ export default async function DynamicPage({ params }: PageProps) {
     notFound();
   }
 
-  // 移除 markdown 内容开头的一级标题（避免与 header 重复）
   let content = page.content.replace(/^\s+/, '');
   const firstH1Match = content.match(/^#\s+.+\n/);
   if (firstH1Match && firstH1Match[0].includes(page.title)) {
     content = content.replace(/^#\s+.+\n/, '');
   }
 
-  // 检查是否为 MDX 内容（包含 JSX 语法）
   const isMdx = page.isMdx || content.includes('<') && (
-    content.includes('/>') || 
+    content.includes('/>') ||
     content.includes('</') ||
     content.includes('import ')
   );
 
   if (isMdx) {
-    // 使用 next-mdx-remote 编译 MDX
     const { content: mdxContent } = await compileMDX({
       source: content,
       components: mdxComponents,
@@ -66,39 +68,38 @@ export default async function DynamicPage({ params }: PageProps) {
     });
 
     return (
-      <article className="max-w-3xl mx-auto">
-        <header className="mb-8">
-          <h1 className="text-4xl font-bold tracking-tight">{page.title}</h1>
+      <article className="page-dynamic max-w-3xl mx-auto">
+        <header className="mb-10 pb-6 border-b">
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight">{page.title}</h1>
           {page.description && (
-            <p className="mt-4 text-xl text-muted-foreground">
+            <p className="mt-3 text-lg text-muted-foreground leading-relaxed">
               {page.description}
             </p>
           )}
         </header>
 
-        <div className="prose prose-neutral dark:prose-invert max-w-none prose-headings:scroll-mt-20 prose-a:text-primary prose-pre:bg-muted prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none">
+        <div className={proseClasses}>
           {mdxContent}
         </div>
       </article>
     );
   }
 
-  // 普通 Markdown
   const html = await markdownToHtml(content);
 
   return (
-    <article className="max-w-3xl mx-auto">
-      <header className="mb-8">
-        <h1 className="text-4xl font-bold tracking-tight">{page.title}</h1>
+    <article className="page-dynamic max-w-3xl mx-auto">
+      <header className="mb-10 pb-6 border-b">
+        <h1 className="text-3xl md:text-4xl font-bold tracking-tight">{page.title}</h1>
         {page.description && (
-          <p className="mt-4 text-xl text-muted-foreground">
+          <p className="mt-3 text-lg text-muted-foreground leading-relaxed">
             {page.description}
           </p>
         )}
       </header>
 
       <div
-        className="prose prose-neutral dark:prose-invert max-w-none prose-headings:scroll-mt-20 prose-a:text-primary prose-pre:bg-muted prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none"
+        className={proseClasses}
         dangerouslySetInnerHTML={{ __html: html }}
       />
     </article>

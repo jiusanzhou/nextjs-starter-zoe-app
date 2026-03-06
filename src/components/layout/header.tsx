@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Home, FileText, FolderKanban, User, MoreHorizontal } from "lucide-react";
 import {
@@ -22,9 +21,9 @@ interface HeaderProps {
   logo?: string;
   version?: string;
   navs?: NavItem[];
+  moreLabel?: string;
 }
 
-// 图标映射
 const iconMap: Record<string, React.ElementType> = {
   home: Home,
   blog: FileText,
@@ -32,51 +31,48 @@ const iconMap: Record<string, React.ElementType> = {
   about: User,
 };
 
-// 根据 href 猜测图标
 function getIconForNav(href: string): React.ElementType {
   const path = href.replace(/^\//, "").split("/")[0].toLowerCase();
   if (path === "" || path === "home") return Home;
   return iconMap[path] || FileText;
 }
 
-export function Header({ title, logo, version, navs = [] }: HeaderProps) {
+export function Header({ title, logo, version, navs = [], moreLabel = "More" }: HeaderProps) {
   const pathname = usePathname();
 
   return (
     <>
       {/* Desktop Header */}
-      <header className="site-header sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="site-header sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/60 transition-shadow">
         <div className="container flex h-14 sm:h-16 items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2 sm:space-x-3">
+          <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group">
             {logo && (
-              <div className="relative h-7 w-7 sm:h-8 sm:w-8 overflow-hidden rounded-lg">
-                {/* 使用 img 标签确保 basePath 正确处理 */}
+              <div className="relative h-7 w-7 sm:h-8 sm:w-8 overflow-hidden rounded-lg ring-1 ring-border/50 transition-shadow group-hover:ring-border">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img 
-                  src={logo.startsWith("http") ? logo : `${process.env.NEXT_PUBLIC_BASE_PATH || ''}${logo}`} 
-                  alt={title} 
-                  className="h-full w-full object-cover" 
+                <img
+                  src={logo.startsWith("http") ? logo : `${process.env.NEXT_PUBLIC_BASE_PATH || ''}${logo}`}
+                  alt={title}
+                  className="h-full w-full object-cover"
                 />
               </div>
             )}
-            <div className="flex items-center space-x-2">
-              <span className="font-bold text-base sm:text-lg">{title}</span>
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-base sm:text-lg tracking-tight">{title}</span>
               {version && (
-                <span className="hidden sm:inline text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
+                <span className="hidden sm:inline text-[10px] font-medium text-muted-foreground bg-muted px-1.5 py-0.5 rounded-md">
                   {version}
                 </span>
               )}
             </div>
           </Link>
 
-          {/* Desktop Nav - Using NavigationMenu */}
+          {/* Desktop Nav */}
           <NavigationMenu className="hidden md:flex">
-            <NavigationMenuList>
+            <NavigationMenuList className="gap-1">
               {navs.map((item) => (
                 <NavigationMenuItem key={item.href}>
                   {item.items && item.items.length > 0 ? (
-                    // Has sub-items - show dropdown
                     <>
                       <NavigationMenuTrigger
                         className={cn(
@@ -117,11 +113,11 @@ export function Header({ title, logo, version, navs = [] }: HeaderProps) {
                       </NavigationMenuContent>
                     </>
                   ) : (
-                    // No sub-items - simple link
                     <Link href={item.href} legacyBehavior passHref>
                       <NavigationMenuLink
                         className={cn(
                           navigationMenuTriggerStyle(),
+                          "relative",
                           pathname === item.href && "bg-accent text-accent-foreground"
                         )}
                       >
@@ -135,74 +131,77 @@ export function Header({ title, logo, version, navs = [] }: HeaderProps) {
           </NavigationMenu>
 
           {/* Right Section */}
-          <div className="flex items-center space-x-1">
-            {/* Dark/Light Toggle */}
+          <div className="flex items-center gap-1">
             <ThemeToggle />
           </div>
         </div>
       </header>
 
       {/* Mobile Bottom Navigation Bar */}
-      <MobileBottomNav navs={navs} pathname={pathname} />
+      <MobileBottomNav navs={navs} pathname={pathname} moreLabel={moreLabel} />
     </>
   );
 }
 
-// 移动端底部导航栏
 function MobileBottomNav({
   navs,
   pathname,
+  moreLabel,
 }: {
   navs: NavItem[];
   pathname: string;
+  moreLabel: string;
 }) {
-  // 最多显示 5 个导航项（4个 + 更多）
   const maxVisible = 4;
   const visibleNavs = navs.slice(0, maxVisible);
   const hasMore = navs.length > maxVisible;
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 safe-area-pb">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/60 safe-area-pb">
       <div className="flex items-center justify-around h-16">
         {visibleNavs.map((item) => {
           const Icon = getIconForNav(item.href);
-          const isActive = pathname === item.href || 
+          const isActive = pathname === item.href ||
             (item.href !== "/" && pathname.startsWith(item.href));
-          
+
           return (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
-                "flex flex-col items-center justify-center gap-1 flex-1 h-full px-2 transition-colors",
+                "flex flex-col items-center justify-center gap-1 flex-1 h-full px-2 transition-colors relative",
                 isActive
                   ? "text-primary"
                   : "text-muted-foreground hover:text-foreground"
               )}
             >
-              <Icon className="h-5 w-5" />
-              <span className="text-xs font-medium truncate max-w-[4rem]">
+              <Icon className={cn("h-5 w-5 transition-transform", isActive && "scale-105")} />
+              <span className="text-[10px] font-medium truncate max-w-[4rem]">
                 {item.title}
               </span>
+              {isActive && (
+                <span className="absolute bottom-1.5 w-1 h-1 rounded-full bg-primary" />
+              )}
             </Link>
           );
         })}
-        
+
         {hasMore && (
-          <MoreMenu navs={navs.slice(maxVisible)} pathname={pathname} />
+          <MoreMenu navs={navs.slice(maxVisible)} pathname={pathname} moreLabel={moreLabel} />
         )}
       </div>
     </nav>
   );
 }
 
-// 更多菜单（如果导航项超过4个）
 function MoreMenu({
   navs,
   pathname,
+  moreLabel,
 }: {
   navs: NavItem[];
   pathname: string;
+  moreLabel: string;
 }) {
   const isActive = navs.some(
     (item) => pathname === item.href || pathname.startsWith(item.href)
@@ -212,29 +211,32 @@ function MoreMenu({
     <div className="relative flex flex-col items-center justify-center gap-1 flex-1 h-full px-2 group">
       <button
         className={cn(
-          "flex flex-col items-center justify-center gap-1 transition-colors",
+          "flex flex-col items-center justify-center gap-1 transition-colors relative",
           isActive
             ? "text-primary"
             : "text-muted-foreground hover:text-foreground"
         )}
       >
         <MoreHorizontal className="h-5 w-5" />
-        <span className="text-xs font-medium">更多</span>
+        <span className="text-[10px] font-medium">{moreLabel}</span>
+        {isActive && (
+          <span className="absolute -bottom-0.5 w-1 h-1 rounded-full bg-primary" />
+        )}
       </button>
-      
-      {/* Popup menu on hover/focus */}
+
+      {/* Popup menu */}
       <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block group-focus-within:block">
-        <div className="bg-popover border rounded-lg shadow-lg p-2 min-w-[120px]">
+        <div className="bg-popover border rounded-xl shadow-lg p-1.5 min-w-[140px]">
           {navs.map((item) => {
             const Icon = getIconForNav(item.href);
             const isItemActive = pathname === item.href;
-            
+
             return (
               <Link
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors",
+                  "flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-colors",
                   isItemActive
                     ? "bg-accent text-accent-foreground"
                     : "text-foreground hover:bg-accent/50"

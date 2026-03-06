@@ -8,36 +8,34 @@ interface HelpHeaderProps {
   description?: string;
   showSearch?: boolean;
   onSearch?: (query: string) => void;
+  searchPlaceholder?: string;
 }
 
 export function HelpHeader({
-  title = "嗨，有什么可以帮你？",
+  title = "Hi, how can we help?",
   description,
   showSearch = true,
   onSearch,
+  searchPlaceholder = "Search help content...",
 }: HelpHeaderProps) {
   return (
-    <div
-      className="hidden md:flex flex-col items-center justify-center min-h-60 bg-cover bg-center text-white"
-      style={{
-        backgroundImage:
-          "linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('https://a.slack-edge.com/94c06/helpcenter/img/cat-hero-banner-image-2x.png')",
-      }}
-    >
-      <h1 className="text-3xl font-bold mb-4">{title}</h1>
-      {description && (
-        <p className="text-lg opacity-90 mb-6">{description}</p>
-      )}
-      {showSearch && (
-        <div className="relative w-full max-w-md px-4">
-          <Search className="absolute left-7 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-          <Input
-            placeholder="搜索帮助内容..."
-            className="pl-12 bg-white text-foreground"
-            onChange={(e) => onSearch?.(e.target.value)}
-          />
-        </div>
-      )}
+    <div className="help-header relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/5 via-primary/10 to-accent/5 border">
+      <div className="relative flex flex-col items-center justify-center py-12 md:py-16 px-4">
+        <h1 className="text-2xl md:text-3xl font-bold mb-3 text-center">{title}</h1>
+        {description && (
+          <p className="text-base text-muted-foreground mb-6 text-center max-w-lg">{description}</p>
+        )}
+        {showSearch && (
+          <div className="relative w-full max-w-md">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder={searchPlaceholder}
+              className="pl-10 h-11 bg-background/80 backdrop-blur-sm border-border/50"
+              onChange={(e) => onSearch?.(e.target.value)}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 }

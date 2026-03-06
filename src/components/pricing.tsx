@@ -5,19 +5,16 @@ import { Check, X, Sparkles, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-// 全局功能定义
 export interface FeatureDefinition {
   id: string;
   name: string;
   tooltip?: string;
 }
 
-// Plan 中的功能值
 export interface PlanFeatureValue {
   [featureId: string]: boolean | string | number;
 }
 
-// 旧格式兼容
 export interface LegacyPricingFeature {
   name: string;
   included: boolean | string;
@@ -32,7 +29,6 @@ export interface PricingPlan {
   priceUnit?: string;
   originalPrice?: number;
   currency?: string;
-  // 新格式: { featureId: value }
   features?: PlanFeatureValue | LegacyPricingFeature[];
   cta?: string;
   ctaLink?: string;
@@ -41,7 +37,6 @@ export interface PricingPlan {
 }
 
 interface PricingTableProps {
-  // 全局功能定义列表
   featureDefinitions?: FeatureDefinition[];
   plans: PricingPlan[];
   title?: string;
@@ -49,9 +44,13 @@ interface PricingTableProps {
   yearlyDiscount?: number;
   showToggle?: boolean;
   className?: string;
+  monthlyLabel?: string;
+  yearlyLabel?: string;
+  yearlySaveLabel?: string;
+  ctaLabel?: string;
+  badgeLabel?: string;
 }
 
-// 渲染功能值
 function renderFeatureValue(value: boolean | string | number | undefined) {
   if (value === true) {
     return <Check className="h-5 w-5 text-green-500" />;
@@ -62,7 +61,6 @@ function renderFeatureValue(value: boolean | string | number | undefined) {
   if (value === undefined || value === null || value === "") {
     return <Minus className="h-5 w-5 text-muted-foreground/30" />;
   }
-  // 字符串或数字
   return <span className="text-sm font-medium">{value}</span>;
 }
 
@@ -71,26 +69,28 @@ export function PricingCard({
   featureDefinitions,
   yearly = false,
   yearlyDiscount = 0,
+  ctaLabel = "Get Started",
+  badgeLabel = "Recommended",
 }: {
   plan: PricingPlan;
   featureDefinitions?: FeatureDefinition[];
   yearly?: boolean;
   yearlyDiscount?: number;
+  ctaLabel?: string;
+  badgeLabel?: string;
 }) {
-  const currency = plan.currency || "¥";
-  const priceUnit = plan.priceUnit || "/月";
-  
-  // 计算年付价格
+  const currency = plan.currency || "$";
+  const priceUnit = plan.priceUnit || "/mo";
+
   let displayPrice = plan.price;
   let displayUnit = priceUnit;
-  
+
   if (yearly && typeof plan.price === "number" && yearlyDiscount > 0) {
     const yearlyPrice = plan.price * 12 * (1 - yearlyDiscount / 100);
     displayPrice = Math.round(yearlyPrice);
-    displayUnit = "/年";
+    displayUnit = "/yr";
   }
 
-  // 判断 features 格式
   const isLegacyFormat = Array.isArray(plan.features);
   const legacyFeatures = isLegacyFormat ? (plan.features as LegacyPricingFeature[]) : [];
   const featureMap = !isLegacyFormat ? (plan.features as PlanFeatureValue || {}) : {};
@@ -98,65 +98,67 @@ export function PricingCard({
   return (
     <div
       className={cn(
-        "relative flex flex-col rounded-2xl border bg-card p-6 shadow-sm transition-all hover:shadow-md",
-        plan.popular && "border-primary shadow-lg scale-105 z-10"
+        "pricing-card relative flex flex-col rounded-2xl border bg-card p-6 lg:p-8 shadow-sm transition-all hover:shadow-md",
+        plan.popular && "highlighted border-primary shadow-lg scale-[1.02] z-10"
       )}
     >
-      {/* 推荐标签 */}
+      {/* Badge */}
       {(plan.popular || plan.badge) && (
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-          <span className="inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1 text-xs font-medium text-primary-foreground">
+        <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-1.5 text-xs font-medium text-primary-foreground shadow-sm">
             {plan.popular && <Sparkles className="h-3 w-3" />}
-            {plan.badge || "推荐"}
+            {plan.badge || badgeLabel}
           </span>
         </div>
       )}
 
-      {/* 套餐名称 */}
-      <div className="mb-4">
+      {/* Plan name */}
+      <div className="mb-6">
         <h3 className="text-xl font-bold">{plan.name}</h3>
         {plan.description && (
-          <p className="mt-1 text-sm text-muted-foreground">{plan.description}</p>
+          <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">{plan.description}</p>
         )}
       </div>
 
-      {/* 价格 */}
-      <div className="mb-6">
+      {/* Price */}
+      <div className="mb-8">
         <div className="flex items-baseline gap-1">
           <span className="text-lg text-muted-foreground">{currency}</span>
-          <span className="text-4xl font-bold tracking-tight">
+          <span className="text-5xl font-bold tracking-tight">
             {typeof displayPrice === "number" ? displayPrice : displayPrice}
           </span>
-          <span className="text-muted-foreground">{displayUnit}</span>
+          <span className="text-muted-foreground ml-1">{displayUnit}</span>
         </div>
         {plan.originalPrice && (
-          <div className="mt-1 text-sm text-muted-foreground line-through">
+          <div className="mt-1.5 text-sm text-muted-foreground line-through">
             {currency}{plan.originalPrice}{priceUnit}
           </div>
         )}
       </div>
 
-      {/* CTA 按钮 */}
+      {/* CTA */}
       <Button
-        className="mb-6 w-full"
+        className="mb-8 w-full h-11"
         variant={plan.popular ? "default" : "outline"}
         asChild={!!plan.ctaLink}
       >
         {plan.ctaLink ? (
-          <a href={plan.ctaLink}>{plan.cta || "开始使用"}</a>
+          <a href={plan.ctaLink}>{plan.cta || ctaLabel}</a>
         ) : (
-          <span>{plan.cta || "开始使用"}</span>
+          <span>{plan.cta || ctaLabel}</span>
         )}
       </Button>
 
-      {/* 功能列表 */}
-      <ul className="space-y-3 text-sm">
-        {/* 新格式：使用全局 featureDefinitions */}
+      {/* Divider */}
+      <div className="border-t mb-6" />
+
+      {/* Features */}
+      <ul className="space-y-3.5 text-sm flex-1">
         {featureDefinitions && featureDefinitions.length > 0 && !isLegacyFormat && (
           featureDefinitions.map((feature) => {
             const value = featureMap[feature.id];
             const isIncluded = value !== false && value !== undefined && value !== null && value !== "";
-            
+
             return (
               <li key={feature.id} className="flex items-center justify-between gap-3">
                 <span className={cn(!isIncluded && "text-muted-foreground/50")}>
@@ -168,7 +170,6 @@ export function PricingCard({
           })
         )}
 
-        {/* 旧格式兼容 */}
         {isLegacyFormat && legacyFeatures.map((feature, idx) => (
           <li key={idx} className="flex items-start gap-3">
             {feature.included === true ? (
@@ -199,12 +200,18 @@ export function PricingTable({
   yearlyDiscount = 20,
   showToggle = true,
   className,
+  monthlyLabel = "Monthly",
+  yearlyLabel = "Yearly",
+  yearlySaveLabel,
+  ctaLabel = "Get Started",
+  badgeLabel = "Recommended",
 }: PricingTableProps) {
   const [yearly, setYearly] = React.useState(false);
+  const saveLabel = yearlySaveLabel || `Save ${yearlyDiscount}%`;
 
   return (
-    <div className={cn("py-12", className)}>
-      {/* 标题 */}
+    <div className={cn("py-4", className)}>
+      {/* Title (for backward compat when used standalone) */}
       {(title || description) && (
         <div className="mb-10 text-center">
           {title && <h2 className="text-3xl font-bold tracking-tight">{title}</h2>}
@@ -214,35 +221,35 @@ export function PricingTable({
         </div>
       )}
 
-      {/* 月付/年付切换 */}
+      {/* Monthly/Yearly toggle */}
       {showToggle && yearlyDiscount > 0 && (
-        <div className="mb-8 flex items-center justify-center gap-4">
-          <span className={cn("text-sm", !yearly && "font-medium")}>月付</span>
+        <div className="mb-10 flex items-center justify-center gap-4">
+          <span className={cn("text-sm transition-colors", !yearly ? "font-medium text-foreground" : "text-muted-foreground")}>{monthlyLabel}</span>
           <button
             onClick={() => setYearly(!yearly)}
             className={cn(
-              "relative h-6 w-11 rounded-full transition-colors",
+              "relative h-7 w-12 rounded-full transition-colors",
               yearly ? "bg-primary" : "bg-muted"
             )}
           >
             <span
               className={cn(
-                "absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform",
+                "absolute top-0.5 left-0.5 h-6 w-6 rounded-full bg-white shadow-sm transition-transform",
                 yearly && "translate-x-5"
               )}
             />
           </button>
-          <span className={cn("text-sm", yearly && "font-medium")}>
-            年付
-            <span className="ml-1 text-xs text-green-500">省 {yearlyDiscount}%</span>
+          <span className={cn("text-sm transition-colors", yearly ? "font-medium text-foreground" : "text-muted-foreground")}>
+            {yearlyLabel}
+            <span className="ml-1.5 text-xs text-green-600 dark:text-green-400 font-medium">{saveLabel}</span>
           </span>
         </div>
       )}
 
-      {/* 价格卡片 */}
+      {/* Pricing cards */}
       <div
         className={cn(
-          "grid gap-6 mx-auto max-w-5xl",
+          "grid gap-6 lg:gap-8 mx-auto max-w-5xl",
           plans.length === 1 && "max-w-md",
           plans.length === 2 && "md:grid-cols-2 max-w-3xl",
           plans.length >= 3 && "md:grid-cols-3"
@@ -255,6 +262,8 @@ export function PricingTable({
             featureDefinitions={featureDefinitions}
             yearly={yearly}
             yearlyDiscount={yearlyDiscount}
+            ctaLabel={ctaLabel}
+            badgeLabel={badgeLabel}
           />
         ))}
       </div>

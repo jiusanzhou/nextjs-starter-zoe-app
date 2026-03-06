@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { GoogleAnalytics, PlausibleAnalytics } from "@/components/analytics";
 import { GoTop } from "@/components/go-top";
 import { loadZoeConfig, getSiteMetadata } from "@/lib/zoefile";
+import { getLabel } from "@/lib/i18n";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -84,6 +85,7 @@ export default function RootLayout({
             logo={config.logo}
             version={config.version}
             navs={config.navs}
+            moreLabel={getLabel(config, 'header.more')}
           />
           <main className="flex-1 container py-6 md:py-8 lg:py-10">{children}</main>
           <Footer
@@ -98,8 +100,8 @@ export default function RootLayout({
               ...(config.author?.email ? { email: config.author.email } : {}),
               ...(config.author?.wechat ? { wechat: config.author.wechat } : {}),
             }}
-            author={config.author}
             links={config.links}
+            wechatScanLabel={getLabel(config, 'footer.wechatScan')}
           />
           <GoTop />
         </ThemeProvider>

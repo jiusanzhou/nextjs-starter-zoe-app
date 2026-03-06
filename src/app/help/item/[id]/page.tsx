@@ -4,6 +4,7 @@ import { loadZoeConfig } from "@/lib/zoefile";
 import { getHelpItems, getHelpItemById } from "@/lib/helpqa";
 import { markdownToHtml } from "@/lib/mdx";
 import { HelpHeader, HelpItemDetail } from "@/components/help";
+import { getLabel } from "@/lib/i18n";
 
 export const dynamicParams = false;
 
@@ -37,21 +38,22 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props) {
   const { id } = await params;
-  if (id === PLACEHOLDER_ID) return { title: "帮助详情" };
-
   const config = loadZoeConfig();
+
+  if (id === PLACEHOLDER_ID) return { title: getLabel(config, 'help.detail') };
+
   const helpConfig = config.helpqa;
 
   if (!helpConfig?.repo) {
-    return { title: "帮助详情" };
+    return { title: getLabel(config, 'help.detail') };
   }
 
   const item = await getHelpItemById(helpConfig, id);
 
   return {
     title: item
-      ? `${item.title} - 帮助中心 - ${config.title}`
-      : "帮助详情",
+      ? `${item.title} - ${getLabel(config, 'help')} - ${config.title}`
+      : getLabel(config, 'help.detail'),
   };
 }
 
@@ -75,12 +77,17 @@ async function ItemContent({ itemId }: { itemId: string }) {
   const itemWithHtml = { ...item, body: htmlBody };
 
   return (
-    <>
+    <div className="page-help">
       <HelpHeader title={item.title} showSearch={false} />
-      <div className="container py-6 max-w-3xl mx-auto">
-        <HelpItemDetail item={itemWithHtml} />
+      <div className="py-6 max-w-3xl mx-auto">
+        <HelpItemDetail
+          item={itemWithHtml}
+          backLabel={getLabel(config, 'help.back')}
+          feedbackLabel={getLabel(config, 'help.feedback')}
+          feedbackThanksLabel={getLabel(config, 'help.feedbackThanks')}
+        />
       </div>
-    </>
+    </div>
   );
 }
 
@@ -91,7 +98,7 @@ export default async function HelpItemPage({ params }: Props) {
     <Suspense
       fallback={
         <div className="container py-12 text-center">
-          <p className="text-muted-foreground">加载中...</p>
+          <p className="text-muted-foreground">{getLabel(loadZoeConfig(), 'loading')}</p>
         </div>
       }
     >

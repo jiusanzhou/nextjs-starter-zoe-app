@@ -1464,3 +1464,242 @@ html.dark.theme-linear .blog-post nav .rounded-xl.border:hover {
   border-color: oklch(0.50 0.15 280 / 0.5);
   box-shadow: 0 0 16px oklch(0.60 0.20 280 / 0.08);
 }
+
+/* ============================================
+   ============================================
+   Page-level theme adaptations
+   Pricing / Changelog / Releases / Help / Dynamic / 404 / Error
+   ============================================
+   ============================================ */
+
+/* --- Pricing Card base transition --- */
+.pricing-card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+/* --- Help category card --- */
+.help-category-card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+/* --- Help header gradient --- */
+.help-header {
+  transition: border-color 0.3s ease;
+}
+
+/* ============================================
+   Vercel: Page-level styles
+   ============================================ */
+
+/* Vercel: Pricing */
+.theme-vercel .pricing-card {
+  border-radius: 0.5rem;
+}
+
+.theme-vercel .pricing-card.highlighted {
+  border-color: var(--foreground);
+}
+
+.theme-vercel .pricing-card:hover {
+  box-shadow: 0 2px 8px oklch(0 0 0 / 0.06);
+}
+
+html.dark.theme-vercel .pricing-card:hover {
+  box-shadow: 0 2px 8px oklch(1 0 0 / 0.06);
+}
+
+/* Vercel: Help */
+.theme-vercel .help-header {
+  border-radius: 0.5rem;
+}
+
+.theme-vercel .help-category-card {
+  border-radius: 0.5rem;
+}
+
+.theme-vercel .help-category-card:hover {
+  box-shadow: 0 2px 8px oklch(0 0 0 / 0.06);
+}
+
+html.dark.theme-vercel .help-category-card:hover {
+  box-shadow: 0 2px 8px oklch(1 0 0 / 0.06);
+}
+
+/* Vercel: Changelog / Releases */
+.theme-vercel .page-changelog h1,
+.theme-vercel .page-releases h1 {
+  letter-spacing: -0.04em;
+  font-weight: 800;
+}
+
+/* Vercel: Dynamic pages */
+.theme-vercel .page-dynamic h1 {
+  letter-spacing: -0.04em;
+  font-weight: 800;
+}
+
+/* Vercel: 404 / Error */
+.theme-vercel .page-not-found h2,
+.theme-vercel .page-error h2 {
+  letter-spacing: -0.03em;
+  font-weight: 800;
+}
+
+/* ============================================
+   Linear: Page-level styles
+   ============================================ */
+
+/* Linear: Pricing */
+html.dark.theme-linear .pricing-card {
+  background: oklch(0.14 0.025 275 / 0.5);
+  backdrop-filter: blur(8px);
+  border-color: oklch(0.28 0.04 280 / 0.4);
+}
+
+html.dark.theme-linear .pricing-card.highlighted {
+  border-color: oklch(0.60 0.20 280 / 0.6);
+  box-shadow: 0 0 30px oklch(0.60 0.20 280 / 0.1);
+}
+
+/* Linear: Help */
+html.dark.theme-linear .help-header {
+  background: oklch(0.14 0.025 275 / 0.4);
+  border-color: oklch(0.28 0.04 280 / 0.4);
+}
+
+html.dark.theme-linear .help-category-card {
+  background: oklch(0.14 0.025 275 / 0.6);
+  backdrop-filter: blur(12px);
+  border-color: oklch(0.28 0.04 280 / 0.5);
+}
+
+html.dark.theme-linear .help-category-card:hover {
+  border-color: oklch(0.60 0.20 280 / 0.6);
+  box-shadow: 0 0 24px oklch(0.60 0.20 280 / 0.1);
+}
+
+/* Linear: Changelog timeline */
+html.dark.theme-linear .page-changelog .border-l-2 {
+  border-color: oklch(0.30 0.05 280 / 0.5);
+}
+
+html.dark.theme-linear .page-changelog .rounded-xl.border.bg-card {
+  background: oklch(0.14 0.025 275 / 0.6);
+  backdrop-filter: blur(12px);
+  border-color: oklch(0.28 0.04 280 / 0.5);
+}
+
+html.dark.theme-linear .page-changelog .rounded-xl.border.bg-card:hover {
+  border-color: oklch(0.40 0.10 280 / 0.5);
+}
+
+/* Linear: Releases */
+html.dark.theme-linear .page-releases [data-slot="card"] {
+  background: oklch(0.14 0.025 275 / 0.6);
+  backdrop-filter: blur(12px);
+  border-color: oklch(0.28 0.04 280 / 0.5);
+}
+
+/* Linear: Hero title gradients */
+.theme-linear .page-changelog h1,
+.theme-linear .page-releases h1,
+.theme-linear .page-projects h1 {
+  background: linear-gradient(135deg, var(--foreground) 0%, var(--primary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+html.dark.theme-linear .page-changelog h1,
+html.dark.theme-linear .page-releases h1,
+html.dark.theme-linear .page-projects h1 {
+  background: linear-gradient(135deg, oklch(0.95 0.01 270) 0%, oklch(0.75 0.20 280) 50%, oklch(0.65 0.22 250) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ============================================
+   Stripe: Page-level styles
+   ============================================ */
+
+/* Stripe: Pricing */
+.theme-stripe .pricing-card {
+  border-radius: 1rem;
+  box-shadow: 0 2px 12px oklch(0.55 0.12 270 / 0.06);
+}
+
+.theme-stripe .pricing-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px oklch(0.55 0.18 270 / 0.10);
+}
+
+.theme-stripe .pricing-card.highlighted {
+  border-color: oklch(0.50 0.25 270);
+  box-shadow: 0 4px 24px oklch(0.50 0.20 270 / 0.15);
+}
+
+/* Stripe: Help */
+.theme-stripe .help-header {
+  border-radius: 1.5rem;
+}
+
+.theme-stripe .help-category-card {
+  border-radius: 1rem;
+  box-shadow: 0 2px 12px oklch(0.55 0.15 270 / 0.06);
+}
+
+.theme-stripe .help-category-card:hover {
+  box-shadow: 0 8px 30px oklch(0.55 0.18 270 / 0.10);
+}
+
+/* Stripe: Changelog / Releases */
+.theme-stripe .page-changelog h1,
+.theme-stripe .page-releases h1,
+.theme-stripe .page-projects h1 {
+  font-family: 'Georgia', 'Times New Roman', serif;
+}
+
+.theme-stripe .page-changelog .rounded-xl.border,
+.theme-stripe .page-releases [data-slot="card"] {
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px oklch(0.55 0.12 270 / 0.04);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.theme-stripe .page-changelog .rounded-xl.border:hover,
+.theme-stripe .page-releases [data-slot="card"]:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px oklch(0.55 0.15 270 / 0.08);
+}
+
+/* Stripe: Dynamic pages */
+.theme-stripe .page-dynamic h1 {
+  font-family: 'Georgia', 'Times New Roman', serif;
+}
+
+/* Stripe: 404 / Error */
+.theme-stripe .page-not-found h2,
+.theme-stripe .page-error h2 {
+  font-family: 'Georgia', 'Times New Roman', serif;
+}
+
+/* Stripe: Footer enhancement */
+.theme-stripe .site-footer {
+  background: var(--card);
+}
+
+html.dark.theme-stripe .site-footer {
+  background: oklch(0.10 0.02 280);
+}
+
+/* ============================================
+   Footer background enhancement for all themes
+   ============================================ */
+.site-footer {
+  transition: background-color 0.3s ease;
+}
+
+html.dark.theme-linear .site-footer {
+  background: oklch(0.06 0.02 275 / 0.8);
+}

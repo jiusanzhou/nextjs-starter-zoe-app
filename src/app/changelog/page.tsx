@@ -1,8 +1,8 @@
 import { getAllChangelogs } from "@/lib/changelog";
 import { loadZoeConfig } from "@/lib/zoefile";
-import { Section } from "@/components/section";
 import { ChangelogList } from "@/components/changelog";
 import { getLabel } from "@/lib/i18n";
+import { Clock } from "lucide-react";
 import type { Metadata } from "next";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -20,24 +20,36 @@ export default async function ChangelogPage() {
 
   if (changelogs.length === 0) {
     return (
-      <div className="max-w-4xl mx-auto">
-        <Section title={getLabel(config, 'changelog')} description={getLabel(config, 'changelog.empty')}>
-          <div className="text-center py-12 text-muted-foreground">
-            <p className="mb-4">
-              在 <code className="px-2 py-1 bg-muted rounded">content/changelog/</code> 目录添加 Markdown 文件，
-            </p>
-            <p className="mb-4">
-              或在 <code className="px-2 py-1 bg-muted rounded">zoe-site.yaml</code> 中配置 GitHub 仓库：
-            </p>
-            <pre className="text-left max-w-md mx-auto p-4 bg-muted rounded-lg text-sm">
+      <div className="page-changelog max-w-4xl mx-auto">
+        {/* Hero */}
+        <div className="text-center py-8 md:py-12">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-primary/10 text-primary mb-4">
+            <Clock className="h-6 w-6" />
+          </div>
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-3">
+            {changelogConfig.title || getLabel(config, 'changelog')}
+          </h1>
+          <p className="text-lg text-muted-foreground">
+            {getLabel(config, 'changelog.empty')}
+          </p>
+        </div>
+
+        <div className="text-center py-12 text-muted-foreground border rounded-xl bg-card">
+          <Clock className="h-12 w-12 mx-auto mb-4 opacity-30" />
+          <p className="mb-4">
+            {getLabel(config, 'changelog.emptyHint.markdown', { dir: 'content/changelog/' })}
+          </p>
+          <p className="mb-4">
+            {getLabel(config, 'changelog.emptyHint.config', { file: 'zoe-site.yaml' })}
+          </p>
+          <pre className="text-left max-w-md mx-auto p-4 bg-muted rounded-lg text-sm">
 {`changelog:
   title: Changelog
   github:
     repo: username/repo
     includePrerelease: false`}
-            </pre>
-          </div>
-        </Section>
+          </pre>
+        </div>
       </div>
     );
   }
@@ -45,9 +57,13 @@ export default async function ChangelogPage() {
   const latestChangelog = changelogs[0];
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
-      <Section className="text-center py-12">
-        <h1 className="text-3xl md:text-4xl font-bold mb-4">
+    <div className="page-changelog max-w-4xl mx-auto space-y-10">
+      {/* Hero */}
+      <div className="text-center py-8 md:py-12">
+        <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-primary/10 text-primary mb-4">
+          <Clock className="h-6 w-6" />
+        </div>
+        <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-3">
           {changelogConfig.title || getLabel(config, 'changelog')}
         </h1>
         <p className="text-lg text-muted-foreground">
@@ -56,13 +72,13 @@ export default async function ChangelogPage() {
         {latestChangelog && (
           <p className="mt-4 text-sm text-muted-foreground">
             {getLabel(config, 'changelog.latestVersion')} <span className="font-semibold text-foreground">{latestChangelog.version}</span>
-            <span className="mx-2">·</span>
+            <span className="mx-2">&middot;</span>
             {getLabel(config, 'changelog.publishedAt')} {new Date(latestChangelog.date).toLocaleDateString(config.lang || "en")}
           </p>
         )}
-      </Section>
+      </div>
 
-      <ChangelogList changelogs={changelogs} />
+      <ChangelogList changelogs={changelogs} config={config} />
     </div>
   );
 }

@@ -22,20 +22,22 @@ export default function DraftsPage() {
   const drafts = allPosts.filter((post) => !post.published);
 
   return (
-    <div className="space-y-8">
+    <div className="page-drafts max-w-3xl mx-auto space-y-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 py-4">
         <div>
-          <div className="flex items-center gap-2 mb-2">
-            <FileEdit className="h-6 w-6 text-muted-foreground" />
-            <h1 className="text-3xl font-bold tracking-tight">{getLabel(config, 'blog.drafts')}</h1>
+          <div className="flex items-center gap-3 mb-2">
+            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-primary/10 text-primary">
+              <FileEdit className="h-5 w-5" />
+            </div>
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight">{getLabel(config, 'blog.drafts')}</h1>
           </div>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground mt-1">
             {getLabel(config, 'blog.drafts.description')}
           </p>
         </div>
-        <Button variant="outline" size="sm" asChild>
-          <Link href="/blog" className="flex items-center gap-1">
+        <Button variant="outline" size="sm" asChild className="self-start">
+          <Link href="/blog" className="flex items-center gap-1.5">
             <ArrowLeft className="h-4 w-4" />
             {getLabel(config, 'blog.back')}
           </Link>
@@ -44,17 +46,17 @@ export default function DraftsPage() {
 
       {/* Draft List */}
       {drafts.length > 0 ? (
-        <div className="divide-y rounded-lg border">
+        <div className="divide-y rounded-xl border bg-card">
           {drafts.map((post) => (
             <Link
               key={post.slug}
               href={`/blog/${post.slug}`}
-              className="flex items-center justify-between p-4 hover:bg-muted/50 transition-colors"
+              className="flex items-center justify-between p-4 hover:bg-muted/30 transition-colors first:rounded-t-xl last:rounded-b-xl"
             >
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <h3 className="font-medium truncate">{post.title}</h3>
-                  <Badge variant="secondary" className="text-xs">
+                  <Badge variant="secondary" className="text-[10px] flex-shrink-0">
                     {getLabel(config, 'blog.drafts.badge')}
                   </Badge>
                 </div>
@@ -74,10 +76,10 @@ export default function DraftsPage() {
           ))}
         </div>
       ) : (
-        <div className="text-center py-12 text-muted-foreground border rounded-lg">
-          <FileEdit className="h-12 w-12 mx-auto mb-4 opacity-50" />
-          <p>{getLabel(config, 'blog.drafts.empty')}</p>
-          <p className="text-sm mt-2">
+        <div className="text-center py-16 text-muted-foreground border rounded-xl bg-card">
+          <FileEdit className="h-12 w-12 mx-auto mb-4 opacity-30" />
+          <p className="text-lg mb-2">{getLabel(config, 'blog.drafts.empty')}</p>
+          <p className="text-sm">
             {getLabel(config, 'blog.drafts.frontmatterHint', { code: 'published: false' })}
           </p>
         </div>
