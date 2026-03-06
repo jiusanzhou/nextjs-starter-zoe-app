@@ -35,10 +35,13 @@ export async function generateMetadata(): Promise<Metadata> {
     formatDetection: {
       telephone: false,
     },
-    icons: site.logo ? {
-      icon: site.logo,
-      apple: site.logo,
-    } : undefined,
+    icons: {
+      icon: [
+        { url: "/favicon.ico", sizes: "any" },
+        { url: "/favicon.svg", type: "image/svg+xml" },
+      ],
+      apple: "/apple-touch-icon.png",
+    },
     openGraph: {
       title: site.title,
       description: site.description,
