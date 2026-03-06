@@ -10,7 +10,9 @@ interface HeroSectionProps {
 }
 
 export function HeroSectionComponent({ config }: HeroSectionProps) {
-  const isLeft = config.align === "left";
+  const hasMedia = !!(config.image || config.video);
+  // Only use left layout when there's media to show beside the text
+  const isLeft = config.align === "left" && hasMedia;
 
   return (
     <section className="hero-section relative overflow-hidden">

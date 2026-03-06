@@ -1,0 +1,206 @@
+# NeuralSpace — Next-generation AI infrastructure
+
+title: NeuralSpace
+description: Next-generation AI infrastructure for the enterprise
+url: https://neuralspace.ai
+logo: /images/neuralspace-logo.svg
+lang: en
+
+# Author / Company
+author:
+  name: NeuralSpace
+  email: hello@neuralspace.ai
+
+organization:
+  name: NeuralSpace Inc.
+  url: https://neuralspace.ai
+
+copyright:
+  from: 2024
+  holder: NeuralSpace Inc.
+
+# Theme — dark, techy Linear-inspired style
+theme: linear
+
+# Navigation
+navs:
+  - title: Platform
+    href: /#features
+  - title: Customers
+    href: /#testimonials
+  - title: Blog
+    href: /blog
+  - title: About
+    href: /about
+
+# Social links
+socials:
+  github: https://github.com/neuralspace
+  twitter: https://twitter.com/neuralspace
+
+# Footer links
+links:
+  - title: Platform
+    category: Product
+    href: /#features
+  - title: Research
+    category: Product
+    href: /research
+  - title: Security
+    category: Product
+    href: /security
+  - title: Blog
+    category: Resources
+    href: /blog
+  - title: Documentation
+    category: Resources
+    href: /docs
+  - title: Papers
+    category: Resources
+    href: /research/papers
+  - title: GitHub
+    category: Company
+    href: https://github.com/neuralspace
+  - title: Careers
+    category: Company
+    href: /careers
+  - title: Contact
+    category: Company
+    href: /contact
+
+# Blog
+blog:
+  title: Blog
+  description: Research, engineering, and company updates
+  basePath: /blog
+  postsPerPage: 10
+
+# Content
+contentDirs:
+  - content
+
+contentTypes:
+  - name: post
+    path: posts
+    template: post
+  - name: page
+    path: pages
+    template: page
+
+# Labels
+labels:
+  blog: Blog
+  blog.archives: Archives
+  blog.tags: Tags
+  blog.drafts: Drafts
+  blog.back: Back to Blog
+  projects: Projects
+  projects.description: Open-source projects
+  loading: Loading...
+  notFound.title: Page Not Found
+  notFound.description: The page you are looking for does not exist.
+  notFound.hint: Check the URL or go back to the homepage.
+  notFound.home: Back to Home
+  notFound.blog: Browse Blog
+  error.title: Something went wrong
+  error.description: An unexpected error occurred. Please try again.
+  error.retry: Retry
+  error.home: Back to Home
+
+# Homepage Sections
+sections:
+  - type: hero
+    badge: "Series A — $24M raised"
+    greeting: The AI infrastructure layer
+    typingTexts:
+      - train models
+      - deploy at scale
+      - iterate in real-time
+    description: NeuralSpace provides the foundational infrastructure for training, fine-tuning, and serving AI models. Built for teams that need performance, reliability, and control.
+    cta:
+      - text: Request Access
+        href: /signup
+      - text: Read the Research
+        href: /research
+        variant: outline
+    align: center
+
+  - type: logos
+    title: Powering AI teams worldwide
+    style: scroll
+    items:
+      - name: OpenAI
+        logo: https://img.logoipsum.com/249.svg
+      - name: Anthropic
+        logo: https://img.logoipsum.com/250.svg
+      - name: Databricks
+        logo: https://img.logoipsum.com/251.svg
+      - name: Scale AI
+        logo: https://img.logoipsum.com/252.svg
+      - name: Hugging Face
+        logo: https://img.logoipsum.com/253.svg
+      - name: Cohere
+        logo: https://img.logoipsum.com/254.svg
+
+  - type: features
+    title: Infrastructure that scales with you
+    description: From research to production, NeuralSpace handles the hard parts
+    columns: 3
+    style: cards
+    items:
+      - icon: "\U0001F9E0"
+        title: Model Training
+        description: Distributed training across thousands of GPUs. Automatic checkpointing, fault tolerance, and mixed-precision support.
+      - icon: "\u26A1"
+        title: Low-Latency Inference
+        description: Serve models with sub-10ms latency. Automatic batching, quantization, and intelligent load balancing.
+      - icon: "\U0001F504"
+        title: Continuous Fine-Tuning
+        description: Fine-tune foundation models on your data with LoRA, QLoRA, and full parameter tuning. Push updates without downtime.
+      - icon: "\U0001F4CA"
+        title: Observability
+        description: Full-stack monitoring for your AI pipelines. Track latency, throughput, drift, and quality metrics in real-time.
+      - icon: "\U0001F512"
+        title: Data Privacy
+        description: Your data never leaves your VPC. SOC 2, HIPAA, and GDPR compliant by default.
+      - icon: "\U0001F310"
+        title: Global Edge Network
+        description: Deploy models to 30+ regions worldwide. Automatic failover and geo-routing for optimal performance.
+
+  - type: testimonials
+    title: Trusted by leading AI teams
+    items:
+      - content: NeuralSpace reduced our model serving costs by 60% while cutting latency in half. The infrastructure just works.
+        author: Dr. Alex Kim
+        role: CTO
+        company: Aether AI
+      - content: We migrated from a custom K8s setup to NeuralSpace in a weekend. Our team can now focus on research instead of infrastructure.
+        author: Priya Sharma
+        role: ML Platform Lead
+        company: DataMind
+      - content: The fine-tuning pipeline is incredibly smooth. We went from prototype to production in days, not months.
+        author: James Okafor
+        role: Head of AI
+        company: Synthex
+
+  - type: stats
+    items:
+      - value: "1B+"
+        label: Inferences Served
+      - value: "<10ms"
+        label: P99 Latency
+      - value: "30+"
+        label: Global Regions
+      - value: "500+"
+        label: Enterprise Customers
+
+  - type: cta
+    title: Build the future of AI
+    description: Get early access to the infrastructure that powers the next generation of AI applications.
+    cta:
+      - text: Request Access
+        href: /signup
+      - text: Talk to an Engineer
+        href: mailto:eng@neuralspace.ai
+        variant: outline
+    style: gradient

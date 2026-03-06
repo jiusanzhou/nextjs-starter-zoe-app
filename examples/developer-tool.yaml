@@ -1,0 +1,224 @@
+# DevKit — The modern developer toolkit
+
+title: DevKit
+description: The modern developer toolkit. Build, test, and deploy with confidence.
+url: https://devkit.sh
+logo: /images/devkit-logo.svg
+lang: en
+
+# Author / Company
+author:
+  name: DevKit
+  email: team@devkit.sh
+
+organization:
+  name: DevKit
+  url: https://devkit.sh
+
+copyright:
+  from: 2024
+  holder: DevKit
+
+# Theme — clean Vercel-inspired minimal style
+theme: vercel
+
+# Navigation
+navs:
+  - title: Features
+    href: /#features
+  - title: Pricing
+    href: /#pricing
+  - title: Docs
+    href: /docs
+  - title: Blog
+    href: /blog
+
+# Social links
+socials:
+  github: https://github.com/devkit
+  twitter: https://twitter.com/devkit
+
+# Footer links
+links:
+  - title: Features
+    category: Product
+    href: /#features
+  - title: Pricing
+    category: Product
+    href: /#pricing
+  - title: Changelog
+    category: Product
+    href: /changelog
+  - title: Documentation
+    category: Developers
+    href: /docs
+  - title: API Reference
+    category: Developers
+    href: /docs/api
+  - title: CLI Reference
+    category: Developers
+    href: /docs/cli
+  - title: GitHub
+    category: Community
+    href: https://github.com/devkit
+  - title: Discord
+    category: Community
+    href: https://discord.gg/devkit
+
+# Blog
+blog:
+  title: Blog
+  description: Engineering insights and product updates
+  basePath: /blog
+  postsPerPage: 10
+
+# Content
+contentDirs:
+  - content
+
+contentTypes:
+  - name: post
+    path: posts
+    template: post
+  - name: page
+    path: pages
+    template: page
+
+# Labels
+labels:
+  blog: Blog
+  blog.archives: Archives
+  blog.tags: Tags
+  blog.drafts: Drafts
+  blog.back: Back to Blog
+  projects: Projects
+  projects.description: Open-source projects
+  loading: Loading...
+  notFound.title: Page Not Found
+  notFound.description: The page you are looking for does not exist.
+  notFound.hint: Check the URL or go back to the homepage.
+  notFound.home: Back to Home
+  notFound.blog: Browse Blog
+  error.title: Something went wrong
+  error.description: An unexpected error occurred. Please try again.
+  error.retry: Retry
+  error.home: Back to Home
+
+# Homepage Sections
+sections:
+  - type: hero
+    greeting: Ship better software, faster
+    description: A unified CLI and dashboard for building, testing, and deploying your applications. Zero config, maximum velocity.
+    cta:
+      - text: Get Started
+        href: /docs/quickstart
+      - text: View on GitHub
+        href: https://github.com/devkit
+        variant: outline
+    align: center
+
+  - type: features
+    title: Built for developers
+    description: Every feature designed to keep you in the flow
+    columns: 3
+    style: cards
+    items:
+      - icon: "\u25B6"
+        title: Zero-Config Builds
+        description: Automatic framework detection. Just push your code and DevKit handles the rest.
+      - icon: "\U0001F9EA"
+        title: Integrated Testing
+        description: Run unit, integration, and E2E tests in parallel with smart caching.
+      - icon: "\U0001F680"
+        title: Instant Deploys
+        description: Deploy to edge networks in seconds. Preview every pull request automatically.
+      - icon: "\U0001F512"
+        title: Built-In Auth
+        description: Add authentication to any app with a single command. OAuth, magic links, and more.
+      - icon: "\U0001F4E6"
+        title: Package Registry
+        description: Private npm registry with automatic publishing, versioning, and dependency scanning.
+      - icon: "\u2328"
+        title: Powerful CLI
+        description: Do everything from the terminal. Scriptable, composable, and blazing fast.
+
+  - type: stats
+    items:
+      - value: "<50ms"
+        label: Cold Start
+      - value: "99.99%"
+        label: Uptime
+      - value: "50+"
+        label: Framework Presets
+      - value: "12K+"
+        label: GitHub Stars
+
+  - type: pricing
+    title: Pricing
+    description: Free for individuals. Powerful for teams.
+    plans:
+      - name: Hobby
+        price: "$0"
+        period: /month
+        description: Perfect for side projects
+        features:
+          - Unlimited deploys
+          - 100 build minutes/month
+          - Community support
+          - 1 team member
+        cta:
+          text: Start Building
+          href: /signup
+      - name: Pro
+        price: "$20"
+        period: /month
+        description: For professional developers
+        features:
+          - Unlimited deploys
+          - Unlimited build minutes
+          - Priority support
+          - Up to 10 team members
+          - Custom domains
+          - Advanced analytics
+        cta:
+          text: Start Free Trial
+          href: /signup?plan=pro
+        highlighted: true
+      - name: Enterprise
+        price: Custom
+        description: For large-scale teams
+        features:
+          - Everything in Pro
+          - Unlimited team members
+          - SSO & SAML
+          - Dedicated support
+          - SLA guarantee
+          - On-premise option
+        cta:
+          text: Contact Sales
+          href: mailto:sales@devkit.sh
+
+  - type: faq
+    title: FAQ
+    items:
+      - question: What frameworks does DevKit support?
+        answer: DevKit supports 50+ frameworks out of the box, including Next.js, Remix, Nuxt, SvelteKit, Astro, and more. If your framework is not listed, you can configure custom build commands.
+      - question: How does pricing work for teams?
+        answer: The Hobby plan is free for individual use. The Pro plan supports up to 10 team members at $20/month. Enterprise plans are custom-priced based on your needs.
+      - question: Can I self-host DevKit?
+        answer: Yes, our Enterprise plan includes an on-premise deployment option. Contact our sales team for details.
+      - question: Is there a free trial?
+        answer: Yes, the Pro plan includes a 14-day free trial with full access to all features. No credit card required.
+      - question: How do I migrate from my current platform?
+        answer: We provide migration guides for Vercel, Netlify, and AWS. Most migrations take under 15 minutes.
+
+  - type: cta
+    title: Start building today
+    description: No credit card required. Deploy your first project in under 2 minutes.
+    cta:
+      - text: Get Started
+        href: /signup
+      - text: Read the Docs
+        href: /docs
+        variant: outline
+    style: simple

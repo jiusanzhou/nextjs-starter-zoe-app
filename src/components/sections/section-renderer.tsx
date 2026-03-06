@@ -50,12 +50,25 @@ function CustomSectionComponent({ config, idx }: { config: CustomSection; idx: n
   );
 }
 
+// Track non-hero section index for alternating backgrounds
+function getSectionBg(type: string, nonHeroIndex: number): string | undefined {
+  if (type === "hero") return undefined;
+  return nonHeroIndex % 2 === 1 ? "bg-muted/30" : undefined;
+}
+
 export function SectionRenderer({ sections, posts, githubProjects, author }: SectionRendererProps) {
+  let nonHeroIndex = 0;
+
   return (
     <>
       {sections.map((section, idx) => {
         // Backward compat: no type field = custom section
         const type = section.type || "custom";
+        const bg = getSectionBg(type, type !== "hero" ? nonHeroIndex : 0);
+        if (type !== "hero") nonHeroIndex++;
+
+        const wrap = (node: React.ReactNode) =>
+          bg ? <div key={idx} className={bg}>{node}</div> : <>{node}</>;
 
         switch (type) {
           case "hero":
@@ -66,56 +79,56 @@ export function SectionRenderer({ sections, posts, githubProjects, author }: Sec
               />
             );
           case "features":
-            return (
+            return wrap(
               <FeaturesSectionComponent
                 key={idx}
                 config={section as SectionConfigUnion & { type: 'features' }}
               />
             );
           case "logos":
-            return (
+            return wrap(
               <LogosSectionComponent
                 key={idx}
                 config={section as SectionConfigUnion & { type: 'logos' }}
               />
             );
           case "testimonials":
-            return (
+            return wrap(
               <TestimonialsSectionComponent
                 key={idx}
                 config={section as SectionConfigUnion & { type: 'testimonials' }}
               />
             );
           case "stats":
-            return (
+            return wrap(
               <StatsSectionComponent
                 key={idx}
                 config={section as SectionConfigUnion & { type: 'stats' }}
               />
             );
           case "pricing":
-            return (
+            return wrap(
               <PricingSectionComponent
                 key={idx}
                 config={section as SectionConfigUnion & { type: 'pricing' }}
               />
             );
           case "faq":
-            return (
+            return wrap(
               <FAQSectionComponent
                 key={idx}
                 config={section as SectionConfigUnion & { type: 'faq' }}
               />
             );
           case "cta":
-            return (
+            return wrap(
               <CTASectionComponent
                 key={idx}
                 config={section as SectionConfigUnion & { type: 'cta' }}
               />
             );
           case "posts":
-            return (
+            return wrap(
               <PostsSectionComponent
                 key={idx}
                 config={section as SectionConfigUnion & { type: 'posts' }}
@@ -123,7 +136,7 @@ export function SectionRenderer({ sections, posts, githubProjects, author }: Sec
               />
             );
           case "projects":
-            return (
+            return wrap(
               <ProjectsSectionComponent
                 key={idx}
                 config={section as SectionConfigUnion & { type: 'projects' }}
@@ -131,7 +144,7 @@ export function SectionRenderer({ sections, posts, githubProjects, author }: Sec
               />
             );
           case "contact":
-            return (
+            return wrap(
               <ContactSectionComponent
                 key={idx}
                 config={section as SectionConfigUnion & { type: 'contact' }}
@@ -140,7 +153,7 @@ export function SectionRenderer({ sections, posts, githubProjects, author }: Sec
             );
           case "custom":
           default:
-            return (
+            return wrap(
               <CustomSectionComponent
                 key={idx}
                 config={section as CustomSection}
