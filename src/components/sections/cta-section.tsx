@@ -11,10 +11,10 @@ export function CTASectionComponent({ config }: CTASectionProps) {
   const style = config.style || "simple";
 
   return (
-    <section className="max-w-5xl mx-auto px-4 py-12 md:py-16 lg:py-20">
+    <section className="section-base max-w-5xl mx-auto px-4 py-12 md:py-16 lg:py-20">
       <div className={cn(
-        "rounded-2xl px-8 py-12 md:px-16 md:py-16 text-center",
-        style === "gradient" && "bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border",
+        "cta-section rounded-2xl px-8 py-12 md:px-16 md:py-16 text-center",
+        style === "gradient" && "cta-gradient bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border",
         style === "card" && "border bg-card shadow-sm",
         style === "simple" && "bg-muted/50"
       )}>

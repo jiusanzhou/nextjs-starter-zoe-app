@@ -7,7 +7,7 @@ interface StatsSectionProps {
 
 export function StatsSectionComponent({ config }: StatsSectionProps) {
   return (
-    <section className="max-w-5xl mx-auto px-4 py-12 md:py-16 lg:py-20">
+    <section className="section-base max-w-5xl mx-auto px-4 py-12 md:py-16 lg:py-20">
       {config.title && (
         <div className="text-center mb-12">
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight">
@@ -22,7 +22,7 @@ export function StatsSectionComponent({ config }: StatsSectionProps) {
       )}>
         {config.items.map((item, i) => (
           <div key={i} className="space-y-2">
-            <div className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-primary">
+            <div className="stat-value text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-primary">
               {item.value}
             </div>
             <div className="text-sm font-medium text-foreground">

@@ -9,7 +9,7 @@ interface FeaturesSectionProps {
 function FeatureCard({ item, style }: { item: FeaturesSection['items'][number]; style?: string }) {
   const content = (
     <div className={cn(
-      "group relative p-6 rounded-xl border bg-card transition-all hover:shadow-md hover:border-primary/20",
+      "feature-card group relative p-6 rounded-xl border bg-card transition-all hover:shadow-md hover:border-primary/20",
       style === "bento" && "p-8"
     )}>
       {item.icon && (
@@ -92,7 +92,7 @@ export function FeaturesSectionComponent({ config }: FeaturesSectionProps) {
     : "md:grid-cols-2 lg:grid-cols-3";
 
   return (
-    <section className="max-w-5xl mx-auto px-4 py-12 md:py-16 lg:py-20">
+    <section className="section-base max-w-5xl mx-auto px-4 py-12 md:py-16 lg:py-20">
       {/* Header */}
       {(config.title || config.description) && (
         <div className="text-center mb-12">

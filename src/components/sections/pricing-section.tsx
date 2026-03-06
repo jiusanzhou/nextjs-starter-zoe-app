@@ -11,7 +11,7 @@ interface PricingSectionProps {
 
 export function PricingSectionComponent({ config }: PricingSectionProps) {
   return (
-    <section className="max-w-5xl mx-auto px-4 py-12 md:py-16 lg:py-20">
+    <section className="section-base max-w-5xl mx-auto px-4 py-12 md:py-16 lg:py-20">
       {(config.title || config.description) && (
         <div className="text-center mb-12">
           {config.title && (
@@ -37,8 +37,8 @@ export function PricingSectionComponent({ config }: PricingSectionProps) {
           <div
             key={i}
             className={cn(
-              "relative flex flex-col rounded-2xl border bg-card p-6 md:p-8 transition-all hover:shadow-md",
-              plan.highlighted && "border-primary shadow-lg scale-[1.02] z-10"
+              "pricing-card relative flex flex-col rounded-2xl border bg-card p-6 md:p-8 transition-all hover:shadow-md",
+              plan.highlighted && "highlighted border-primary shadow-lg scale-[1.02] z-10"
             )}
           >
             {plan.highlighted && (

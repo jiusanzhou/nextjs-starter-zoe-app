@@ -11,7 +11,7 @@ export function ProjectsSectionComponent({ config, projects }: ProjectsSectionPr
   if (projects.length === 0) return null;
 
   return (
-    <section className="max-w-5xl mx-auto px-4 py-12 md:py-16 lg:py-20">
+    <section className="section-base max-w-5xl mx-auto px-4 py-12 md:py-16 lg:py-20">
       {(config.title || config.description) && (
         <div className="text-center mb-12">
           {config.title && (

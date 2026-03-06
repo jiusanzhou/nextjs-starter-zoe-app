@@ -219,3 +219,21 @@
 .prose :not(pre) > code::after {
   content: none;
 }
+
+/* Logo scroll animation */
+@keyframes scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* Linear border glow animation */
+@keyframes linear-border-glow {
+  0%, 100% { border-color: oklch(0.60 0.20 280 / 0.3); }
+  50% { border-color: oklch(0.60 0.20 280 / 0.6); }
+}
+
+/* Stripe float animation */
+@keyframes stripe-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}

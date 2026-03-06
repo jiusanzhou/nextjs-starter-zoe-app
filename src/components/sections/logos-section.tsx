@@ -33,7 +33,7 @@ export function LogosSectionComponent({ config }: LogosSectionProps) {
   const isScroll = config.style === "scroll";
 
   return (
-    <section className="max-w-5xl mx-auto px-4 py-12 md:py-16">
+    <section className="section-base max-w-5xl mx-auto px-4 py-12 md:py-16">
       {config.title && (
         <p className="text-center text-sm text-muted-foreground mb-8 uppercase tracking-wider font-medium">
           {config.title}

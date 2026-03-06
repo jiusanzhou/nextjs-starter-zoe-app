@@ -42,7 +42,7 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
 
 export function FAQSectionComponent({ config }: FAQSectionProps) {
   return (
-    <section className="max-w-3xl mx-auto px-4 py-12 md:py-16 lg:py-20">
+    <section className="section-base max-w-3xl mx-auto px-4 py-12 md:py-16 lg:py-20">
       {(config.title || config.description) && (
         <div className="text-center mb-12">
           {config.title && (
@@ -58,7 +58,7 @@ export function FAQSectionComponent({ config }: FAQSectionProps) {
         </div>
       )}
 
-      <div className="rounded-xl border bg-card p-6">
+      <div className="faq-container rounded-xl border bg-card p-6">
         {config.items.map((item, i) => (
           <FAQItem key={i} question={item.question} answer={item.answer} />
         ))}

@@ -9,7 +9,7 @@ export function TestimonialsSectionComponent({ config }: TestimonialsSectionProp
   const columns = config.items.length <= 2 ? "md:grid-cols-2" : "md:grid-cols-2 lg:grid-cols-3";
 
   return (
-    <section className="max-w-5xl mx-auto px-4 py-12 md:py-16 lg:py-20">
+    <section className="section-base max-w-5xl mx-auto px-4 py-12 md:py-16 lg:py-20">
       {(config.title || config.description) && (
         <div className="text-center mb-12">
           {config.title && (
@@ -29,7 +29,7 @@ export function TestimonialsSectionComponent({ config }: TestimonialsSectionProp
         {config.items.map((item, i) => (
           <div
             key={i}
-            className="relative p-6 rounded-xl border bg-card"
+            className="testimonial-card relative p-6 rounded-xl border bg-card"
           >
             {/* Quote */}
             <blockquote className="text-sm leading-relaxed text-foreground/90 mb-6">

@@ -108,7 +108,7 @@ export function Footer({ organization, copyright, socials, author, links }: Foot
   const hasLinks = Object.keys(linksByCategory).length > 0;
 
   return (
-    <footer className="border-t py-8 md:py-12 safe-area-pb">
+    <footer className="site-footer border-t py-8 md:py-12 safe-area-pb">
       <div className="container">
         {/* 主要内容区域 */}
         {(hasLinks || organization) && (

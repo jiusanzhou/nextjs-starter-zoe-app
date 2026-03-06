@@ -13,9 +13,9 @@ export function HeroSectionComponent({ config }: HeroSectionProps) {
   const isLeft = config.align === "left";
 
   return (
-    <section className="relative overflow-hidden">
+    <section className="hero-section relative overflow-hidden">
       <div className={cn(
-        "max-w-5xl mx-auto px-4 py-20 md:py-28 lg:py-36",
+        "relative z-10 max-w-5xl mx-auto px-4 py-20 md:py-28 lg:py-36",
         isLeft ? "flex flex-col md:flex-row items-center gap-12" : "text-center"
       )}>
         <div className={cn(isLeft && "flex-1")}>
