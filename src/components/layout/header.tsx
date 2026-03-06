@@ -14,7 +14,6 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { ThemeStyleToggle } from "@/components/theme-style-toggle";
 import { cn } from "@/lib/utils";
 import type { NavItem } from "@/types";
 
@@ -137,11 +136,6 @@ export function Header({ title, logo, version, navs = [] }: HeaderProps) {
 
           {/* Right Section */}
           <div className="flex items-center space-x-1">
-            {/* Theme Style Toggle - hidden on mobile */}
-            <div className="hidden sm:block">
-              <ThemeStyleToggle />
-            </div>
-
             {/* Dark/Light Toggle */}
             <ThemeToggle />
           </div>

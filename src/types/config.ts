@@ -148,11 +148,11 @@ export interface ZoeSiteConfig {
   // Changelog Configuration
   changelog?: ChangelogSiteConfig;
 
-  // Homepage Hero Configuration
+  // Homepage Hero Configuration (legacy fallback)
   hero?: HeroConfig;
 
-  // Homepage Sections
-  sections?: SectionConfig[];
+  // Homepage Sections (typed section system)
+  sections?: SectionConfigUnion[];
 
   // UI Labels (i18n override)
   labels?: Record<string, string>;
@@ -162,20 +162,151 @@ export interface HeroConfig {
   greeting?: string;
   typingTexts?: string[];
   description?: string;
-  cta?: { text: string; href: string }[];
+  cta?: { text: string; href: string; variant?: 'default' | 'outline' }[];
+  image?: string;
+  video?: string;
+  avatar?: string;
+  badge?: string;
+  align?: 'center' | 'left';
 }
 
-export interface SectionConfig {
-  title: string;
-  description?: string;
-  items?: SectionItem[];
-}
-
+// Legacy section format (backward compat)
 export interface SectionItem {
   icon?: string;
   title: string;
   description: string;
 }
+
+// --- New typed section system ---
+
+export type SectionType = 'hero' | 'features' | 'logos' | 'testimonials' | 'stats' | 'pricing' | 'faq' | 'cta' | 'posts' | 'projects' | 'contact' | 'custom';
+
+export interface HeroSection {
+  type: 'hero';
+  greeting?: string;
+  typingTexts?: string[];
+  description?: string;
+  cta?: { text: string; href: string; variant?: 'default' | 'outline' }[];
+  image?: string;
+  video?: string;
+  avatar?: string;
+  badge?: string;
+  align?: 'center' | 'left';
+}
+
+export interface FeaturesSection {
+  type: 'features';
+  title?: string;
+  description?: string;
+  columns?: 2 | 3 | 4;
+  style?: 'cards' | 'icons' | 'bento';
+  items: {
+    icon?: string;
+    title: string;
+    description: string;
+    image?: string;
+    href?: string;
+  }[];
+}
+
+export interface LogosSection {
+  type: 'logos';
+  title?: string;
+  items: { name: string; logo: string; href?: string }[];
+  style?: 'scroll' | 'grid';
+}
+
+export interface TestimonialsSection {
+  type: 'testimonials';
+  title?: string;
+  description?: string;
+  items: {
+    content: string;
+    author: string;
+    role?: string;
+    avatar?: string;
+    company?: string;
+  }[];
+}
+
+export interface StatsSection {
+  type: 'stats';
+  title?: string;
+  items: { value: string; label: string; description?: string }[];
+}
+
+export interface PricingSectionConfig {
+  type: 'pricing';
+  title?: string;
+  description?: string;
+  plans: {
+    name: string;
+    price: string;
+    period?: string;
+    description?: string;
+    features: string[];
+    cta?: { text: string; href: string };
+    highlighted?: boolean;
+  }[];
+}
+
+export interface FAQSection {
+  type: 'faq';
+  title?: string;
+  description?: string;
+  items: { question: string; answer: string }[];
+}
+
+export interface CTASection {
+  type: 'cta';
+  title: string;
+  description?: string;
+  cta: { text: string; href: string; variant?: 'default' | 'outline' }[];
+  style?: 'simple' | 'gradient' | 'card';
+}
+
+export interface PostsSection {
+  type: 'posts';
+  title?: string;
+  description?: string;
+  limit?: number;
+  mode?: 'grid' | 'tile';
+}
+
+export interface ProjectsSection {
+  type: 'projects';
+  title?: string;
+  description?: string;
+  limit?: number;
+}
+
+export interface ContactSection {
+  type: 'contact';
+  title?: string;
+  description?: string;
+}
+
+export interface CustomSection {
+  type?: 'custom';
+  title?: string;
+  description?: string;
+  items?: SectionItem[];
+  position?: 'left' | 'right' | 'center';
+}
+
+export type SectionConfigUnion =
+  | HeroSection
+  | FeaturesSection
+  | LogosSection
+  | TestimonialsSection
+  | StatsSection
+  | PricingSectionConfig
+  | FAQSection
+  | CTASection
+  | PostsSection
+  | ProjectsSection
+  | ContactSection
+  | CustomSection;
 
 // Changelog Config (site-level)
 export interface ChangelogSiteConfig {
