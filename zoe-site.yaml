@@ -20,7 +20,7 @@ copyright:
   holder: FlowAI Inc.
 
 # Theme
-theme: stripe
+theme: vercel
 
 # Navigation
 navs:
@@ -140,18 +140,18 @@ sections:
     title: Trusted by teams at
     style: scroll
     items:
-      - name: Vercel
-        logo: https://img.logoipsum.com/243.svg
-      - name: Stripe
-        logo: https://img.logoipsum.com/244.svg
-      - name: Notion
-        logo: https://img.logoipsum.com/245.svg
-      - name: Linear
-        logo: https://img.logoipsum.com/246.svg
-      - name: Figma
-        logo: https://img.logoipsum.com/247.svg
-      - name: GitHub
-        logo: https://img.logoipsum.com/248.svg
+      - name: Acme Corp
+        logo: /images/logo-acme.svg
+      - name: Globex
+        logo: /images/logo-globex.svg
+      - name: Initech
+        logo: /images/logo-initech.svg
+      - name: Umbrella
+        logo: /images/logo-umbrella.svg
+      - name: Cyberdyne
+        logo: /images/logo-cyberdyne.svg
+      - name: Wayne
+        logo: /images/logo-wayne.svg
 
   - type: features
     title: Everything you need to automate
@@ -276,3 +276,22 @@ sections:
         href: mailto:sales@flowai.dev
         variant: outline
     style: gradient
+
+  - type: contact
+    title: Get in Touch
+    description: Have questions? We would love to hear from you.
+    style: form
+    email: hello@flowai.dev
+    links:
+      - icon: mail
+        title: Email Us
+        href: mailto:hello@flowai.dev
+        description: For general inquiries
+      - icon: message
+        title: Live Chat
+        href: "#"
+        description: Available Mon-Fri, 9am-5pm
+      - icon: github
+        title: GitHub
+        href: https://github.com/flowai
+        description: Report issues and contribute

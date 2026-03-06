@@ -1128,3 +1128,122 @@ html.dark.theme-stripe footer.site-footer {
 .theme-stripe .theme-decoration-stripe {
   display: block;
 }
+
+/* ============================================
+   ============================================
+   Project Card / Post Card / Contact 语义类名
+   适配各主题选择器
+   ============================================
+   ============================================ */
+
+/* --- Project Card --- */
+.project-card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+/* --- Post Card --- */
+.post-card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+/* --- Post Tile --- */
+.post-tile {
+  transition: background-color 0.15s ease;
+}
+
+/* --- Contact Form --- */
+.contact-form input,
+.contact-form textarea {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* --- Contact Link --- */
+.contact-link {
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease, background-color 0.15s ease;
+}
+
+/* --- Vercel: Project/Post Cards --- */
+.theme-vercel .project-card,
+.theme-vercel .post-card {
+  border-radius: 0.5rem;
+}
+
+.theme-vercel .project-card:hover,
+.theme-vercel .post-card:hover {
+  box-shadow: 0 2px 8px oklch(0 0 0 / 0.06);
+  border-color: oklch(0.75 0 0);
+}
+
+html.dark.theme-vercel .project-card:hover,
+html.dark.theme-vercel .post-card:hover {
+  box-shadow: 0 2px 8px oklch(1 0 0 / 0.06);
+  border-color: oklch(0.35 0 0);
+}
+
+.theme-vercel .contact-form {
+  border-radius: 0.5rem;
+}
+
+/* --- Linear: Project/Post Cards --- */
+html.dark.theme-linear .project-card,
+html.dark.theme-linear .post-card {
+  background: oklch(0.14 0.025 275 / 0.6);
+  backdrop-filter: blur(12px);
+  border-color: oklch(0.28 0.04 280 / 0.5);
+}
+
+html.dark.theme-linear .project-card:hover,
+html.dark.theme-linear .post-card:hover {
+  border-color: oklch(0.60 0.20 280 / 0.6);
+  box-shadow: 0 0 24px oklch(0.60 0.20 280 / 0.1);
+}
+
+html.dark.theme-linear .contact-form {
+  background: oklch(0.14 0.025 275 / 0.5);
+  backdrop-filter: blur(8px);
+  border-color: oklch(0.28 0.04 280 / 0.4);
+}
+
+html.dark.theme-linear .contact-link {
+  background: oklch(0.14 0.025 275 / 0.4);
+  border-color: oklch(0.28 0.04 280 / 0.4);
+}
+
+html.dark.theme-linear .contact-link:hover {
+  border-color: oklch(0.50 0.15 280 / 0.5);
+}
+
+/* --- Stripe: Project/Post Cards --- */
+.theme-stripe .project-card,
+.theme-stripe .post-card {
+  border-radius: 1rem;
+  box-shadow: 0 2px 12px oklch(0.55 0.15 270 / 0.06);
+}
+
+.theme-stripe .project-card:hover,
+.theme-stripe .post-card:hover {
+  box-shadow:
+    0 8px 30px oklch(0.55 0.18 270 / 0.10),
+    0 2px 8px oklch(0.50 0.15 230 / 0.06);
+}
+
+html.dark.theme-stripe .project-card,
+html.dark.theme-stripe .post-card {
+  box-shadow: 0 2px 12px oklch(0.55 0.15 270 / 0.04);
+}
+
+html.dark.theme-stripe .project-card:hover,
+html.dark.theme-stripe .post-card:hover {
+  box-shadow:
+    0 8px 30px oklch(0.55 0.18 270 / 0.08),
+    0 2px 8px oklch(0.50 0.15 230 / 0.05);
+}
+
+.theme-stripe .contact-form {
+  border-radius: 1rem;
+  box-shadow: 0 2px 12px oklch(0.55 0.12 270 / 0.06);
+}
+
+.theme-stripe .contact-link {
+  border-radius: 0.75rem;
+}

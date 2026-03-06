@@ -1,13 +1,19 @@
 import { PostsList } from "@/components/post-card";
-import type { PostsSection } from "@/types";
+import { getLabel } from "@/lib/i18n";
+import type { PostsSection, ZoeSiteConfig } from "@/types";
 import type { PostMeta } from "@/types";
 
 interface PostsSectionProps {
   config: PostsSection;
   posts: PostMeta[];
+  siteConfig?: ZoeSiteConfig;
 }
 
-export function PostsSectionComponent({ config, posts }: PostsSectionProps) {
+export function PostsSectionComponent({
+  config,
+  posts,
+  siteConfig,
+}: PostsSectionProps) {
   if (posts.length === 0) return null;
 
   return (
@@ -32,6 +38,10 @@ export function PostsSectionComponent({ config, posts }: PostsSectionProps) {
         mode={config.mode || "grid"}
         preview
         limit={config.limit || 6}
+        viewMoreLabel={getLabel(siteConfig, "blog.viewMore")}
+        emptyLabel={getLabel(siteConfig, "blog.noPosts")}
+        dateFormat={getLabel(siteConfig, "blog.dateFormat")}
+        minReadLabel={getLabel(siteConfig, "blog.minRead")}
       />
     </section>
   );

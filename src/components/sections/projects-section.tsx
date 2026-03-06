@@ -1,13 +1,19 @@
 import { GitHubProjectsList } from "@/components/project-card";
-import type { ProjectsSection } from "@/types";
+import { getLabel } from "@/lib/i18n";
+import type { ProjectsSection, ZoeSiteConfig } from "@/types";
 import type { ProjectFromGitHub } from "@/lib/github-projects";
 
 interface ProjectsSectionProps {
   config: ProjectsSection;
   projects: ProjectFromGitHub[];
+  siteConfig?: ZoeSiteConfig;
 }
 
-export function ProjectsSectionComponent({ config, projects }: ProjectsSectionProps) {
+export function ProjectsSectionComponent({
+  config,
+  projects,
+  siteConfig,
+}: ProjectsSectionProps) {
   if (projects.length === 0) return null;
 
   return (
@@ -32,6 +38,8 @@ export function ProjectsSectionComponent({ config, projects }: ProjectsSectionPr
         preview
         limit={config.limit || 6}
         showFilter={false}
+        viewMoreLabel={getLabel(siteConfig, "projects.viewMore")}
+        emptyLabel={getLabel(siteConfig, "projects.noProjects")}
       />
     </section>
   );

@@ -284,6 +284,9 @@ export interface ContactSection {
   type: 'contact';
   title?: string;
   description?: string;
+  style?: 'form' | 'card' | 'simple';
+  email?: string;
+  links?: { icon?: string; title: string; href: string; description?: string }[];
 }
 
 export interface CustomSection {

@@ -14,16 +14,17 @@ import type {
   SectionConfigUnion,
   CustomSection,
   Author,
+  ZoeSiteConfig,
 } from "@/types";
 import type { PostMeta } from "@/types";
 import type { ProjectFromGitHub } from "@/lib/github-projects";
 
 interface SectionRendererProps {
   sections: SectionConfigUnion[];
-  // Data dependencies passed from the page
   posts?: PostMeta[];
   githubProjects?: ProjectFromGitHub[];
   author?: Author;
+  siteConfig?: ZoeSiteConfig;
 }
 
 // Render a legacy/custom section (no type field or type='custom')
@@ -56,7 +57,7 @@ function getSectionBg(type: string, nonHeroIndex: number): string | undefined {
   return nonHeroIndex % 2 === 1 ? "bg-muted/30" : undefined;
 }
 
-export function SectionRenderer({ sections, posts, githubProjects, author }: SectionRendererProps) {
+export function SectionRenderer({ sections, posts, githubProjects, author, siteConfig }: SectionRendererProps) {
   let nonHeroIndex = 0;
 
   return (
@@ -133,6 +134,7 @@ export function SectionRenderer({ sections, posts, githubProjects, author }: Sec
                 key={idx}
                 config={section as SectionConfigUnion & { type: 'posts' }}
                 posts={posts || []}
+                siteConfig={siteConfig}
               />
             );
           case "projects":
@@ -141,6 +143,7 @@ export function SectionRenderer({ sections, posts, githubProjects, author }: Sec
                 key={idx}
                 config={section as SectionConfigUnion & { type: 'projects' }}
                 projects={githubProjects || []}
+                siteConfig={siteConfig}
               />
             );
           case "contact":
@@ -149,6 +152,7 @@ export function SectionRenderer({ sections, posts, githubProjects, author }: Sec
                 key={idx}
                 config={section as SectionConfigUnion & { type: 'contact' }}
                 author={author}
+                siteConfig={siteConfig}
               />
             );
           case "custom":

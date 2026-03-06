@@ -91,6 +91,7 @@ async function HomeContent() {
         posts={posts}
         githubProjects={githubProjects || undefined}
         author={config.author}
+        siteConfig={config}
       />
     </div>
   );

@@ -28,6 +28,8 @@ const defaultLabels: Record<string, string> = {
   'projects': 'Projects',
   'projects.description': 'My open source projects and portfolio',
   'projects.tag': 'Tag:',
+  'projects.viewMore': 'View More',
+  'projects.noProjects': 'No projects yet',
 
   // Help
   'help': 'Help Center',
@@ -70,7 +72,15 @@ const defaultLabels: Record<string, string> = {
 
   // Contact
   'contact': 'Contact',
-  'contact.description': 'Get in touch 👇',
+  'contact.description': 'Get in touch',
+  'contact.form.name': 'Name',
+  'contact.form.namePlaceholder': 'Your name',
+  'contact.form.email': 'Email',
+  'contact.form.emailPlaceholder': 'your@email.com',
+  'contact.form.message': 'Message',
+  'contact.form.messagePlaceholder': 'Tell us about your project...',
+  'contact.form.submit': 'Send Message',
+  'contact.form.sent': 'Message sent! We\u2019ll get back to you soon.',
 
   // Homepage
   'home.projects': 'Projects',
@@ -112,8 +122,8 @@ const defaultLabels: Record<string, string> = {
   'changelog.viewHistory': 'View version history and new features',
 };
 
-export function getLabel(config: ZoeSiteConfig, key: string, vars?: Record<string, string | number>): string {
-  let label = config.labels?.[key] ?? defaultLabels[key] ?? key;
+export function getLabel(config: ZoeSiteConfig | undefined | null, key: string, vars?: Record<string, string | number>): string {
+  let label = config?.labels?.[key] ?? defaultLabels[key] ?? key;
   if (vars) {
     for (const [k, v] of Object.entries(vars)) {
       label = label.replace(`{${k}}`, String(v));
