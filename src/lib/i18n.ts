@@ -23,6 +23,21 @@ const defaultLabels: Record<string, string> = {
   'blog.dateFormat': 'MMM dd, yyyy',
   'blog.archiveDateFormat': 'MM-dd',
   'blog.postNotFound': 'Post Not Found',
+  'blog.searchPlaceholder': 'Search articles...',
+  'blog.featured': 'Featured',
+  'blog.pinnedPost': 'Pinned',
+  'blog.gridView': 'Grid view',
+  'blog.listView': 'List view',
+  'blog.heroDescription': 'Thoughts, tutorials, and insights',
+  'blog.allPosts': 'All Posts',
+  'blog.prevPost': 'Previous',
+  'blog.nextPost': 'Next',
+  'blog.tagNotFound': 'Tag Not Found',
+  'blog.tagDescription': 'All posts tagged with "{name}"',
+  'blog.postsCount': '{count} posts',
+  'blog.archiveDescription': 'All posts organized by year',
+  'blog.tagsDescription': 'Browse all topics',
+  'blog.writtenBy': 'Written by',
 
   // Projects
   'projects': 'Projects',
@@ -30,6 +45,8 @@ const defaultLabels: Record<string, string> = {
   'projects.tag': 'Tag:',
   'projects.viewMore': 'View More',
   'projects.noProjects': 'No projects yet',
+  'projects.count': '{count} projects',
+  'projects.filterAll': 'All',
 
   // Help
   'help': 'Help Center',
@@ -50,6 +67,11 @@ const defaultLabels: Record<string, string> = {
   // Pricing
   'pricing': 'Pricing',
   'pricing.description': 'Choose the right plan for you',
+  'pricing.monthly': 'Monthly',
+  'pricing.yearly': 'Yearly',
+  'pricing.yearlySave': 'Save {percent}%',
+  'pricing.getStarted': 'Get Started',
+  'pricing.recommended': 'Recommended',
 
   // Loading
   'loading': 'Loading...',
@@ -120,6 +142,9 @@ const defaultLabels: Record<string, string> = {
   'changelog.latestVersion': 'Latest version:',
   'changelog.publishedAt': 'Published on',
   'changelog.viewHistory': 'View version history and new features',
+  'changelog.viewDetails': 'View details',
+  'changelog.emptyHint.markdown': 'Add Markdown files to the {dir} directory,',
+  'changelog.emptyHint.config': 'or configure a GitHub repository in {file}:',
 };
 
 export function getLabel(config: ZoeSiteConfig | undefined | null, key: string, vars?: Record<string, string | number>): string {

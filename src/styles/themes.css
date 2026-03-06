@@ -1247,3 +1247,220 @@ html.dark.theme-stripe .post-card:hover {
 .theme-stripe .contact-link {
   border-radius: 0.75rem;
 }
+
+/* ============================================
+   ============================================
+   BLOG 页面主题适配
+   blog-page / blog-post / blog-archives / blog-tags / blog-tag
+   ============================================
+   ============================================ */
+
+/* --- Blog Hero Base --- */
+.blog-hero {
+  position: relative;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.blog-post-hero {
+  transition: box-shadow 0.3s ease;
+}
+
+/* --- Blog Archives Timeline --- */
+.blog-archives .absolute.w-px {
+  transition: background-color 0.3s ease;
+}
+
+/* ============================================
+   Vercel: Blog — 极简风格
+   ============================================ */
+.theme-vercel .blog-page .blog-hero {
+  border-radius: 0.5rem;
+  border-color: var(--border);
+  background: var(--card);
+}
+
+.theme-vercel .blog-page .blog-hero-gradient {
+  display: none;
+}
+
+.theme-vercel .blog-page .blog-hero h1 {
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  letter-spacing: -0.04em;
+  font-weight: 800;
+}
+
+.theme-vercel .blog-post .blog-post-hero {
+  border-radius: 0.5rem;
+}
+
+.theme-vercel .blog-post .blog-post-hero h1 {
+  letter-spacing: -0.04em;
+  font-weight: 800;
+}
+
+.theme-vercel .blog-archives h1,
+.theme-vercel .blog-tags h1,
+.theme-vercel .blog-tag h1 {
+  letter-spacing: -0.04em;
+  font-weight: 800;
+}
+
+/* ============================================
+   Linear: Blog — 暗色光晕
+   ============================================ */
+.theme-linear .blog-page .blog-hero {
+  overflow: hidden;
+}
+
+.theme-linear .blog-page .blog-hero h1 {
+  background: linear-gradient(135deg, var(--foreground) 0%, var(--primary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+html.dark.theme-linear .blog-page .blog-hero {
+  background: oklch(0.14 0.025 275 / 0.6);
+  backdrop-filter: blur(12px);
+  border-color: oklch(0.28 0.04 280 / 0.5);
+}
+
+html.dark.theme-linear .blog-page .blog-hero h1 {
+  background: linear-gradient(135deg, oklch(0.95 0.01 270) 0%, oklch(0.75 0.20 280) 50%, oklch(0.65 0.22 250) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+html.dark.theme-linear .blog-page .blog-hero-gradient {
+  background: radial-gradient(ellipse at top right, oklch(0.55 0.25 280 / 0.12), transparent 70%);
+}
+
+html.dark.theme-linear .blog-post .blog-post-hero {
+  border-color: oklch(0.28 0.04 280 / 0.5);
+}
+
+html.dark.theme-linear .blog-archives .absolute.w-px {
+  background-color: oklch(0.30 0.05 280 / 0.5);
+}
+
+html.dark.theme-linear .blog-archives .rounded-full.border-2 {
+  border-color: oklch(0.65 0.22 280);
+}
+
+html.dark.theme-linear .blog-archives .rounded-lg.border {
+  background: oklch(0.14 0.025 275 / 0.6);
+  backdrop-filter: blur(12px);
+  border-color: oklch(0.28 0.04 280 / 0.5);
+}
+
+html.dark.theme-linear .blog-archives .rounded-lg.border:hover {
+  border-color: oklch(0.60 0.20 280 / 0.6);
+  box-shadow: 0 0 16px oklch(0.60 0.20 280 / 0.08);
+}
+
+html.dark.theme-linear .blog-tags .feature-card {
+  background: oklch(0.14 0.025 275 / 0.6);
+  backdrop-filter: blur(12px);
+  border-color: oklch(0.28 0.04 280 / 0.5);
+}
+
+html.dark.theme-linear .blog-tags .feature-card:hover {
+  border-color: oklch(0.60 0.20 280 / 0.6);
+  box-shadow: 0 0 24px oklch(0.60 0.20 280 / 0.1);
+}
+
+html.dark.theme-linear .blog-tag .rounded-2xl.border {
+  background: oklch(0.14 0.025 275 / 0.6);
+  backdrop-filter: blur(12px);
+  border-color: oklch(0.28 0.04 280 / 0.5);
+}
+
+html.dark.theme-linear .blog-tag h1 {
+  background: linear-gradient(135deg, oklch(0.95 0.01 270) 0%, oklch(0.75 0.20 280) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ============================================
+   Stripe: Blog — 白底渐变
+   ============================================ */
+.theme-stripe .blog-page .blog-hero {
+  border-radius: 1.5rem;
+  box-shadow: 0 2px 12px oklch(0.55 0.15 270 / 0.06);
+}
+
+.theme-stripe .blog-page .blog-hero-gradient {
+  background: radial-gradient(ellipse at top right, oklch(0.65 0.20 270 / 0.08), oklch(0.60 0.18 230 / 0.04) 50%, transparent 70%);
+}
+
+html.dark.theme-stripe .blog-page .blog-hero-gradient {
+  background: radial-gradient(ellipse at top right, oklch(0.50 0.18 270 / 0.12), oklch(0.45 0.15 230 / 0.06) 50%, transparent 70%);
+}
+
+.theme-stripe .blog-page .blog-hero h1 {
+  font-family: 'Georgia', 'Times New Roman', serif;
+}
+
+.theme-stripe .blog-post .blog-post-hero {
+  border-radius: 1.5rem;
+}
+
+.theme-stripe .blog-post .blog-post-hero h1 {
+  font-family: 'Georgia', 'Times New Roman', serif;
+}
+
+.theme-stripe .blog-archives h1,
+.theme-stripe .blog-tags h1,
+.theme-stripe .blog-tag h1 {
+  font-family: 'Georgia', 'Times New Roman', serif;
+}
+
+.theme-stripe .blog-archives .rounded-lg.border {
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px oklch(0.55 0.12 270 / 0.04);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.theme-stripe .blog-archives .rounded-lg.border:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px oklch(0.55 0.15 270 / 0.08);
+}
+
+.theme-stripe .blog-tags .feature-card {
+  border-radius: 1rem;
+  box-shadow: 0 2px 12px oklch(0.55 0.15 270 / 0.06);
+}
+
+.theme-stripe .blog-tags .feature-card:hover {
+  box-shadow: 0 8px 30px oklch(0.55 0.18 270 / 0.10), 0 2px 8px oklch(0.50 0.15 230 / 0.06);
+}
+
+.theme-stripe .blog-tag .rounded-2xl.border {
+  border-radius: 1.5rem;
+  box-shadow: 0 2px 12px oklch(0.55 0.12 270 / 0.04);
+}
+
+/* --- Prev/Next navigation --- */
+.theme-stripe .blog-post nav .rounded-xl.border {
+  border-radius: 1rem;
+  box-shadow: 0 1px 6px oklch(0.55 0.12 270 / 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.theme-stripe .blog-post nav .rounded-xl.border:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px oklch(0.55 0.15 270 / 0.08);
+}
+
+html.dark.theme-linear .blog-post nav .rounded-xl.border {
+  background: oklch(0.14 0.025 275 / 0.5);
+  backdrop-filter: blur(8px);
+  border-color: oklch(0.28 0.04 280 / 0.4);
+}
+
+html.dark.theme-linear .blog-post nav .rounded-xl.border:hover {
+  border-color: oklch(0.50 0.15 280 / 0.5);
+  box-shadow: 0 0 16px oklch(0.60 0.20 280 / 0.08);
+}

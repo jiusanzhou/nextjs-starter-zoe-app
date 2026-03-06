@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import Link from "next/link";
+import { Tag, ChevronRight } from "lucide-react";
 import { PostCard } from "@/components/post-card";
 import { getAllTags, getPostsByTag } from "@/lib/content";
+import { loadZoeConfig } from "@/lib/zoefile";
+import { getLabel } from "@/lib/i18n";
 
 interface TagPageProps {
   params: Promise<{ slug: string }>;
@@ -28,21 +32,23 @@ export async function generateMetadata({
   params,
 }: TagPageProps): Promise<Metadata> {
   const { slug } = await params;
+  const config = loadZoeConfig();
   const tags = getAllTags();
   const tag = tags.find((t) => t.slug === slug);
 
   if (!tag) {
-    return { title: "标签未找到" };
+    return { title: getLabel(config, 'blog.tagNotFound') };
   }
 
   return {
-    title: `标签: ${tag.name}`,
-    description: `浏览标签 "${tag.name}" 下的所有文章`,
+    title: `${getLabel(config, 'blog.tagPrefix')}${tag.name}`,
+    description: getLabel(config, 'blog.tagDescription', { name: tag.name }),
   };
 }
 
 export default async function TagPage({ params }: TagPageProps) {
   const { slug } = await params;
+  const config = loadZoeConfig();
   const tags = getAllTags();
   const tag = tags.find((t) => t.slug === slug);
 
@@ -51,27 +57,52 @@ export default async function TagPage({ params }: TagPageProps) {
   }
 
   const posts = getPostsByTag(slug);
+  const dateFormat = getLabel(config, 'blog.dateFormat');
+  const minReadLabel = getLabel(config, 'blog.minRead');
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">
-          标签: {tag.name}
-        </h1>
-        <p className="mt-2 text-muted-foreground">
-          共 {tag.count} 篇文章
+    <div className="blog-tag">
+      {/* Breadcrumb */}
+      <nav className="mb-6 flex items-center gap-1.5 text-sm text-muted-foreground">
+        <Link href="/blog" className="hover:text-foreground transition-colors">
+          {getLabel(config, 'blog')}
+        </Link>
+        <ChevronRight className="h-3.5 w-3.5" />
+        <Link href="/blog/tags" className="hover:text-foreground transition-colors">
+          {getLabel(config, 'blog.tags')}
+        </Link>
+        <ChevronRight className="h-3.5 w-3.5" />
+        <span className="text-foreground">{tag.name}</span>
+      </nav>
+
+      {/* Hero */}
+      <div className="mb-10 rounded-2xl border bg-gradient-to-br from-primary/5 via-transparent to-accent/5 px-6 py-10 sm:px-10 sm:py-14">
+        <div className="flex items-center gap-3 mb-3">
+          <Tag className="h-6 w-6 text-primary" />
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
+            {tag.name}
+          </h1>
+        </div>
+        <p className="text-lg text-muted-foreground">
+          {getLabel(config, 'blog.postsCount', { count: tag.count })}
         </p>
       </div>
 
+      {/* Posts Grid */}
       {posts.length > 0 ? (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {posts.map((post) => (
-            <PostCard key={post.slug} post={post} />
+            <PostCard
+              key={post.slug}
+              post={post}
+              dateFormat={dateFormat}
+              minReadLabel={minReadLabel}
+            />
           ))}
         </div>
       ) : (
-        <div className="text-center py-12 text-muted-foreground">
-          暂无文章
+        <div className="text-center py-16 text-muted-foreground">
+          {getLabel(config, 'blog.noPosts')}
         </div>
       )}
     </div>

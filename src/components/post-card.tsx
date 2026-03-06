@@ -14,6 +14,7 @@ interface PostCardProps {
   basePath?: string;
   dateFormat?: string;
   minReadLabel?: string;
+  featured?: boolean;
 }
 
 export function PostCard({
@@ -21,14 +22,18 @@ export function PostCard({
   basePath = "/blog",
   dateFormat = "MMM dd, yyyy",
   minReadLabel = "min read",
+  featured = false,
 }: PostCardProps) {
   return (
     <Link
       href={`${basePath}/${post.slug}`}
-      className="post-card feature-card group block rounded-xl border bg-card overflow-hidden hover:-translate-y-1 hover:shadow-lg transition-all"
+      className={cn(
+        "post-card feature-card group block rounded-xl border bg-card overflow-hidden hover:-translate-y-1 hover:shadow-lg transition-all",
+        featured && "sm:col-span-2"
+      )}
     >
       {/* Banner / Gradient placeholder */}
-      <div className="aspect-[16/9] overflow-hidden bg-muted relative">
+      <div className={cn("overflow-hidden bg-muted relative", featured ? "aspect-[21/9]" : "aspect-[16/9]")}>
         {post.banner ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -40,14 +45,14 @@ export function PostCard({
           <div className="w-full h-full bg-gradient-to-br from-primary/5 via-primary/10 to-muted" />
         )}
         {post.pinned && (
-          <div className="absolute top-3 right-3 flex items-center gap-1 px-2 py-1 rounded-full bg-background/80 backdrop-blur-sm text-xs font-medium">
+          <div className="absolute top-3 right-3 flex items-center gap-1 px-2.5 py-1 rounded-full bg-background/80 backdrop-blur-sm text-xs font-medium">
             <Star className="h-3 w-3 text-yellow-500 fill-yellow-500" />
           </div>
         )}
       </div>
 
       {/* Content */}
-      <div className="p-5 space-y-3">
+      <div className={cn("p-5 space-y-3", featured && "p-6")}>
         {/* Meta row */}
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <time dateTime={post.date}>
@@ -64,13 +69,19 @@ export function PostCard({
         </div>
 
         {/* Title */}
-        <h3 className="text-lg font-semibold leading-snug line-clamp-2 group-hover:text-primary transition-colors">
+        <h3 className={cn(
+          "font-semibold leading-snug line-clamp-2 group-hover:text-primary transition-colors",
+          featured ? "text-xl sm:text-2xl" : "text-lg"
+        )}>
           {post.title}
         </h3>
 
         {/* Description */}
         {post.description && (
-          <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">
+          <p className={cn(
+            "text-sm text-muted-foreground leading-relaxed",
+            featured ? "line-clamp-3" : "line-clamp-2"
+          )}>
             {post.description}
           </p>
         )}
@@ -78,7 +89,7 @@ export function PostCard({
         {/* Tags */}
         {post.tags && post.tags.length > 0 && (
           <div className="flex flex-wrap gap-1.5 pt-1">
-            {post.tags.slice(0, 3).map((tag) => (
+            {post.tags.slice(0, featured ? 5 : 3).map((tag) => (
               <span
                 key={tag.slug}
                 className="text-xs px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground"
@@ -174,6 +185,7 @@ interface PostsListProps {
   emptyLabel?: string;
   dateFormat?: string;
   minReadLabel?: string;
+  pinnedSection?: boolean;
 }
 
 export function PostsList({
@@ -188,20 +200,25 @@ export function PostsList({
   emptyLabel = "No posts yet",
   dateFormat = "MMM dd, yyyy",
   minReadLabel = "min read",
+  pinnedSection = false,
 }: PostsListProps) {
   const displayPosts = preview ? posts.slice(0, limit) : posts;
 
   return (
     <div>
       {mode === "grid" ? (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {displayPosts.map((post) => (
+        <div className={cn(
+          "grid gap-6",
+          pinnedSection ? "sm:grid-cols-2" : "sm:grid-cols-2 lg:grid-cols-3"
+        )}>
+          {displayPosts.map((post, idx) => (
             <PostCard
               key={post.slug}
               post={post}
               basePath={basePath}
               dateFormat={dateFormat}
               minReadLabel={minReadLabel}
+              featured={pinnedSection && idx === 0 && displayPosts.length > 1}
             />
           ))}
         </div>
