@@ -20,6 +20,38 @@ const geistMono = Geist_Mono({
 
 export async function generateMetadata(): Promise<Metadata> {
   const site = getSiteMetadata();
+
+  // Favicon 解析优先级：config.logo > author.avatar > 内置兜底文件
+  // 支持的扩展名 → MIME type 映射
+  const mimeByExt: Record<string, string> = {
+    svg: "image/svg+xml",
+    png: "image/png",
+    jpg: "image/jpeg",
+    jpeg: "image/jpeg",
+    webp: "image/webp",
+    ico: "image/x-icon",
+    gif: "image/gif",
+  };
+  const guessMime = (src: string): string | undefined => {
+    const m = src.match(/\.([a-z0-9]+)(?:\?.*)?$/i);
+    return m ? mimeByExt[m[1].toLowerCase()] : undefined;
+  };
+
+  const customIconSrc = site.logo || site.author?.avatar;
+  const iconList = customIconSrc
+    ? [
+        // 用户自定义头像/logo 作为主 icon
+        { url: customIconSrc, type: guessMime(customIconSrc) },
+        // 兜底：保留内置 favicon，用于不支持外链的浏览器
+        { url: "/favicon.ico", sizes: "any" },
+        { url: "/favicon.svg", type: "image/svg+xml" },
+      ]
+    : [
+        { url: "/favicon.ico", sizes: "any" },
+        { url: "/favicon.svg", type: "image/svg+xml" },
+      ];
+  const appleIcon = customIconSrc || "/apple-touch-icon.png";
+
   return {
     title: {
       default: site.title,
@@ -37,11 +69,9 @@ export async function generateMetadata(): Promise<Metadata> {
       telephone: false,
     },
     icons: {
-      icon: [
-        { url: "/favicon.ico", sizes: "any" },
-        { url: "/favicon.svg", type: "image/svg+xml" },
-      ],
-      apple: "/apple-touch-icon.png",
+      icon: iconList,
+      shortcut: customIconSrc || "/favicon.ico",
+      apple: appleIcon,
     },
     openGraph: {
       title: site.title,
