@@ -10,6 +10,7 @@ import { CTASectionComponent } from "./cta-section";
 import { PostsSectionComponent } from "./posts-section";
 import { ProjectsSectionComponent } from "./projects-section";
 import { ContactSectionComponent } from "./contact-section";
+import { QuoteSectionComponent } from "./quote-section";
 import type {
   SectionConfigUnion,
   CustomSection,
@@ -153,6 +154,13 @@ export function SectionRenderer({ sections, posts, githubProjects, author, siteC
                 config={section as SectionConfigUnion & { type: 'contact' }}
                 author={author}
                 siteConfig={siteConfig}
+              />
+            );
+          case "quote":
+            return wrap(
+              <QuoteSectionComponent
+                key={idx}
+                config={section as SectionConfigUnion & { type: 'quote' }}
               />
             );
           case "custom":

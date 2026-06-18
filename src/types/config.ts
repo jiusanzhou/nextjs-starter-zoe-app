@@ -179,7 +179,7 @@ export interface SectionItem {
 
 // --- New typed section system ---
 
-export type SectionType = 'hero' | 'features' | 'logos' | 'testimonials' | 'stats' | 'pricing' | 'faq' | 'cta' | 'posts' | 'projects' | 'contact' | 'custom';
+export type SectionType = 'hero' | 'features' | 'logos' | 'testimonials' | 'stats' | 'pricing' | 'faq' | 'cta' | 'posts' | 'projects' | 'contact' | 'quote' | 'custom';
 
 export interface HeroSection {
   type: 'hero';
@@ -289,6 +289,19 @@ export interface ContactSection {
   links?: { icon?: string; title: string; href: string; description?: string }[];
 }
 
+export interface QuoteSection {
+  type: 'quote';
+  title?: string;
+  description?: string;
+  // Main quote content (supports inline markdown link rendering downstream)
+  quote: string;
+  // Optional attribution / source line
+  cite?: string;
+  // Optional link rendered as a small action below the quote
+  link?: { text: string; href: string };
+  align?: 'center' | 'left';
+}
+
 export interface CustomSection {
   type?: 'custom';
   title?: string;
@@ -309,6 +322,7 @@ export type SectionConfigUnion =
   | PostsSection
   | ProjectsSection
   | ContactSection
+  | QuoteSection
   | CustomSection;
 
 // Changelog Config (site-level)
