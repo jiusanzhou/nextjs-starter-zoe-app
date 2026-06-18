@@ -179,8 +179,8 @@ export default async function PostPage({ params }: PostPageProps) {
             <Separator className="my-8" />
             <nav className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {prevPost ? (
-                <Link
-                  href={`/blog/${prevPost.slug}`}
+                <a
+                  href={`/blog/${prevPost.slug}/`}
                   className="group flex items-start gap-3 rounded-xl border p-4 hover:bg-muted/50 transition-colors"
                 >
                   <ArrowLeft className="h-5 w-5 mt-0.5 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0" />
@@ -188,11 +188,11 @@ export default async function PostPage({ params }: PostPageProps) {
                     <p className="text-xs text-muted-foreground mb-1">{getLabel(config, 'blog.prevPost')}</p>
                     <p className="font-medium line-clamp-2 group-hover:text-primary transition-colors">{prevPost.title}</p>
                   </div>
-                </Link>
+                </a>
               ) : <div />}
               {nextPost && (
-                <Link
-                  href={`/blog/${nextPost.slug}`}
+                <a
+                  href={`/blog/${nextPost.slug}/`}
                   className="group flex items-start gap-3 rounded-xl border p-4 hover:bg-muted/50 transition-colors text-right sm:flex-row-reverse"
                 >
                   <ArrowRight className="h-5 w-5 mt-0.5 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0" />
@@ -200,7 +200,7 @@ export default async function PostPage({ params }: PostPageProps) {
                     <p className="text-xs text-muted-foreground mb-1">{getLabel(config, 'blog.nextPost')}</p>
                     <p className="font-medium line-clamp-2 group-hover:text-primary transition-colors">{nextPost.title}</p>
                   </div>
-                </Link>
+                </a>
               )}
             </nav>
           </>
