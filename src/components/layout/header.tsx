@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState, useRef, useEffect } from "react";
 import { Home, FileText, FolderKanban, User, MoreHorizontal } from "lucide-react";
 import {
   NavigationMenu,
@@ -203,16 +204,52 @@ function MoreMenu({
   pathname: string;
   moreLabel: string;
 }) {
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
   const isActive = navs.some(
     (item) => pathname === item.href || pathname.startsWith(item.href)
   );
 
+  // Close on outside click / touch / Escape
+  useEffect(() => {
+    if (!open) return;
+    const handlePointer = (e: Event) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("mousedown", handlePointer);
+    document.addEventListener("touchstart", handlePointer, { passive: true });
+    document.addEventListener("keydown", handleKey);
+    return () => {
+      document.removeEventListener("mousedown", handlePointer);
+      document.removeEventListener("touchstart", handlePointer);
+      document.removeEventListener("keydown", handleKey);
+    };
+  }, [open]);
+
+  // Close when route changes (after tapping a link)
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
   return (
-    <div className="relative flex flex-col items-center justify-center gap-1 flex-1 h-full px-2 group">
+    <div
+      ref={containerRef}
+      className="relative flex flex-col items-center justify-center gap-1 flex-1 h-full px-2"
+    >
       <button
+        type="button"
+        aria-expanded={open}
+        aria-haspopup="menu"
+        onClick={() => setOpen((v) => !v)}
         className={cn(
-          "flex flex-col items-center justify-center gap-1 transition-colors relative",
-          isActive
+          "flex flex-col items-center justify-center gap-1 transition-colors relative w-full h-full",
+          isActive || open
             ? "text-primary"
             : "text-muted-foreground hover:text-foreground"
         )}
@@ -225,30 +262,57 @@ function MoreMenu({
       </button>
 
       {/* Popup menu */}
-      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block group-focus-within:block">
-        <div className="bg-popover border rounded-xl shadow-lg p-1.5 min-w-[140px]">
-          {navs.map((item) => {
-            const Icon = getIconForNav(item.href);
-            const isItemActive = pathname === item.href;
+      {open && (
+        <div
+          role="menu"
+          className="absolute bottom-full right-2 mb-2 z-50"
+        >
+          <div className="bg-popover border rounded-xl shadow-lg p-1.5 min-w-[160px]">
+            {navs.map((item) => {
+              const Icon = getIconForNav(item.href);
+              const isItemActive = pathname === item.href;
+              const isExternal = /^https?:\/\//.test(item.href);
 
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  "flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-colors",
-                  isItemActive
-                    ? "bg-accent text-accent-foreground"
-                    : "text-foreground hover:bg-accent/50"
-                )}
-              >
-                <Icon className="h-4 w-4" />
-                {item.title}
-              </Link>
-            );
-          })}
+              const className = cn(
+                "flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-colors whitespace-nowrap",
+                isItemActive
+                  ? "bg-accent text-accent-foreground"
+                  : "text-foreground hover:bg-accent/50"
+              );
+
+              if (isExternal) {
+                return (
+                  <a
+                    key={item.href}
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={className}
+                    onClick={() => setOpen(false)}
+                    role="menuitem"
+                  >
+                    <Icon className="h-4 w-4" />
+                    {item.title}
+                  </a>
+                );
+              }
+
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={className}
+                  onClick={() => setOpen(false)}
+                  role="menuitem"
+                >
+                  <Icon className="h-4 w-4" />
+                  {item.title}
+                </Link>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
