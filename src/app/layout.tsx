@@ -80,6 +80,38 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: site.title,
       locale: site.lang,
       type: "website",
+      images: site.author?.avatar
+        ? [
+            {
+              url: site.author.avatar,
+              alt: site.title,
+            },
+          ]
+        : site.logo
+          ? [{ url: site.logo, alt: site.title }]
+          : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: site.title,
+      description: site.description,
+      creator: site.author?.twitter ? `@${site.author.twitter}` : undefined,
+      images: site.author?.avatar ? [site.author.avatar] : site.logo ? [site.logo] : undefined,
+    },
+    alternates: site.url
+      ? {
+          canonical: site.url,
+        }
+      : undefined,
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+      },
     },
   };
 }
@@ -92,11 +124,65 @@ export default function RootLayout({
   const config = loadZoeConfig();
   const themeClass = config.theme ? `theme-${config.theme}` : '';
 
+  // Build Person/WebSite JSON-LD
+  const author = config.author;
+  const sameAs: string[] = [];
+  if (author?.github) sameAs.push(`https://github.com/${author.github}`);
+  if (author?.twitter) sameAs.push(`https://twitter.com/${author.twitter}`);
+  if (author?.linkedin) sameAs.push(`https://www.linkedin.com/in/${author.linkedin}`);
+  if (config.socials) {
+    for (const [k, v] of Object.entries(config.socials)) {
+      if (typeof v === "string" && v.startsWith("http") && !sameAs.includes(v)) {
+        sameAs.push(v);
+      }
+    }
+  }
+
+  const jsonLdGraph: Record<string, unknown>[] = [];
+  if (author?.name) {
+    jsonLdGraph.push({
+      "@type": "Person",
+      "@id": `${config.url || ""}#person`,
+      name: author.name,
+      url: author.homepage || config.url,
+      image: author.avatar,
+      email: author.email ? `mailto:${author.email}` : undefined,
+      jobTitle: author.minibio,
+      sameAs: sameAs.length ? sameAs : undefined,
+    });
+  }
+  if (config.url) {
+    jsonLdGraph.push({
+      "@type": "WebSite",
+      "@id": `${config.url}#website`,
+      url: config.url,
+      name: config.title,
+      description: config.description,
+      inLanguage: config.lang,
+      author: author?.name ? { "@id": `${config.url}#person` } : undefined,
+    });
+  }
+  const jsonLd =
+    jsonLdGraph.length > 0
+      ? {
+          "@context": "https://schema.org",
+          "@graph": jsonLdGraph,
+        }
+      : null;
+
   return (
     <html lang={config.lang || "en"} className={themeClass} suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
+        {jsonLd && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify(jsonLd, (_k, v) => (v === undefined ? undefined : v)),
+            }}
+          />
+        )}
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

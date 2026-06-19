@@ -101,12 +101,14 @@ export default function HomePage() {
   return (
     <Suspense
       fallback={
-        <div className="space-y-8 md:space-y-16">
+        <div className="space-y-8 md:space-y-16" aria-busy="true" aria-label="Loading">
           <Section className="py-16 md:py-24 lg:py-32">
             <div className="text-center">
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
-                Loading...
-              </h1>
+              <div
+                className="h-12 w-48 mx-auto bg-muted/40 rounded animate-pulse"
+                role="status"
+                aria-label="Loading"
+              />
             </div>
           </Section>
         </div>
