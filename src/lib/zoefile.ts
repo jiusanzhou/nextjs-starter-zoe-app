@@ -141,6 +141,7 @@ export function getSiteMetadata() {
     description: config.description || '',
     url: config.url || '',
     logo: config.logo,
+    image: config.image,
     lang: config.lang || 'en',
     author: config.author,
   };
