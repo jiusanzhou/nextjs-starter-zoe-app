@@ -133,6 +133,28 @@ projects:
   owners:
     - jiusanzhou
 
+# 独立产品（手动维护，区别于 GitHub repos）
+# 每个产品的 `image` 推荐复用站点本身的 og:image (1200x630)
+products:
+  - slug: example-saas
+    name: Example SaaS
+    tagline: 一句话讲清产品价值
+    url: https://example.com
+    image: https://example.com/opengraph-image
+    status: live              # idea | building | live | paused | sunset
+    category: SaaS            # 任意分类标签
+    launchedAt: '2025-12'
+    tags: [Next.js, AI]
+    featured: true            # 顶部大卡片
+  - slug: example-tool
+    name: Example Tool
+    tagline: 另一个产品
+    url: https://example.dev
+    image: https://example.dev/opengraph-image
+    status: building
+    category: Tool
+    launchedAt: '2026'
+
 # Help/QA 系统（从 GitHub Issues 获取）
 helpqa:
   provider: github

@@ -9,6 +9,7 @@ import { FAQSectionComponent } from "./faq-section";
 import { CTASectionComponent } from "./cta-section";
 import { PostsSectionComponent } from "./posts-section";
 import { ProjectsSectionComponent } from "./projects-section";
+import { ProductsSectionComponent } from "./products-section";
 import { ContactSectionComponent } from "./contact-section";
 import { QuoteSectionComponent } from "./quote-section";
 import type {
@@ -144,6 +145,14 @@ export function SectionRenderer({ sections, posts, githubProjects, author, siteC
                 key={idx}
                 config={section as SectionConfigUnion & { type: 'projects' }}
                 projects={githubProjects || []}
+                siteConfig={siteConfig}
+              />
+            );
+          case "products":
+            return wrap(
+              <ProductsSectionComponent
+                key={idx}
+                config={section as SectionConfigUnion & { type: 'products' }}
                 siteConfig={siteConfig}
               />
             );

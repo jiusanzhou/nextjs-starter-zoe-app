@@ -48,6 +48,13 @@ const defaultLabels: Record<string, string> = {
   'projects.count': '{count} projects',
   'projects.filterAll': 'All',
 
+  // Products
+  'products': 'Products',
+  'products.description': 'Independent products I build and ship',
+  'products.viewMore': 'View More',
+  'products.noProducts': 'No products yet',
+  'products.count': '{count} products',
+
   // Help
   'help': 'Help Center',
   'help.title': 'Hi, how can we help?',
@@ -107,6 +114,8 @@ const defaultLabels: Record<string, string> = {
   // Homepage
   'home.projects': 'Projects',
   'home.projects.description': 'Open source work',
+  'home.products': 'Products',
+  'home.products.description': 'Things I built and shipped',
   'home.latestPosts': 'Latest Posts',
   'home.latestPosts.description': 'Recent writings',
 

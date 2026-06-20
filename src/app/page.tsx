@@ -26,6 +26,7 @@ async function HomeContent() {
   const hasHeroSection = sections.some((s) => s.type === "hero");
   const hasPostsSection = sections.some((s) => s.type === "posts");
   const hasProjectsSection = sections.some((s) => s.type === "projects");
+  const hasProductsSection = sections.some((s) => s.type === "products");
   const hasContactSection = sections.some((s) => s.type === "contact");
 
   // Build hero from legacy config as fallback
@@ -53,6 +54,16 @@ async function HomeContent() {
   }
 
   allSections.push(...sections);
+
+  // Auto-append products if not explicitly configured
+  if (!hasProductsSection && config.products && config.products.length > 0) {
+    allSections.push({
+      type: "products",
+      title: getLabel(config, "home.products"),
+      description: getLabel(config, "home.products.description"),
+      limit: 6,
+    });
+  }
 
   // Auto-append projects if not explicitly configured
   if (!hasProjectsSection && githubProjects && githubProjects.length > 0) {

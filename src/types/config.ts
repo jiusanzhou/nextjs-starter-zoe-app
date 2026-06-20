@@ -96,6 +96,40 @@ export interface ProjectsConfig {
   owners: string[];
 }
 
+/**
+ * Independent / commercial product entry.
+ * Different from GitHub `projects` (OSS repos), `products` describe
+ * standalone products you've shipped — SaaS, sites, tools, apps, etc.
+ */
+export interface Product {
+  /** Unique slug for routing / keys */
+  slug?: string;
+  /** Display name, e.g. `zshare` */
+  name: string;
+  /** Short one-liner shown under the name */
+  tagline?: string;
+  /** Optional longer description */
+  description?: string;
+  /** Main destination, e.g. https://zshare.wencai.app */
+  url?: string;
+  /** Cover image — recommended 1200x630 (reuse the product's og:image) */
+  image?: string;
+  /** Optional small square logo */
+  logo?: string;
+  /** Lifecycle status badge */
+  status?: 'idea' | 'building' | 'live' | 'paused' | 'sunset';
+  /** Free-form launch date string, e.g. `2025-12` or `2024` */
+  launchedAt?: string;
+  /** Free-form category, e.g. `SaaS`, `OSS`, `Tool`, `Site` */
+  category?: string;
+  /** Tech / topic tags */
+  tags?: string[];
+  /** Pin to the top of the page / be eligible for hero card */
+  featured?: boolean;
+  /** Optional GitHub repo URL when applicable */
+  repo?: string;
+}
+
 export interface FooterLink {
   title: string;
   href: string;
@@ -146,6 +180,9 @@ export interface ZoeSiteConfig {
 
   // GitHub Projects Configuration
   projects?: ProjectsConfig;
+
+  // Independent Products Configuration
+  products?: Product[];
   
   // Pricing Configuration
   pricing?: PricingConfig;
@@ -184,7 +221,7 @@ export interface SectionItem {
 
 // --- New typed section system ---
 
-export type SectionType = 'hero' | 'features' | 'logos' | 'testimonials' | 'stats' | 'pricing' | 'faq' | 'cta' | 'posts' | 'projects' | 'contact' | 'quote' | 'custom';
+export type SectionType = 'hero' | 'features' | 'logos' | 'testimonials' | 'stats' | 'pricing' | 'faq' | 'cta' | 'posts' | 'projects' | 'products' | 'contact' | 'quote' | 'custom';
 
 export interface HeroSection {
   type: 'hero';
@@ -285,6 +322,20 @@ export interface ProjectsSection {
   limit?: number;
 }
 
+export interface ProductsSection {
+  type: 'products';
+  title?: string;
+  description?: string;
+  /** How many products to show on the section (homepage). Default 6. */
+  limit?: number;
+  /** Override the products array; falls back to siteConfig.products */
+  items?: Product[];
+  /** Show the 'View more' button */
+  showMore?: boolean;
+  /** Custom href for the 'View more' button (default /products) */
+  moreHref?: string;
+}
+
 export interface ContactSection {
   type: 'contact';
   title?: string;
@@ -326,6 +377,7 @@ export type SectionConfigUnion =
   | CTASection
   | PostsSection
   | ProjectsSection
+  | ProductsSection
   | ContactSection
   | QuoteSection
   | CustomSection;
