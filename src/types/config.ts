@@ -107,6 +107,11 @@ export interface ZoeSiteConfig {
   description?: string;
   url?: string;
   logo?: string;
+  /**
+   * Social/share image used as default og:image and twitter:image.
+   * Recommended: 1200x630 PNG/JPG. Falls back to author.avatar / logo when not set.
+   */
+  image?: string;
   lang?: string;
   version?: string;
 

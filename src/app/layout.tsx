@@ -80,23 +80,31 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: site.title,
       locale: site.lang,
       type: "website",
-      images: site.author?.avatar
-        ? [
-            {
-              url: site.author.avatar,
-              alt: site.title,
-            },
-          ]
-        : site.logo
-          ? [{ url: site.logo, alt: site.title }]
-          : undefined,
+      images: site.image
+        ? [{ url: site.image, alt: site.title, width: 1200, height: 630 }]
+        : site.author?.avatar
+          ? [
+              {
+                url: site.author.avatar,
+                alt: site.title,
+              },
+            ]
+          : site.logo
+            ? [{ url: site.logo, alt: site.title }]
+            : undefined,
     },
     twitter: {
       card: "summary_large_image",
       title: site.title,
       description: site.description,
       creator: site.author?.twitter ? `@${site.author.twitter}` : undefined,
-      images: site.author?.avatar ? [site.author.avatar] : site.logo ? [site.logo] : undefined,
+      images: site.image
+        ? [site.image]
+        : site.author?.avatar
+          ? [site.author.avatar]
+          : site.logo
+            ? [site.logo]
+            : undefined,
     },
     alternates: site.url
       ? {
