@@ -39,12 +39,23 @@ function CustomSectionComponent({ config, idx }: { config: CustomSection; idx: n
       wrapperClassName={idx === 0 ? "bg-muted/50" : undefined}
     >
       {config.items && config.items.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 auto-rows-fr">
           {config.items.map((item, j) => (
-            <div key={j} className="p-6 rounded-xl border bg-card transition-all hover:shadow-md hover:border-primary/20">
-              {item.icon && <div className="text-3xl mb-4">{item.icon}</div>}
-              <h3 className="font-semibold text-lg mb-2">{item.title}</h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">{item.description}</p>
+            <div
+              key={j}
+              className="group flex flex-col gap-4 p-7 md:p-8 rounded-2xl border bg-card transition-all hover:shadow-lg hover:border-primary/30 hover:-translate-y-0.5"
+            >
+              {item.icon && (
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 text-3xl shrink-0 transition-colors group-hover:bg-primary/15">
+                  {item.icon}
+                </div>
+              )}
+              <h3 className="font-semibold text-lg md:text-xl tracking-tight">
+                {item.title}
+              </h3>
+              <p className="text-muted-foreground text-sm md:text-base leading-relaxed">
+                {item.description}
+              </p>
             </div>
           ))}
         </div>
