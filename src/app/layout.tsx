@@ -6,6 +6,7 @@ import { GoogleAnalytics, PlausibleAnalytics } from "@/components/analytics";
 import { GoTop } from "@/components/go-top";
 import { loadZoeConfig, getSiteMetadata } from "@/lib/zoefile";
 import { getLabel } from "@/lib/i18n";
+import type { ZoeSiteConfig } from "@/types";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -121,7 +122,76 @@ export async function generateMetadata(): Promise<Metadata> {
         "max-snippet": -1,
       },
     },
+    ...(buildVerification(site.verification)),
   };
+}
+
+/**
+ * Map zoe-site `verification` config → Next.js Metadata.verification.
+ *
+ * Next.js natively supports: google, yahoo, yandex, me, other (raw meta map).
+ * Other keys (bing, baidu, 360, sogou, shenma, naver, pinterest, facebook,
+ * `other.*`) are routed through `verification.other` so they render as
+ * `<meta name="<key>" content="<value>"/>`.
+ */
+function buildVerification(v: ZoeSiteConfig["verification"]) {
+  if (!v) return {};
+
+  // Native keys handled directly by Next.js Metadata.
+  const nativeKeys = ["google", "yahoo", "yandex"] as const;
+
+  // Custom keys → `<meta name=metaName content=value>`.
+  const customMetaName: Record<string, string> = {
+    bing: "msvalidate.01",
+    baidu: "baidu-site-verification",
+    "360": "360-site-verification",
+    sogou: "sogou_site_verification",
+    shenma: "shenma-site-verification",
+    naver: "naver-site-verification",
+    pinterest: "p:domain_verify",
+    facebook: "facebook-domain-verification",
+  };
+
+  const metadataVerification: {
+    google?: string | string[];
+    yahoo?: string | string[];
+    yandex?: string | string[];
+    other: Record<string, string | string[]>;
+  } = { other: {} };
+
+  for (const k of nativeKeys) {
+    const val = v[k];
+    if (val !== undefined && val !== null && val !== "") {
+      metadataVerification[k] = val;
+    }
+  }
+
+  for (const [k, metaName] of Object.entries(customMetaName)) {
+    const val = (v as Record<string, unknown>)[k];
+    if (typeof val === "string" && val) {
+      metadataVerification.other[metaName] = val;
+    } else if (Array.isArray(val) && val.length) {
+      metadataVerification.other[metaName] = val as string[];
+    }
+  }
+
+  if (v.other) {
+    for (const [k, val] of Object.entries(v.other)) {
+      if (typeof val === "string" && val) {
+        metadataVerification.other[k] = val;
+      } else if (Array.isArray(val) && val.length) {
+        metadataVerification.other[k] = val;
+      }
+    }
+  }
+
+  if (Object.keys(metadataVerification.other).length === 0) {
+    delete (metadataVerification as Partial<typeof metadataVerification>).other;
+  }
+
+  return Object.keys(metadataVerification).length
+    ? { verification: metadataVerification }
+    : {};
 }
 
 export default function RootLayout({

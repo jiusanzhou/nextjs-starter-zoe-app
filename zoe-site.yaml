@@ -22,6 +22,24 @@ copyright:
 # Theme
 theme: vercel
 
+# Site verification meta tags for search engines / webmaster tools.
+# Uncomment the keys you need and paste the tokens from each provider's console.
+# Each value renders as <meta name="..." content="..."/> in <head>.
+#
+# verification:
+#   google: <google-site-verification-token>     # Google Search Console
+#   bing: <msvalidate-token>                     # Bing Webmaster Tools
+#   yandex: <yandex-verification-token>          # Yandex Webmaster
+#   baidu: <baidu-site-verification-token>       # 百度站长
+#   "360": <360-site-verification-token>         # 360 站长平台
+#   sogou: <sogou_site_verification-token>       # 搜狗站长
+#   shenma: <shenma-site-verification-token>     # 神马搜索
+#   naver: <naver-site-verification-token>       # Naver
+#   pinterest: <p:domain_verify-token>           # Pinterest
+#   facebook: <facebook-domain-verification>     # Facebook
+#   other:                                       # Anything else, raw <meta>
+#     my-custom-meta: any-value
+
 # Navigation
 navs:
   - title: Product

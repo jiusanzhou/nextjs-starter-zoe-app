@@ -69,6 +69,40 @@ export interface AnalyticsConfig {
   plausibleDomain?: string;
 }
 
+/**
+ * Site verification tokens for search engines / webmaster tools.
+ * Renders <meta name="..." content="..."/> in the document head.
+ *
+ * Supported keys map to Next.js Metadata `verification` plus extras
+ * (baidu, sogou, 360, shenma, naver, pinterest, custom others).
+ */
+export interface VerificationConfig {
+  /** Google Search Console — `google-site-verification` */
+  google?: string | string[];
+  /** Bing Webmaster Tools — `msvalidate.01` */
+  bing?: string | string[];
+  /** Yandex Webmaster — `yandex-verification` */
+  yandex?: string | string[];
+  /** Yahoo Site Explorer — `y_key` */
+  yahoo?: string | string[];
+  /** 百度站长 — `baidu-site-verification` */
+  baidu?: string | string[];
+  /** 360 站长平台 — `360-site-verification` */
+  "360"?: string | string[];
+  /** 搜狗站长 — `sogou_site_verification` */
+  sogou?: string | string[];
+  /** 神马搜索 — `shenma-site-verification` */
+  shenma?: string | string[];
+  /** Naver — `naver-site-verification` */
+  naver?: string | string[];
+  /** Pinterest — `p:domain_verify` */
+  pinterest?: string | string[];
+  /** Facebook — `facebook-domain-verification` */
+  facebook?: string | string[];
+  /** Any extra `<meta name=key content=value>` entries */
+  other?: Record<string, string | string[]>;
+}
+
 export interface ReleaseRepoConfig {
   provider?: 'github' | 'gitee';
   repo: string;
@@ -168,6 +202,19 @@ export interface ZoeSiteConfig {
   rss?: RSSConfig;
   comments?: CommentsConfig;
   analytics?: AnalyticsConfig;
+
+  /**
+   * Site verification meta tags for search engines and other services.
+   * Each value is the unique verification token provided by the service.
+   * Use string for a single token, or string[] for multiple (rare).
+   *
+   * Example:
+   *   verification:
+   *     google: abc123def456
+   *     bing: xyz789
+   *     baidu: code...
+   */
+  verification?: VerificationConfig;
 
   // App Release Configuration (for /releases page)
   releaseRepo?: string | ReleaseRepoConfig[];
