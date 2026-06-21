@@ -2,16 +2,33 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, ExternalLink, Github, Star, GitFork } from "lucide-react";
+import { ArrowRight, ArrowUpRight, ExternalLink, Github, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { getLanguageColor } from "@/lib/github-language-colors";
 import type { ProjectMeta } from "@/types";
 import type { ProjectFromGitHub } from "@/lib/github-projects";
 
 function formatNumber(n: number): string {
   if (n >= 1000) return `${(n / 1000).toFixed(1)}k`;
   return String(n);
+}
+
+/**
+ * GitHub auto-generates a 1200x640 social/og card for every public repo at:
+ *   https://opengraph.githubassets.com/{hash}/{owner}/{repo}
+ * The hash is arbitrary (used by GitHub for cache busting); any value works.
+ */
+function getRepoSocialImage(repoUrl: string): string | null {
+  try {
+    const u = new URL(repoUrl);
+    const [owner, repo] = u.pathname.replace(/^\//, "").split("/");
+    if (!owner || !repo) return null;
+    return `https://opengraph.githubassets.com/1/${owner}/${repo}`;
+  } catch {
+    return null;
+  }
 }
 
 // --- Local Project Card ---
@@ -72,71 +89,95 @@ export function ProjectCard({ project }: ProjectCardProps) {
   );
 }
 
-// --- GitHub Project Card (product-grade redesign) ---
+// --- GitHub Project Card (cover + language strip, matches ProductCard) ---
 
 interface GitHubProjectCardProps {
   project: ProjectFromGitHub;
 }
 
 export function GitHubProjectCard({ project }: GitHubProjectCardProps) {
+  const cover = getRepoSocialImage(project.url);
+  const langColor = getLanguageColor(project.language);
+
   return (
     <Link
       href={project.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="project-card feature-card group block p-6 lg:p-8 rounded-xl border bg-card hover:-translate-y-1 hover:shadow-lg transition-all"
+      className="project-card group flex flex-col h-full overflow-hidden rounded-2xl border bg-card transition-all hover:-translate-y-1 hover:shadow-xl"
     >
-      <div className="space-y-4">
-        {/* Header */}
+      {/* Cover — GitHub repo social card (1200x640). Fallback: gradient with repo name. */}
+      <div className="relative w-full aspect-[1200/630] overflow-hidden bg-muted">
+        {cover ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={cover}
+            alt={`${project.name} repository preview`}
+            loading="lazy"
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+          />
+        ) : (
+          <div className="h-full w-full bg-gradient-to-br from-primary/10 via-muted to-primary/5 flex items-center justify-center p-6">
+            <span className="text-2xl md:text-3xl font-bold tracking-tight text-muted-foreground/60 text-center break-all">
+              {project.name}
+            </span>
+          </div>
+        )}
+        {/* Language strip — thin colored bar at bottom of cover */}
+        {project.language && (
+          <div
+            className="absolute bottom-0 left-0 right-0 h-1"
+            style={{ backgroundColor: langColor }}
+          />
+        )}
+      </div>
+
+      {/* Body */}
+      <div className="p-5 md:p-6 flex flex-col gap-3 flex-1">
         <div className="flex items-start justify-between gap-3">
-          <h3 className="text-xl font-semibold line-clamp-1 group-hover:text-primary transition-colors">
+          <h3 className="text-lg font-semibold tracking-tight truncate group-hover:text-primary transition-colors">
             {project.name}
           </h3>
-          <Github className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-1" />
+          <ArrowUpRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground flex-shrink-0 mt-1 transition-colors" />
         </div>
 
-        {/* Description */}
-        {project.description ? (
-          <p className="text-base text-muted-foreground leading-relaxed line-clamp-3">
+        {project.description && (
+          <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">
             {project.description}
           </p>
-        ) : (
-          <div className="min-h-[1.5rem]" />
         )}
 
-        {/* Footer: language + topics + stats */}
-        <div className="flex items-center justify-between gap-4 pt-2">
-          <div className="flex flex-wrap items-center gap-2 min-w-0">
-            {project.language && (
-              <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-primary/10 text-primary">
-                <span className="w-2 h-2 rounded-full bg-primary" />
-                {project.language}
-              </span>
-            )}
-            {project.topics.slice(0, 2).map((topic) => (
+        {/* Meta row pinned to bottom */}
+        <div className="flex flex-wrap items-center gap-2 pt-1 mt-auto">
+          {project.language && (
+            <span className="inline-flex items-center gap-1.5 text-[11px] font-medium px-2 py-0.5 rounded-full bg-muted text-foreground/80">
+              <span
+                className="w-2 h-2 rounded-full"
+                style={{ backgroundColor: langColor }}
+              />
+              {project.language}
+            </span>
+          )}
+          {project.stars > 0 && (
+            <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
+              <Star className="h-3 w-3" />
+              {formatNumber(project.stars)}
+            </span>
+          )}
+          {project.topics
+            .filter((t) => t !== "zoe-lab")
+            .slice(0, 1)
+            .map((topic) => (
               <span
                 key={topic}
-                className="text-xs px-2 py-0.5 rounded-full border text-muted-foreground"
+                className="text-[11px] px-2 py-0.5 rounded-full border text-muted-foreground"
               >
                 {topic}
               </span>
             ))}
-          </div>
-
-          <div className="flex items-center gap-3 text-xs text-muted-foreground flex-shrink-0">
-            {project.stars > 0 && (
-              <span className="flex items-center gap-1">
-                <Star className="h-3 w-3" />
-                {formatNumber(project.stars)}
-              </span>
-            )}
-            {project.forks > 0 && (
-              <span className="flex items-center gap-1">
-                <GitFork className="h-3 w-3" />
-                {formatNumber(project.forks)}
-              </span>
-            )}
-          </div>
+          <span className="ml-auto inline-flex items-center text-muted-foreground/70">
+            <Github className="h-3.5 w-3.5" />
+          </span>
         </div>
       </div>
     </Link>
@@ -232,7 +273,7 @@ export function GitHubProjectsList({
         />
       )}
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
         {displayProjects.map((project) => (
           <GitHubProjectCard key={project.id} project={project} />
         ))}
