@@ -135,7 +135,7 @@ function processVariables(obj: unknown, rootConfig: unknown): ZoeSiteConfig {
  */
 export function getSiteMetadata() {
   const config = loadZoeConfig();
-  
+
   return {
     title: config.title,
     description: config.description || '',
@@ -144,5 +144,6 @@ export function getSiteMetadata() {
     image: config.image,
     lang: config.lang || 'en',
     author: config.author,
+    verification: config.verification,
   };
 }
