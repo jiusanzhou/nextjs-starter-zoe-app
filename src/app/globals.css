@@ -166,6 +166,10 @@
   @apply rounded-lg my-6 overflow-x-auto text-sm;
   background-color: #f6f8fa !important;
   padding: 1rem 1.25rem;
+  /* 防止移动端被超长行撑爆父容器 */
+  max-width: 100%;
+  width: 100%;
+  min-width: 0;
 }
 
 .dark .prose .shiki {
@@ -175,6 +179,9 @@
 /* Code block wrapper with copy button */
 .code-block-wrapper {
   position: relative;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .code-block-wrapper:hover .copy-button {
@@ -218,6 +225,42 @@
 .prose :not(pre) > code::before,
 .prose :not(pre) > code::after {
   content: none;
+}
+
+/* ===== Blog post mobile fixes ===== */
+/* 把博客详情页正文裹在隔离层里，避免溢出冒泡到 body 形成横向滚动 */
+.blog-post {
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: clip;
+}
+
+.blog-post .prose {
+  min-width: 0;
+}
+
+/* 长链接 / 中文长串文本不撑爆容器 */
+.blog-post .prose,
+.blog-post .prose p,
+.blog-post .prose li,
+.blog-post .prose a,
+.blog-post .prose blockquote {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* 表格水平滚动（裸 markdown 表格没有 wrapper） */
+.blog-post .prose table {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/* 图片自适应 */
+.blog-post .prose img {
+  max-width: 100%;
+  height: auto;
 }
 
 /* Logo scroll animation */
