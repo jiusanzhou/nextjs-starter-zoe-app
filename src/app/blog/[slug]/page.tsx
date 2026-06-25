@@ -32,6 +32,9 @@ export async function generateMetadata({
     return { title: getLabel(loadZoeConfig(), 'blog.postNotFound') };
   }
 
+  // If frontmatter `banner` is set, it overrides the auto-generated
+  // opengraph-image.tsx output. Otherwise Next.js automatically injects
+  // the dynamic OG image co-located in this route.
   return {
     title: post.title,
     description: post.description || post.excerpt,
@@ -41,7 +44,13 @@ export async function generateMetadata({
       type: "article",
       publishedTime: post.date,
       modifiedTime: post.modifiedDate,
-      images: post.banner ? [post.banner] : undefined,
+      ...(post.banner ? { images: [post.banner] } : {}),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.description || post.excerpt,
+      ...(post.banner ? { images: [post.banner] } : {}),
     },
   };
 }
