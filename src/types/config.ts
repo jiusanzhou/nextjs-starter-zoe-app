@@ -347,6 +347,7 @@ export interface HeroSection {
 
 export interface FeaturesSection {
   type: 'features';
+  id?: string;
   title?: string;
   description?: string;
   columns?: 2 | 3 | 4;

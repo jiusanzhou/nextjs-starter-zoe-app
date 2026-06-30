@@ -92,7 +92,7 @@ export function FeaturesSectionComponent({ config }: FeaturesSectionProps) {
     : "md:grid-cols-2 lg:grid-cols-3";
 
   return (
-    <section className="section-base max-w-5xl mx-auto px-4 py-12 md:py-16 lg:py-20">
+    <section id={config.id} className="section-base max-w-5xl mx-auto px-4 py-12 md:py-16 lg:py-20">
       {/* Header */}
       {(config.title || config.description) && (
         <div className="text-center mb-12">
