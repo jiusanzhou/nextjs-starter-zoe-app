@@ -14,14 +14,39 @@
 
 ---
 
+## 🎨 Live Demo
+
+**[👉 zoe.im/nextjs-starter-zoe-app](https://zoe.im/nextjs-starter-zoe-app/)** — Click the palette button (bottom-left) to switch themes live. URL is shareable.
+
+Try any theme directly:
+
+| Theme | Style | Preview |
+|-------|-------|---------|
+| **Wenzi · 文子** | 纸感杂志风，奶油米黄底 + 撞色高光 | [?theme=wenzi](https://zoe.im/nextjs-starter-zoe-app/?theme=wenzi) |
+| **WellWell** | 暖橙 + 自然绿，"好好工作 = 好好生活" | [?theme=wellwell](https://zoe.im/nextjs-starter-zoe-app/?theme=wellwell) |
+| **Linear** | 深蓝紫，玻璃质感，AI/科技感 | [?theme=linear](https://zoe.im/nextjs-starter-zoe-app/?theme=linear) |
+| **Stripe** | 紫青渐变，鲜亮活力 | [?theme=stripe](https://zoe.im/nextjs-starter-zoe-app/?theme=stripe) |
+| **Vercel** | 纯黑白，极简开发风 | [?theme=vercel](https://zoe.im/nextjs-starter-zoe-app/?theme=vercel) |
+| **Terminal** | 黑底绿字，黑客美学 | [?theme=terminal](https://zoe.im/nextjs-starter-zoe-app/?theme=terminal) |
+| **Default** | 优雅中性色调 | [?theme=default](https://zoe.im/nextjs-starter-zoe-app/?theme=default) |
+
+### Real-world sites built with this starter
+
+- **[zoe.im](https://zoe.im)** — Zoe 的个人主页（`default` 主题）
+- **[wellwell.work](https://wellwell.work)** — 好好工作 · WellWell Work（`wellwell` 主题）
+
+> 💡 Both sites are pure data repositories — the framework is pulled at build time via GitHub Actions. See [wellwellwork.github.io](https://github.com/wellwellwork/wellwellwork.github.io) for the data-only setup pattern.
+
+---
+
 ## Features
 
 - **Config-Driven** — One `zoe-site.yaml` controls site metadata, navigation, sections, themes, and content
 - **11 Section Types** — Hero, Features, Logos, Testimonials, Stats, Pricing, FAQ, CTA, Posts, Projects, Contact
-- **3 Product-Grade Themes** — Stripe (purple-blue gradient), Vercel (minimal black & white), Linear (dark tech)
+- **7 Product-Grade Themes** — From minimal Vercel to magazine-style Wenzi, each with light/dark
 - **Static Export** — Pure HTML output, deploy anywhere (Vercel, Netlify, GitHub Pages)
 - **Blog System** — MDX/Markdown posts with tags, archives, pinned posts, and drafts
-- **Dark Mode** — System-aware light/dark toggle
+- **Dark Mode** — System-aware light/dark toggle (orthogonal to color themes)
 - **SEO Ready** — Auto-generated metadata, Open Graph, sitemap, robots.txt
 - **Fully Typed** — TypeScript end-to-end
 
@@ -29,17 +54,21 @@
 
 | Theme | Style | Best For |
 |-------|-------|----------|
-| `stripe` | Purple-blue gradient, vibrant | SaaS products, landing pages |
-| `vercel` | Pure black & white, minimal | Developer tools, documentation |
-| `linear` | Dark, techy, sleek | AI/ML startups, tech products |
 | `default` | Elegant neutral tones | Personal sites, blogs |
-| `terminal` | Green-on-black, retro | Hacker aesthetic |
+| `vercel` | Pure black & white, minimal | Developer tools, documentation |
+| `stripe` | Purple-blue gradient, vibrant | SaaS products, landing pages |
+| `linear` | Dark, techy, glass morphism | AI/ML startups, tech products |
+| `terminal` | Green-on-black, retro | Hacker aesthetic, CLI tools |
+| `wellwell` | Warm orange + natural green | Indie studios, build-in-public |
+| `wenzi` | Paper-cream + magazine accents | Personal brand, editorial sites |
 
 Set in config:
 
 ```yaml
-theme: stripe
+theme: wenzi
 ```
+
+All themes ship with both light and dark variants. The color theme (e.g. `wenzi`) and light/dark mode are independent — they can be combined freely.
 
 ## Section Types
 
