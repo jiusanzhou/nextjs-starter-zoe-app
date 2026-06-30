@@ -104,6 +104,190 @@ html.dark.theme-vercel {
 }
 
 /* ============================================
+   WellWell Work 主题 (theme-wellwell)
+   暖橙 + 自然绿，"好好工作 = 好好生活"
+   primary: 橙 (hue 35) / accent: 绿 (hue 145)
+   ============================================ */
+html.theme-wellwell {
+  --radius: 0.75rem;
+  --background: oklch(0.99 0.005 80);
+  --foreground: oklch(0.22 0.02 60);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.22 0.02 60);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.22 0.02 60);
+  --primary: oklch(0.65 0.18 45);
+  --primary-foreground: oklch(0.99 0.005 80);
+  --secondary: oklch(0.96 0.02 80);
+  --secondary-foreground: oklch(0.28 0.03 60);
+  --muted: oklch(0.96 0.02 80);
+  --muted-foreground: oklch(0.50 0.03 60);
+  --accent: oklch(0.62 0.14 145);
+  --accent-foreground: oklch(0.99 0.005 80);
+  --destructive: oklch(0.58 0.22 25);
+  --border: oklch(0.92 0.015 80);
+  --input: oklch(0.92 0.015 80);
+  --ring: oklch(0.65 0.18 45);
+}
+
+html.dark.theme-wellwell {
+  --background: oklch(0.13 0.015 60);
+  --foreground: oklch(0.94 0.01 80);
+  --card: oklch(0.17 0.02 60);
+  --card-foreground: oklch(0.94 0.01 80);
+  --popover: oklch(0.17 0.02 60);
+  --popover-foreground: oklch(0.94 0.01 80);
+  --primary: oklch(0.72 0.18 50);
+  --primary-foreground: oklch(0.13 0.015 60);
+  --secondary: oklch(0.22 0.02 60);
+  --secondary-foreground: oklch(0.92 0.01 80);
+  --muted: oklch(0.22 0.02 60);
+  --muted-foreground: oklch(0.60 0.02 70);
+  --accent: oklch(0.65 0.14 145);
+  --accent-foreground: oklch(0.13 0.015 60);
+  --destructive: oklch(0.62 0.22 25);
+  --border: oklch(0.25 0.02 60);
+  --input: oklch(0.22 0.02 60);
+  --ring: oklch(0.72 0.18 50);
+}
+
+/* WellWell: Hero 渐变文字 — 橙到绿 */
+.theme-wellwell .hero-greeting,
+.theme-wellwell h1.hero-title {
+  background: linear-gradient(135deg, oklch(0.65 0.18 45), oklch(0.62 0.14 145));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* WellWell: 产品卡 hover 暖意 */
+.theme-wellwell .product-card:hover {
+  border-color: oklch(0.65 0.18 45 / 0.4);
+  box-shadow: 0 4px 24px oklch(0.65 0.18 45 / 0.08);
+}
+
+/* ============================================
+   Wenzi 主题 (theme-wenzi)
+   纸感杂志风 — 奶油米黄底 + 深墨蓝字 + 撞色高光
+   参考 imwenzi.com：标题宋体、荧光黄绿/薰衣草紫/樱花粉撞色
+   primary: 深墨蓝 (近黑) / accent: 荧光黄绿
+   ============================================ */
+html.theme-wenzi {
+  --radius: 0.5rem;
+  /* 奶油米黄纸感底 #F4F0E6 */
+  --background: oklch(0.95 0.018 85);
+  /* 深墨蓝 #1A1F33 — 比纯黑更柔 */
+  --foreground: oklch(0.22 0.03 270);
+  --card: oklch(0.97 0.012 85);
+  --card-foreground: oklch(0.22 0.03 270);
+  --popover: oklch(0.97 0.012 85);
+  --popover-foreground: oklch(0.22 0.03 270);
+  /* 主色 = 深墨蓝（按钮/链接） */
+  --primary: oklch(0.22 0.03 270);
+  --primary-foreground: oklch(0.95 0.018 85);
+  /* 次要 = 略深的米色 #EBE4D2 */
+  --secondary: oklch(0.91 0.022 85);
+  --secondary-foreground: oklch(0.28 0.03 270);
+  --muted: oklch(0.91 0.022 85);
+  --muted-foreground: oklch(0.45 0.025 270);
+  /* 强调 = 荧光黄绿 #D4F23A — 杂志高光感 */
+  --accent: oklch(0.92 0.22 120);
+  --accent-foreground: oklch(0.22 0.03 270);
+  --destructive: oklch(0.62 0.22 25);
+  --border: oklch(0.30 0.02 270 / 0.16);
+  --input: oklch(0.30 0.02 270 / 0.16);
+  --ring: oklch(0.22 0.03 270);
+}
+
+html.dark.theme-wenzi {
+  /* 暗色：深墨蓝底 + 米黄字（反相） */
+  --background: oklch(0.18 0.025 270);
+  --foreground: oklch(0.93 0.018 85);
+  --card: oklch(0.22 0.025 270);
+  --card-foreground: oklch(0.93 0.018 85);
+  --popover: oklch(0.22 0.025 270);
+  --popover-foreground: oklch(0.93 0.018 85);
+  --primary: oklch(0.92 0.22 120); /* 暗色用荧光黄绿做主色 */
+  --primary-foreground: oklch(0.18 0.025 270);
+  --secondary: oklch(0.26 0.025 270);
+  --secondary-foreground: oklch(0.93 0.018 85);
+  --muted: oklch(0.26 0.025 270);
+  --muted-foreground: oklch(0.70 0.02 85);
+  --accent: oklch(0.92 0.22 120);
+  --accent-foreground: oklch(0.18 0.025 270);
+  --destructive: oklch(0.65 0.22 25);
+  --border: oklch(0.93 0.018 85 / 0.18);
+  --input: oklch(0.93 0.018 85 / 0.12);
+  --ring: oklch(0.92 0.22 120);
+}
+
+/* Wenzi: 标题使用宋体 — 杂志编辑感 */
+.theme-wenzi h1,
+.theme-wenzi h2,
+.theme-wenzi h3,
+.theme-wenzi .hero-title,
+.theme-wenzi .hero-greeting {
+  font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", "STSong", serif;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* Wenzi: Hero 大字用深墨蓝实色，不渐变（保持杂志感） */
+.theme-wenzi .hero-greeting,
+.theme-wenzi h1.hero-title {
+  color: var(--foreground);
+  background: none;
+  -webkit-text-fill-color: currentColor;
+}
+
+/* Wenzi: 章节标题下加荧光黄绿色块高光 */
+.theme-wenzi h2 {
+  position: relative;
+  display: inline-block;
+}
+.theme-wenzi h2::after {
+  content: "";
+  position: absolute;
+  left: -4px;
+  right: -4px;
+  bottom: 4px;
+  height: 0.35em;
+  background: oklch(0.92 0.22 120);
+  z-index: -1;
+  border-radius: 2px;
+}
+
+/* Wenzi: 产品卡 — 纸张层叠感 */
+.theme-wenzi .product-card,
+.theme-wenzi .feature-card {
+  background: var(--card);
+  border-color: oklch(0.30 0.02 270 / 0.16);
+  box-shadow: 2px 2px 0 0 oklch(0.30 0.02 270 / 0.06);
+  transition: all 0.2s ease;
+}
+.theme-wenzi .product-card:hover,
+.theme-wenzi .feature-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0 0 oklch(0.22 0.03 270);
+  border-color: oklch(0.22 0.03 270);
+}
+
+/* Wenzi: 标签/徽章 — 撞色 */
+.theme-wenzi [data-slot="badge"] {
+  background: oklch(0.92 0.22 120);
+  color: oklch(0.22 0.03 270);
+  border-radius: 9999px;
+  font-weight: 600;
+}
+
+/* Wenzi: 统计数字用宋体大字 */
+.theme-wenzi .stat-value {
+  font-family: "Noto Serif SC", "Source Han Serif SC", serif;
+  font-weight: 700;
+}
+
+/* ============================================
    Linear 主题 (theme-linear)
    深蓝/紫色、渐变、玻璃质感
    参考 linear.app
