@@ -11,19 +11,17 @@ import { getLabel } from "@/lib/i18n";
 import { BlogPostView } from "@/components/views/blog-post-view";
 
 /**
- * Build a canonical, single-encoded URL for the dynamic OG image route.
- * Next.js static export auto-injects `og:image` for dynamic `opengraph-image.tsx`,
- * but when the slug contains non-ASCII characters (e.g. CJK), the framework
- * percent-encodes the slug twice (`%E6...` → `%25E6...`), producing a 404.
+ * Resolve a usable OG image for this post.
  *
- * By setting `openGraph.images` / `twitter.images` explicitly with a properly
- * encoded absolute URL, we override Next's auto-injection and ship a working URL.
+ * Why no dynamic `opengraph-image.tsx`: Next.js 16 static export double-encodes
+ * non-ASCII slugs in the auto-injected OG URL (e.g. `把人生托管到-github` becomes
+ * `%25E6%258A%258A...` instead of `%E6%8A%8A...`), 404'ing the dynamic route.
+ * Until that's fixed upstream, we fall back to:
+ *   1. post.banner (per-post hero image)
+ *   2. site.image (sitewide default — e.g. /images/og.png)
  */
-function buildOgImageUrl(slug: string, siteUrl: string | undefined): string | undefined {
-  if (!siteUrl) return undefined;
-  const base = siteUrl.replace(/\/$/, "");
-  // encodeURIComponent encodes once; Next will not re-encode user-provided URLs.
-  return `${base}/blog/${encodeURIComponent(slug)}/opengraph-image-fx5gi7`;
+function resolveOgImage(banner: string | undefined, siteImage: string | undefined): string | undefined {
+  return banner || siteImage || undefined;
 }
 
 interface PostPageProps {
@@ -56,12 +54,11 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
     (s) => `/blog/${s}`,
   );
 
-  // Resolve OG image: post.banner wins; otherwise use the dynamic OG route
-  // with a properly encoded URL (works around Next double-encoding of CJK slugs).
+  // Resolve OG image: post.banner wins; otherwise fall back to the sitewide image.
   const site = getSiteMetadata();
   const ogImage = post.banner
     ? post.banner
-    : buildOgImageUrl(post.slug, site.url);
+    : resolveOgImage(undefined, site.image);
 
   return {
     title: post.title,

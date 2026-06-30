@@ -17,16 +17,6 @@ interface PostPageProps {
   params: Promise<{ lang: string; slug: string }>;
 }
 
-/**
- * See note in (site)/blog/[slug]/page.tsx — explicit OG URL avoids Next.js
- * double-encoding non-ASCII slugs in auto-injected metadata routes.
- */
-function buildLangOgImageUrl(lang: string, slug: string, siteUrl: string | undefined): string | undefined {
-  if (!siteUrl) return undefined;
-  const base = siteUrl.replace(/\/$/, "");
-  return `${base}/${lang}/blog/${encodeURIComponent(slug)}/opengraph-image-fx5gi7`;
-}
-
 export async function generateStaticParams(): Promise<{ lang: string; slug: string }[]> {
   if (!isI18nEnabled()) return [{ lang: "__placeholder__", slug: "__placeholder__" }];
   const def = getDefaultLocale();
@@ -68,9 +58,7 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
   );
 
   const site = getSiteMetadata();
-  const ogImage = post.banner
-    ? post.banner
-    : buildLangOgImageUrl(lang, post.slug, site.url);
+  const ogImage = post.banner || site.image || undefined;
 
   return {
     title: post.title,
