@@ -20,6 +20,19 @@ export interface PostMeta {
   published?: boolean;
   pinned?: boolean;
   readingTime?: number;
+  /**
+   * Language tag of this content, e.g. "zh", "en".
+   * Falls back to the site's default locale when absent.
+   */
+  lang?: string;
+  /**
+   * Pairing key for cross-locale translations. Two posts with the same
+   * `translationOf` value (or sharing a stable canonical slug via this
+   * field) are treated as translations of each other.
+   *
+   * Convention: use the canonical (original-language) slug here.
+   */
+  translationOf?: string;
 }
 
 export interface Post extends PostMeta {
@@ -34,6 +47,10 @@ export interface PageMeta {
   layout?: string;
   container?: string;
   isMdx?: boolean;
+  /** Language tag of this page. */
+  lang?: string;
+  /** Pairing key for cross-locale translations (see PostMeta.translationOf). */
+  translationOf?: string;
 }
 
 export interface Page extends PageMeta {
@@ -49,6 +66,10 @@ export interface ProjectMeta {
   banner?: string;
   tags?: string[];
   featured?: boolean;
+  /** Language tag of this project entry. */
+  lang?: string;
+  /** Pairing key for cross-locale translations. */
+  translationOf?: string;
 }
 
 export interface Project extends ProjectMeta {

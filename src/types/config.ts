@@ -3,6 +3,61 @@
  * TypeScript 类型定义，替代 Gatsby 的 GraphQL Schema
  */
 
+// --- i18n primitives ---
+
+/**
+ * A localized string can be either a plain string (single-language sites)
+ * or a map keyed by locale code, e.g. `{ zh: "你好", en: "Hello" }`.
+ *
+ * When `i18n` is not configured on the site, only plain strings are used.
+ * When `i18n` is configured, both forms are valid; `resolveLocalized()`
+ * picks the value for the requested locale, falls back to the default
+ * locale, and finally to the first available locale.
+ */
+export type LocalizedString = string | Record<string, string>;
+
+/**
+ * Locale-aware override map for a chunk of config.
+ * Used at top-level `i18n.overrides` to override specific config branches
+ * per locale (sections / navs / labels / hero / etc.).
+ */
+export interface I18nOverrides {
+  [locale: string]: Partial<ZoeSiteConfig>;
+}
+
+export interface I18nConfig {
+  /** Whether i18n is enabled. If unset/false, behave as single-language. */
+  enabled?: boolean;
+  /** Available locale codes, e.g. ["zh", "en"]. First entry is the default unless `defaultLocale` is set. */
+  locales: string[];
+  /** Default locale used when no locale prefix is present in the URL. */
+  defaultLocale?: string;
+  /**
+   * URL strategy.
+   * - `prefix-except-default`: default locale at `/`, others at `/<locale>/...` (recommended)
+   * - `prefix`: every locale prefixed, including default
+   */
+  routing?: 'prefix-except-default' | 'prefix';
+  /**
+   * Per-locale display names for UI (language switcher), e.g. { zh: "中文", en: "English" }.
+   */
+  localeNames?: Record<string, string>;
+  /**
+   * Per-locale config overrides. Anything in here is shallow-merged onto the
+   * top-level config when resolving for that locale.
+   *
+   * Example:
+   *   i18n:
+   *     overrides:
+   *       en:
+   *         title: "Zoe — founder portfolio"
+   *         sections: [...]
+   *         navs: [...]
+   *         labels: { ... }
+   */
+  overrides?: I18nOverrides;
+}
+
 export interface Author {
   name: string;
   email?: string;
@@ -245,6 +300,13 @@ export interface ZoeSiteConfig {
 
   // UI Labels (i18n override)
   labels?: Record<string, string>;
+
+  /**
+   * Internationalization configuration. When unset/disabled, the site
+   * behaves as a single-language site (current behavior).
+   * See `I18nConfig` for details.
+   */
+  i18n?: I18nConfig;
 }
 
 export interface HeroConfig {

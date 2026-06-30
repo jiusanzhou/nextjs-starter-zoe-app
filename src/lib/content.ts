@@ -1,13 +1,18 @@
 /**
  * Content Loader
  * 内容加载器 - 替代 Gatsby 的 gatsby-source-filesystem + gatsby-plugin-mdx
+ *
+ * i18n 说明：
+ * - 每篇内容的 frontmatter 可声明 `lang`（"zh" / "en" 等），未声明时视为默认 locale
+ * - 同一篇内容的多语言版本通过 frontmatter.translationOf 配对（值为 canonical slug）
+ * - get* 函数接受可选 `locale` 参数：不传 → 不过滤（保留旧行为）；传了 → 仅返回该 locale 内容
  */
 
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import readingTime from 'reading-time';
-import { loadZoeConfig, getProjectRoot } from './zoefile';
+import { loadZoeConfig, getProjectRoot, getDefaultLocale, isI18nEnabled } from './zoefile';
 import type { Post, PostMeta, Page, PageMeta, Project, ProjectMeta, GitContentSource } from '@/types';
 
 // 缓存 Git 内容目录
@@ -146,9 +151,50 @@ function parseMarkdownFile(filePath: string) {
 }
 
 /**
- * 获取所有博客文章
+ * 解析 frontmatter 的 lang 字段。
+ * - 显式声明 → 直接用
+ * - 缺省 + i18n 启用 → 默认 locale
+ * - 缺省 + i18n 未启用 → undefined（保留旧语义）
  */
-export function getAllPosts(includeDrafts = false): Post[] {
+function resolveContentLang(frontmatterLang: unknown): string | undefined {
+  if (typeof frontmatterLang === 'string' && frontmatterLang.trim()) {
+    return frontmatterLang.trim();
+  }
+  if (isI18nEnabled()) {
+    return getDefaultLocale();
+  }
+  return undefined;
+}
+
+/**
+ * 通用的 locale 过滤器：i18n 未启用或 locale 为 undefined 时不过滤
+ * 内容 lang 为 undefined 时视为默认 locale
+ */
+function filterByLocale<T extends { lang?: string }>(items: T[], locale?: string): T[] {
+  if (!locale || !isI18nEnabled()) return items;
+  const def = getDefaultLocale();
+  return items.filter((item) => (item.lang || def) === locale);
+}
+
+/**
+ * 获取所有博客文章
+ *
+ * @param includeDrafts 是否包含未发布的草稿
+ * @param locale       可选 locale；传入时按 lang 字段过滤（lang 缺省视为默认 locale）
+ *
+ * 兼容性：旧的 `getAllPosts(true)` / `getAllPosts()` 调用方式完全保留。
+ * 也支持 `getAllPosts({ includeDrafts, locale })` 的对象形式。
+ */
+export function getAllPosts(
+  includeDrafts: boolean | { includeDrafts?: boolean; locale?: string } = false,
+  locale?: string
+): Post[] {
+  // 支持两种调用形式
+  const opts =
+    typeof includeDrafts === 'object'
+      ? { includeDrafts: !!includeDrafts.includeDrafts, locale: includeDrafts.locale }
+      : { includeDrafts, locale };
+
   const contentDirs = getContentDirs();
   const posts: Post[] = [];
 
@@ -166,6 +212,8 @@ export function getAllPosts(includeDrafts = false): Post[] {
         slug: slugify(tag),
       }));
 
+      const lang = resolveContentLang(frontmatter.lang);
+
       posts.push({
         slug,
         title: frontmatter.title || slug,
@@ -180,55 +228,78 @@ export function getAllPosts(includeDrafts = false): Post[] {
         readingTime,
         content,
         rawContent: content,
+        lang,
+        translationOf:
+          typeof frontmatter.translationOf === 'string' ? frontmatter.translationOf : undefined,
       });
     }
   }
 
-  // 按日期排序（最新在前），置顶文章优先
-  // 去重：同 slug 只保留第一个（用户内容目录排在 _example 前面，所以优先）
+  // 去重：同 (slug, lang) 只保留第一个（用户内容目录排在 _example 前面，所以优先）
+  // 注意：i18n 启用后允许"同 slug 不同 lang"共存
   const seen = new Set<string>();
-  const uniquePosts = posts.filter(post => {
-    if (seen.has(post.slug)) return false;
-    seen.add(post.slug);
+  const uniquePosts = posts.filter((post) => {
+    const key = `${post.slug}__${post.lang || ''}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
     return true;
   });
 
   const sortedPosts = uniquePosts.sort((a, b) => {
-    // 置顶文章优先
     if (a.pinned && !b.pinned) return -1;
     if (!a.pinned && b.pinned) return 1;
-    // 同为置顶或同为非置顶，按日期排序
     return new Date(b.date).getTime() - new Date(a.date).getTime();
   });
-  
-  // includeDrafts 参数控制是否包含草稿
-  if (includeDrafts) {
-    return sortedPosts;
-  }
-  
-  return sortedPosts.filter(post => post.published);
+
+  const visible = opts.includeDrafts ? sortedPosts : sortedPosts.filter((post) => post.published);
+
+  // 提供 locale 时按 lang 过滤
+  return filterByLocale(visible, locale ?? opts.locale);
 }
 
 /**
  * 获取文章元数据列表（不包含内容，用于列表页）
  */
-export function getPostsMeta(): PostMeta[] {
-  return getAllPosts().map(({ content, rawContent, ...meta }) => meta);
+export function getPostsMeta(locale?: string): PostMeta[] {
+  return getAllPosts(false, locale).map(({ content, rawContent, ...meta }) => meta);
 }
 
 /**
  * 根据 slug 获取单篇文章
+ *
+ * @param slug   文章 slug
+ * @param locale 可选 locale；提供时仅在该 locale 文章中查找
  */
-export function getPostBySlug(slug: string): Post | undefined {
+export function getPostBySlug(slug: string, locale?: string): Post | undefined {
   const decoded = decodeURIComponent(slug);
-  return getAllPosts().find(post => post.slug === decoded);
+  const posts = getAllPosts(false, locale);
+  return posts.find((post) => post.slug === decoded);
+}
+
+/**
+ * 获取一篇文章的所有翻译版本
+ * 通过 translationOf 字段（或 slug 作 fallback）配对
+ *
+ * @returns Map<locale, Post>
+ */
+export function getPostTranslations(post: Post | PostMeta): Map<string, Post> {
+  const def = getDefaultLocale();
+  const key = post.translationOf || post.slug;
+  const all = getAllPosts(false);
+  const map = new Map<string, Post>();
+  for (const p of all) {
+    if ((p.translationOf || p.slug) === key) {
+      map.set(p.lang || def, p);
+    }
+  }
+  return map;
 }
 
 /**
  * 获取所有标签
  */
-export function getAllTags(): { name: string; slug: string; count: number }[] {
-  const posts = getAllPosts();
+export function getAllTags(locale?: string): { name: string; slug: string; count: number }[] {
+  const posts = getAllPosts(false, locale);
   const tagMap = new Map<string, { name: string; slug: string; count: number }>();
 
   for (const post of posts) {
@@ -248,16 +319,16 @@ export function getAllTags(): { name: string; slug: string; count: number }[] {
 /**
  * 根据标签获取文章
  */
-export function getPostsByTag(tagSlug: string): Post[] {
-  return getAllPosts().filter(post =>
-    post.tags?.some(tag => tag.slug === tagSlug)
+export function getPostsByTag(tagSlug: string, locale?: string): Post[] {
+  return getAllPosts(false, locale).filter((post) =>
+    post.tags?.some((tag) => tag.slug === tagSlug)
   );
 }
 
 /**
  * 获取所有页面
  */
-export function getAllPages(): Page[] {
+export function getAllPages(locale?: string): Page[] {
   const contentDirs = getContentDirs();
   const pages: Page[] = [];
 
@@ -268,7 +339,7 @@ export function getAllPages(): Page[] {
     for (const file of files) {
       const parsed = parseMarkdownFile(file);
       const { frontmatter, content, slug } = parsed;
-      
+
       // 检查文件扩展名是否为 .mdx
       const isMdx = file.endsWith('.mdx');
 
@@ -280,37 +351,43 @@ export function getAllPages(): Page[] {
         container: frontmatter.container,
         isMdx,
         content,
+        lang: resolveContentLang(frontmatter.lang),
+        translationOf:
+          typeof frontmatter.translationOf === 'string' ? frontmatter.translationOf : undefined,
       });
     }
   }
 
-  // 去重：同 slug 只保留第一个（用户内容优先于 _example）
+  // 去重：同 (slug, lang) 只保留第一个
   const seen = new Set<string>();
-  return pages.filter(page => {
-    if (seen.has(page.slug)) return false;
-    seen.add(page.slug);
+  const uniquePages = pages.filter((page) => {
+    const key = `${page.slug}__${page.lang || ''}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
     return true;
   });
+
+  return filterByLocale(uniquePages, locale);
 }
 
 /**
  * 获取页面元数据列表
  */
-export function getPagesMeta(): PageMeta[] {
-  return getAllPages().map(({ content, ...meta }) => meta);
+export function getPagesMeta(locale?: string): PageMeta[] {
+  return getAllPages(locale).map(({ content, ...meta }) => meta);
 }
 
 /**
  * 根据 slug 获取单个页面
  */
-export function getPageBySlug(slug: string): Page | undefined {
-  return getAllPages().find(page => page.slug === slug);
+export function getPageBySlug(slug: string, locale?: string): Page | undefined {
+  return getAllPages(locale).find((page) => page.slug === slug);
 }
 
 /**
  * 获取所有项目
  */
-export function getAllProjects(): Project[] {
+export function getAllProjects(locale?: string): Project[] {
   const contentDirs = getContentDirs();
   const projects: Project[] = [];
 
@@ -332,36 +409,41 @@ export function getAllProjects(): Project[] {
         tags: frontmatter.tags || [],
         featured: frontmatter.featured || false,
         content,
+        lang: resolveContentLang(frontmatter.lang),
+        translationOf:
+          typeof frontmatter.translationOf === 'string' ? frontmatter.translationOf : undefined,
       });
     }
   }
 
-  // 去重：同 slug 只保留第一个（用户内容优先于 _example）
+  // 去重：同 (slug, lang) 只保留第一个
   const seen = new Set<string>();
-  const uniqueProjects = projects.filter(project => {
-    if (seen.has(project.slug)) return false;
-    seen.add(project.slug);
+  const uniqueProjects = projects.filter((project) => {
+    const key = `${project.slug}__${project.lang || ''}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
     return true;
   });
 
-  // 置顶项目排在前面
-  return uniqueProjects.sort((a, b) => {
+  const sorted = uniqueProjects.sort((a, b) => {
     if (a.featured && !b.featured) return -1;
     if (!a.featured && b.featured) return 1;
     return 0;
   });
+
+  return filterByLocale(sorted, locale);
 }
 
 /**
  * 获取项目元数据列表
  */
-export function getProjectsMeta(): ProjectMeta[] {
-  return getAllProjects().map(({ content, ...meta }) => meta);
+export function getProjectsMeta(locale?: string): ProjectMeta[] {
+  return getAllProjects(locale).map(({ content, ...meta }) => meta);
 }
 
 /**
  * 根据 slug 获取单个项目
  */
-export function getProjectBySlug(slug: string): Project | undefined {
-  return getAllProjects().find(project => project.slug === slug);
+export function getProjectBySlug(slug: string, locale?: string): Project | undefined {
+  return getAllProjects(locale).find((project) => project.slug === slug);
 }

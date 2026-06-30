@@ -1,14 +1,21 @@
 /**
  * Zoefile Loader
  * 加载和解析 zoe-site.yaml 配置文件
+ *
+ * i18n 设计:
+ * - `loadZoeConfig()` 不传参 = 返回默认 locale（向后兼容，等同未启用 i18n 时的旧行为）
+ * - `loadZoeConfig(locale)` 返回应用了该 locale overrides 的配置
+ * - 单语言站不需要做任何改动
  */
 
 import fs from 'fs';
 import path from 'path';
 import yaml from 'js-yaml';
-import type { ZoeSiteConfig } from '@/types';
+import type { ZoeSiteConfig, I18nConfig } from '@/types';
 
-let cachedConfig: ZoeSiteConfig | null = null;
+// 缓存：rawConfig（未应用 locale overrides）+ 按 locale 缓存的最终配置
+let cachedRawConfig: ZoeSiteConfig | null = null;
+const cachedByLocale = new Map<string, ZoeSiteConfig>();
 
 /**
  * 获取项目根目录
@@ -51,20 +58,21 @@ function deepMerge<T extends Record<string, unknown>>(target: T, source: Partial
 }
 
 /**
- * 加载 zoe-site.yaml 配置文件
+ * 加载 zoe-site.yaml 原始配置（不带 locale overrides）
  *
- * CI 模式（设置了 `ZOE_CONFIG_PATH` 或 `ZOE_CONFIG_LIST`）：
- *   完全使用外部注入的配置，theme 自带的 zoe-site.yaml 被忽略。
+ * 支持两种来源：
+ *   - CI 模式（设置了 `ZOE_CONFIG_PATH` 或 `ZOE_CONFIG_LIST`）：完全使用外部
+ *     注入的配置，theme 自带的 zoe-site.yaml 被忽略
+ *   - 常规模式：
+ *       1. `_example/zoe-site.yaml`（仅 dev / USE_EXAMPLE_CONTENT=true）
+ *       2. theme 根目录的 `zoe-site.yaml`
  *
- * 常规模式：
- *   1. `_example/zoe-site.yaml`（仅 dev / USE_EXAMPLE_CONTENT=true）
- *   2. theme 根目录的 `zoe-site.yaml`
+ * 内部缓存。开发模式下禁用 raw 缓存（方便热改 yaml）。
  */
-export function loadZoeConfig(): ZoeSiteConfig {
-  // 开发模式下禁用缓存，方便编辑 zoe-site.yaml 时实时生效
+function loadRawConfig(): ZoeSiteConfig {
   const isDev = process.env.NODE_ENV === 'development';
-  if (cachedConfig && !isDev) {
-    return cachedConfig;
+  if (cachedRawConfig && !isDev) {
+    return cachedRawConfig;
   }
 
   const root = getProjectRoot();
@@ -93,7 +101,7 @@ export function loadZoeConfig(): ZoeSiteConfig {
     throw new Error(`Configuration file not found. Set ZOE_CONFIG_PATH or place zoe-site.yaml at ${root}`);
   }
 
-  // 依次 deep merge
+  // 依次 deep merge（前面的作为基础，后面的覆盖）
   let config: Record<string, unknown> = {};
   for (const filePath of layers) {
     const fileContent = fs.readFileSync(filePath, 'utf-8');
@@ -104,9 +112,58 @@ export function loadZoeConfig(): ZoeSiteConfig {
   }
 
   // 处理变量替换，例如 ${zoe.title}
-  cachedConfig = processVariables(config, config);
+  cachedRawConfig = processVariables(config, config);
 
-  return cachedConfig;
+  // dev 模式下，每次重新读 yaml 后也要清掉 per-locale 缓存
+  if (isDev) {
+    cachedByLocale.clear();
+  }
+
+  return cachedRawConfig;
+}
+
+/**
+ * 加载 zoe-site.yaml 配置文件
+ *
+ * @param locale 可选 locale，若 i18n 已启用且该 locale 存在 overrides，
+ *               则将 overrides 合并到顶层（深合并；数组直接替换）
+ * @returns 解析后的配置；若未启用 i18n 或 locale 未提供，返回原始（默认）配置
+ *
+ * 注意：所有 callsite 不传 locale 时的行为与未启用 i18n 等价，向后兼容。
+ */
+export function loadZoeConfig(locale?: string): ZoeSiteConfig {
+  const raw = loadRawConfig();
+
+  // 未启用 i18n 或未指定 locale → 返回 raw
+  if (!isI18nEnabled(raw) || !locale) {
+    return raw;
+  }
+
+  // 已缓存
+  const cached = cachedByLocale.get(locale);
+  if (cached) return cached;
+
+  const i18n = raw.i18n!;
+  const overrides = i18n.overrides?.[locale];
+
+  let resolved: ZoeSiteConfig;
+  if (overrides) {
+    resolved = deepMerge(
+      raw as unknown as Record<string, unknown>,
+      overrides as unknown as Record<string, unknown>
+    ) as unknown as ZoeSiteConfig;
+  } else {
+    resolved = raw;
+  }
+
+  // 重新跑一次变量替换，让 overrides 中的 ${zoe.x} 也生效
+  resolved = processVariables(resolved, resolved);
+
+  // 设置 lang 字段为当前 locale（覆盖默认）
+  resolved = { ...resolved, lang: locale };
+
+  cachedByLocale.set(locale, resolved);
+  return resolved;
 }
 
 /**
@@ -181,9 +238,11 @@ function processVariables(obj: unknown, rootConfig: unknown): ZoeSiteConfig {
 
 /**
  * 获取站点元数据（用于 SEO）
+ *
+ * @param locale 可选 locale；传入时会基于该 locale 的配置返回元数据
  */
-export function getSiteMetadata() {
-  const config = loadZoeConfig();
+export function getSiteMetadata(locale?: string) {
+  const config = loadZoeConfig(locale);
 
   return {
     title: config.title,
@@ -195,4 +254,124 @@ export function getSiteMetadata() {
     author: config.author,
     verification: config.verification,
   };
+}
+
+// =============================================================
+// i18n helpers
+// =============================================================
+
+/**
+ * 判断 i18n 是否启用（基于原始或已解析配置）
+ */
+export function isI18nEnabled(config?: ZoeSiteConfig): boolean {
+  const c = config ?? loadRawConfig();
+  const i18n = c.i18n;
+  return !!(i18n && i18n.enabled !== false && Array.isArray(i18n.locales) && i18n.locales.length > 0);
+}
+
+/**
+ * 获取 i18n 配置对象（未启用时返回 undefined）
+ */
+export function getI18nConfig(): I18nConfig | undefined {
+  const raw = loadRawConfig();
+  return isI18nEnabled(raw) ? raw.i18n : undefined;
+}
+
+/**
+ * 获取所有可用 locale 列表
+ * 未启用 i18n 时返回 [config.lang || 'en']（兼容旧站）
+ */
+export function getLocales(): string[] {
+  const raw = loadRawConfig();
+  if (isI18nEnabled(raw)) {
+    return raw.i18n!.locales;
+  }
+  return [raw.lang || 'en'];
+}
+
+/**
+ * 获取默认 locale
+ * - i18n 启用：取 i18n.defaultLocale 或 locales[0]
+ * - 未启用：取 config.lang 或 'en'
+ */
+export function getDefaultLocale(): string {
+  const raw = loadRawConfig();
+  if (isI18nEnabled(raw)) {
+    return raw.i18n!.defaultLocale || raw.i18n!.locales[0];
+  }
+  return raw.lang || 'en';
+}
+
+/**
+ * 校验给定 locale 是否在 i18n.locales 列表中
+ */
+export function isValidLocale(locale: string): boolean {
+  return getLocales().includes(locale);
+}
+
+/**
+ * 解析 URL 段判断是否为 locale 前缀
+ * 用法：在 `[lang]` 路由参数里传入，决定要走哪个 locale 的配置。
+ *
+ * - 若是有效 locale → 返回该 locale
+ * - 否则 → 返回 undefined（外层路由应当继续走 `slug` 逻辑）
+ */
+export function parseLocaleFromSegment(segment: string | undefined | null): string | undefined {
+  if (!segment) return undefined;
+  return isValidLocale(segment) ? segment : undefined;
+}
+
+/**
+ * 解析一个 LocalizedString（字符串 or { locale: 字符串 } map）
+ *
+ * 解析顺序：
+ * 1. 直接是 string → 返回该 string（视为所有语言共享）
+ * 2. 是 map：locale → defaultLocale → 任意首个 key
+ * 3. 都没有 → 返回 ''
+ */
+export function resolveLocalized(
+  value: string | Record<string, string> | undefined | null,
+  locale?: string
+): string {
+  if (value == null) return '';
+  if (typeof value === 'string') return value;
+
+  const target = locale || getDefaultLocale();
+  if (value[target]) return value[target];
+
+  const def = getDefaultLocale();
+  if (value[def]) return value[def];
+
+  const keys = Object.keys(value);
+  return keys.length > 0 ? value[keys[0]] : '';
+}
+
+/**
+ * 给定 locale 构造 URL 前缀（前置 `/`，末尾无斜杠）
+ *
+ * 例：
+ *  - i18n disabled / locale=default + routing=prefix-except-default → ''
+ *  - locale=en + routing=prefix-except-default(默认 zh) → '/en'
+ *  - locale=zh + routing=prefix → '/zh'
+ */
+export function getLocalePrefix(locale?: string): string {
+  if (!isI18nEnabled()) return '';
+  const i18n = getI18nConfig()!;
+  const routing = i18n.routing || 'prefix-except-default';
+  const def = getDefaultLocale();
+  const target = locale || def;
+
+  if (routing === 'prefix-except-default' && target === def) {
+    return '';
+  }
+  return `/${target}`;
+}
+
+/**
+ * 测试钩子：清空内部缓存
+ * 仅用于单测，正常请勿调用
+ */
+export function __resetZoeConfigCache() {
+  cachedRawConfig = null;
+  cachedByLocale.clear();
 }
