@@ -5,6 +5,19 @@
 
 import yaml from 'js-yaml';
 import type { Release, ReleaseConfig, ReleaseMeta, ReleaseAssets } from '@/types/release';
+import { markdownToHtml } from './mdx';
+
+/**
+ * 默认资源匹配规则（用户未配置 assetRegexPatterns 时使用）
+ * 注意：按 key 顺序匹配，先 macOS/Windows/Android 等具体平台，再回退到压缩包
+ */
+const DEFAULT_ASSET_PATTERNS: Record<string, string> = {
+  android: '\\.apk$',
+  ios: '\\.ipa$',
+  macos: '(darwin|macos|osx|\\.dmg$|\\.pkg$)',
+  windows: '(windows|win32|win64|win-|\\.exe$|\\.msi$)',
+  linux: '(linux|\\.AppImage$|\\.deb$|\\.rpm$)',
+};
 
 // Meta extraction regex - matches ```yaml version ... ```
 const META_REGEXP = /```yaml version([\s\S]*?)```/;
@@ -55,15 +68,16 @@ function parseMeta(note: string): ReleaseMeta | null {
 
 /**
  * Match assets to regex patterns
+ * 使用 case-insensitive 匹配，按 patterns 顺序优先级
  */
 function matchAssets(
   assets: Array<{ name: string; browser_download_url: string }>,
   patterns: Record<string, string>
 ): ReleaseAssets {
   const result: ReleaseAssets = {};
-  
+
   for (const [key, pattern] of Object.entries(patterns)) {
-    const regex = new RegExp(pattern);
+    const regex = new RegExp(pattern, 'i');
     for (const asset of assets) {
       if (regex.test(asset.name)) {
         result[key] = asset.browser_download_url;
@@ -71,7 +85,7 @@ function matchAssets(
       }
     }
   }
-  
+
   return result;
 }
 
@@ -161,18 +175,20 @@ export async function fetchGitHubReleases(
   assetPatterns: Record<string, string> = {}
 ): Promise<Release[]> {
   const url = `https://api.github.com/repos/${repo}/releases`;
-  
+  const token = process.env.GITHUB_TOKEN;
+
   try {
     const response = await fetch(url, {
       headers: {
         'Accept': 'application/vnd.github.v3+json',
         'User-Agent': 'nextjs-starter-zoe-app',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
       next: { revalidate: 3600 }, // Cache for 1 hour
     });
 
     if (!response.ok) {
-      console.error(`Failed to fetch GitHub releases: ${response.status}`);
+      console.error(`Failed to fetch GitHub releases for ${repo}: ${response.status}`);
       return [];
     }
 
@@ -184,7 +200,8 @@ export async function fetchGitHubReleases(
 
     return data
       .map(r => adaptGitHubRelease(r, repo, assetPatterns))
-      .filter((r): r is Release => r !== null);
+      .filter((r): r is Release => r !== null)
+      .sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime());
   } catch (error) {
     console.error('Error fetching GitHub releases:', error);
     return [];
@@ -238,8 +255,11 @@ export async function fetchReleases(
   const allReleases = await Promise.all(
     configs.map(async (config) => {
       const provider = config.provider || 'github';
-      const patterns = config.assetRegexPatterns || {};
-      
+      // 没显式配 patterns 就用默认规则
+      const patterns = config.assetRegexPatterns && Object.keys(config.assetRegexPatterns).length > 0
+        ? config.assetRegexPatterns
+        : DEFAULT_ASSET_PATTERNS;
+
       if (provider === 'github') {
         return fetchGitHubReleases(config.repo, patterns);
       } else if (provider === 'gitee') {
@@ -249,7 +269,25 @@ export async function fetchReleases(
     })
   );
 
-  return allReleases.flat();
+  // 跨仓库聚合后按发布时间倒序
+  const releases = allReleases
+    .flat()
+    .sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime());
+
+  // 预渲染 release notes（server-side markdown → html）
+  await Promise.all(
+    releases.map(async (r) => {
+      if (r.release_note) {
+        try {
+          r.release_note_html = await markdownToHtml(r.release_note);
+        } catch (e) {
+          console.error(`Failed to render markdown for ${r.repo}@${r.version}`, e);
+        }
+      }
+    })
+  );
+
+  return releases;
 }
 
 /**

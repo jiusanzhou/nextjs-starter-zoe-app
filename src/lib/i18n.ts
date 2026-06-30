@@ -143,6 +143,9 @@ const defaultLabels: Record<string, string> = {
   'releases.noReleases': 'No releases yet',
   'releases.showAll': 'Show all {count} versions',
   'releases.notes': 'Release Notes',
+  'releases.unitVersion': 'versions',
+  'releases.unitRepo': 'repos',
+  'releases.unitDownload': 'downloads',
 
   // Changelog
   'changelog': 'Changelog',

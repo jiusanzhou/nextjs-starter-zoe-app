@@ -24,6 +24,7 @@ export interface Release {
   published_at: string;
   prerelease: boolean;
   release_note: string;
+  release_note_html?: string;
   assets: ReleaseAssets;
   urls?: Record<string, string>;
   meta?: ReleaseMeta;

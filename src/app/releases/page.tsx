@@ -2,9 +2,12 @@ import { fetchReleases, getLatestRelease } from "@/lib/release";
 import { loadZoeConfig } from "@/lib/zoefile";
 import { ReleaseList } from "@/components/release-card";
 import { getLabel } from "@/lib/i18n";
-import { Download } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Download, Sparkles } from "lucide-react";
 import type { ReleaseConfig } from "@/types/release";
 import type { Metadata } from "next";
+
+export const revalidate = 3600;
 
 export async function generateMetadata(): Promise<Metadata> {
   const config = loadZoeConfig();
@@ -78,6 +81,13 @@ releaseRepo:
     );
   }
 
+  // 统计：总版本 / 仓库数 / 资源总数
+  const stats = {
+    total: releases.length,
+    repos: new Set(releases.map((r) => r.repo)).size,
+    assets: releases.reduce((sum, r) => sum + Object.keys(r.assets).length, 0),
+  };
+
   return (
     <div className="page-releases max-w-4xl mx-auto space-y-10">
       {/* Hero */}
@@ -88,15 +98,42 @@ releaseRepo:
         <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-3">
           {getLabel(config, 'releases')}
         </h1>
-        <p className="text-lg text-muted-foreground">
+        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
           {getLabel(config, 'releases.description')}
         </p>
+
         {latestRelease && (
-          <p className="mt-4 text-sm text-muted-foreground">
-            {getLabel(config, 'releases.latestVersion')} <span className="font-semibold text-foreground">{latestRelease.version}</span>
-            <span className="mx-2">&middot;</span>
-            {getLabel(config, 'releases.publishedAt')} {new Date(latestRelease.published_at).toLocaleDateString(config.lang || "en")}
-          </p>
+          <div className="mt-6 inline-flex items-center gap-2 px-4 py-2 rounded-full border bg-card text-sm">
+            <Sparkles className="h-3.5 w-3.5 text-primary" />
+            <span className="text-muted-foreground">{getLabel(config, 'releases.latestVersion')}</span>
+            <Badge variant="default" className="font-mono">{latestRelease.version}</Badge>
+            <span className="text-muted-foreground">·</span>
+            <span className="text-muted-foreground">
+              {new Date(latestRelease.published_at).toLocaleDateString(config.lang || "en", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              })}
+            </span>
+          </div>
+        )}
+
+        {releases.length > 0 && (
+          <div className="mt-4 flex items-center justify-center gap-4 text-sm text-muted-foreground">
+            <span>{stats.total} {getLabel(config, 'releases.unitVersion')}</span>
+            {stats.repos > 1 && (
+              <>
+                <span>·</span>
+                <span>{stats.repos} {getLabel(config, 'releases.unitRepo')}</span>
+              </>
+            )}
+            {stats.assets > 0 && (
+              <>
+                <span>·</span>
+                <span>{stats.assets} {getLabel(config, 'releases.unitDownload')}</span>
+              </>
+            )}
+          </div>
         )}
       </div>
 

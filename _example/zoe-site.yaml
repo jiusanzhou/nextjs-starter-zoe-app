@@ -121,10 +121,22 @@ rss:
   path: /rss.xml
   title: ZoeAPP RSS Feed
 
-# App Releases（从 GitHub/Gitee 获取）
+# App Releases — 自动从 GitHub / Gitee 拉取并展示在 /releases 落地页
+# 详细文档：docs/releases.md
+#
+# 简写：单仓库
+# releaseRepo: "owner/repo"
+#
+# 完整：多仓库 + 自定义资源匹配
 # releaseRepo:
 #   - provider: github
-#     repo: moeapp/automate
+#     repo: owner/repo
+#     assetRegexPatterns:
+#       android: "myapp-android-.*\\.apk$"
+#       macos: "myapp-mac-(arm64|x64)\\.dmg$"
+#       windows: "myapp-win-x64-setup\\.exe$"
+#   - provider: gitee
+#     repo: owner/repo
 
 # GitHub 项目（自动从 API 获取）
 projects:
