@@ -1,14 +1,18 @@
 /**
  * RSS Feed Generator
  * 构建时生成 RSS Feed
+ *
+ * 多语言站点：RSS 只输出默认 locale 的文章。如果未来需要为非默认 locale
+ * 单独输出 feed（如 /en/rss.xml），改为接收 locale 参数即可。
  */
 
 import { getAllPosts } from './content';
-import { loadZoeConfig } from './zoefile';
+import { loadZoeConfig, getDefaultLocale, isI18nEnabled } from './zoefile';
 
 export function generateRSSFeed(): string {
   const config = loadZoeConfig();
-  const posts = getAllPosts();
+  const locale = isI18nEnabled() ? getDefaultLocale() : undefined;
+  const posts = getAllPosts(false, locale);
 
   if (!config.rss?.enabled) {
     return '';
