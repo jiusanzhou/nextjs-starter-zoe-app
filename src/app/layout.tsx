@@ -1,13 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { Header, Footer } from "@/components/layout";
 import { ThemeProvider } from "@/components/theme-provider";
 import { GoogleAnalytics, PlausibleAnalytics } from "@/components/analytics";
-import { GoTop } from "@/components/go-top";
-import { ThemeSwitcher } from "@/components/theme-switcher";
-import { DemoBanner } from "@/components/demo-banner";
 import { loadZoeConfig, getSiteMetadata } from "@/lib/zoefile";
-import { getLabel } from "@/lib/i18n";
 import type { ZoeSiteConfig } from "@/types";
 import "./globals.css";
 
@@ -25,7 +20,6 @@ export async function generateMetadata(): Promise<Metadata> {
   const site = getSiteMetadata();
 
   // Favicon 解析优先级：config.logo > author.avatar > 内置兜底文件
-  // 支持的扩展名 → MIME type 映射
   const mimeByExt: Record<string, string> = {
     svg: "image/svg+xml",
     png: "image/png",
@@ -43,9 +37,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const customIconSrc = site.logo || site.author?.avatar;
   const iconList = customIconSrc
     ? [
-        // 用户自定义头像/logo 作为主 icon
         { url: customIconSrc, type: guessMime(customIconSrc) },
-        // 兜底：保留内置 favicon，用于不支持外链的浏览器
         { url: "/favicon.ico", sizes: "any" },
         { url: "/favicon.svg", type: "image/svg+xml" },
       ]
@@ -68,9 +60,7 @@ export async function generateMetadata(): Promise<Metadata> {
       statusBarStyle: "default",
       title: site.title,
     },
-    formatDetection: {
-      telephone: false,
-    },
+    formatDetection: { telephone: false },
     icons: {
       icon: iconList,
       shortcut: customIconSrc || "/favicon.ico",
@@ -86,12 +76,7 @@ export async function generateMetadata(): Promise<Metadata> {
       images: site.image
         ? [{ url: site.image, alt: site.title, width: 1200, height: 630 }]
         : site.author?.avatar
-          ? [
-              {
-                url: site.author.avatar,
-                alt: site.title,
-              },
-            ]
+          ? [{ url: site.author.avatar, alt: site.title }]
           : site.logo
             ? [{ url: site.logo, alt: site.title }]
             : undefined,
@@ -109,11 +94,7 @@ export async function generateMetadata(): Promise<Metadata> {
             ? [site.logo]
             : undefined,
     },
-    alternates: site.url
-      ? {
-          canonical: site.url,
-        }
-      : undefined,
+    alternates: site.url ? { canonical: site.url } : undefined,
     robots: {
       index: true,
       follow: true,
@@ -124,25 +105,17 @@ export async function generateMetadata(): Promise<Metadata> {
         "max-snippet": -1,
       },
     },
-    ...(buildVerification(site.verification)),
+    ...buildVerification(site.verification),
   };
 }
 
 /**
  * Map zoe-site `verification` config → Next.js Metadata.verification.
- *
- * Next.js natively supports: google, yahoo, yandex, me, other (raw meta map).
- * Other keys (bing, baidu, 360, sogou, shenma, naver, pinterest, facebook,
- * `other.*`) are routed through `verification.other` so they render as
- * `<meta name="<key>" content="<value>"/>`.
  */
 function buildVerification(v: ZoeSiteConfig["verification"]) {
   if (!v) return {};
 
-  // Native keys handled directly by Next.js Metadata.
   const nativeKeys = ["google", "yahoo", "yandex"] as const;
-
-  // Custom keys → `<meta name=metaName content=value>`.
   const customMetaName: Record<string, string> = {
     bing: "msvalidate.01",
     baidu: "baidu-site-verification",
@@ -167,7 +140,6 @@ function buildVerification(v: ZoeSiteConfig["verification"]) {
       metadataVerification[k] = val;
     }
   }
-
   for (const [k, metaName] of Object.entries(customMetaName)) {
     const val = (v as Record<string, unknown>)[k];
     if (typeof val === "string" && val) {
@@ -176,7 +148,6 @@ function buildVerification(v: ZoeSiteConfig["verification"]) {
       metadataVerification.other[metaName] = val as string[];
     }
   }
-
   if (v.other) {
     for (const [k, val] of Object.entries(v.other)) {
       if (typeof val === "string" && val) {
@@ -186,11 +157,9 @@ function buildVerification(v: ZoeSiteConfig["verification"]) {
       }
     }
   }
-
   if (Object.keys(metadataVerification.other).length === 0) {
     delete (metadataVerification as Partial<typeof metadataVerification>).other;
   }
-
   return Object.keys(metadataVerification).length
     ? { verification: metadataVerification }
     : {};
@@ -202,110 +171,31 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const config = loadZoeConfig();
-  const themeClass = config.theme ? `theme-${config.theme}` : '';
-
-  // Demo 模式：在 USE_EXAMPLE_CONTENT=true 时启用主题切换器和提示横幅
-  // 用于框架自身的 demo 站（zoe.im/nextjs-starter-zoe-app）展示所有主题
-  const isDemoMode = process.env.USE_EXAMPLE_CONTENT === 'true';
-
-  // Build Person/WebSite JSON-LD
-  const author = config.author;
-  const sameAs: string[] = [];
-  if (author?.github) sameAs.push(`https://github.com/${author.github}`);
-  if (author?.twitter) sameAs.push(`https://twitter.com/${author.twitter}`);
-  if (author?.linkedin) sameAs.push(`https://www.linkedin.com/in/${author.linkedin}`);
-  if (config.socials) {
-    for (const [k, v] of Object.entries(config.socials)) {
-      if (typeof v === "string" && v.startsWith("http") && !sameAs.includes(v)) {
-        sameAs.push(v);
-      }
-    }
-  }
-
-  const jsonLdGraph: Record<string, unknown>[] = [];
-  if (author?.name) {
-    jsonLdGraph.push({
-      "@type": "Person",
-      "@id": `${config.url || ""}#person`,
-      name: author.name,
-      url: author.homepage || config.url,
-      image: author.avatar,
-      email: author.email ? `mailto:${author.email}` : undefined,
-      jobTitle: author.minibio,
-      sameAs: sameAs.length ? sameAs : undefined,
-    });
-  }
-  if (config.url) {
-    jsonLdGraph.push({
-      "@type": "WebSite",
-      "@id": `${config.url}#website`,
-      url: config.url,
-      name: config.title,
-      description: config.description,
-      inLanguage: config.lang,
-      author: author?.name ? { "@id": `${config.url}#person` } : undefined,
-    });
-  }
-  const jsonLd =
-    jsonLdGraph.length > 0
-      ? {
-          "@context": "https://schema.org",
-          "@graph": jsonLdGraph,
-        }
-      : null;
+  const themeClass = config.theme ? `theme-${config.theme}` : "";
 
   return (
     <html lang={config.lang || "en"} className={themeClass} suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
-        {jsonLd && (
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify(jsonLd, (_k, v) => (v === undefined ? undefined : v)),
-            }}
-          />
-        )}
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
-          {/* Analytics */}
+          {/* Analytics（全局） */}
           {config.analytics?.googleId && (
             <GoogleAnalytics measurementId={config.analytics.googleId} />
           )}
           {config.analytics?.plausibleDomain && (
             <PlausibleAnalytics domain={config.analytics.plausibleDomain} />
           )}
-          {isDemoMode && <DemoBanner />}
-          <Header
-            title={config.title}
-            logo={config.logo}
-            version={config.version}
-            navs={config.navs}
-            moreLabel={getLabel(config, 'header.more')}
-          />
-          <main className="flex-1 container py-6 md:py-8 lg:py-10">{children}</main>
-          <Footer
-            organization={{
-              name: config.title || "",
-              ...config.organization,
-              logo: config.logo || config.organization?.logo,
-            }}
-            copyright={config.copyright}
-            socials={{
-              ...config.socials,
-              ...(config.author?.email ? { email: config.author.email } : {}),
-              ...(config.author?.wechat ? { wechat: config.author.wechat } : {}),
-            }}
-            links={config.links}
-            wechatScanLabel={getLabel(config, 'footer.wechatScan')}
-          />
-          <GoTop />
-          {isDemoMode && <ThemeSwitcher />}
+          {/*
+            站点视觉外壳（Header/Footer/JSON-LD/...）由各 route group 的 layout
+            提供：默认 locale 走 `(site)/layout.tsx`，非默认 locale 走 `[lang]/layout.tsx`。
+          */}
+          {children}
         </ThemeProvider>
       </body>
     </html>

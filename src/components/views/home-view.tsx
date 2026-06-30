@@ -1,3 +1,10 @@
+/**
+ * Shared HomePage content renderer (locale-aware).
+ *
+ * 默认 locale 的 `(site)/page.tsx` 和非默认 locale 的 `[lang]/page.tsx`
+ * 都通过这个函数构造首页 sections，避免逻辑重复。
+ */
+
 import { Suspense } from "react";
 import { Section } from "@/components/section";
 import { SectionRenderer } from "@/components/sections/section-renderer";
@@ -7,22 +14,23 @@ import { getGitHubProjects } from "@/lib/github-projects";
 import { getLabel } from "@/lib/i18n";
 import type { HeroSection, SectionConfigUnion } from "@/types";
 
-export const revalidate = 3600;
+interface HomeContentProps {
+  /** 可选 locale；不传 → 默认 locale 行为（向后兼容） */
+  locale?: string;
+}
 
-async function HomeContent() {
-  const config = await loadZoeConfig();
-  const posts = getPostsMeta();
+async function HomeContent({ locale }: HomeContentProps) {
+  const config = loadZoeConfig(locale);
+  const posts = getPostsMeta(locale);
   const projectsConfig = config.projects;
 
-  let githubProjects: Awaited<ReturnType<typeof getGitHubProjects>> | null =
-    null;
+  let githubProjects: Awaited<ReturnType<typeof getGitHubProjects>> | null = null;
   if (projectsConfig?.owners && projectsConfig.owners.length > 0) {
     githubProjects = await getGitHubProjects(projectsConfig);
   }
 
   const sections = config.sections || [];
 
-  // Check if sections contain specific types
   const hasHeroSection = sections.some((s) => s.type === "hero");
   const hasPostsSection = sections.some((s) => s.type === "posts");
   const hasProjectsSection = sections.some((s) => s.type === "projects");
@@ -34,7 +42,8 @@ async function HomeContent() {
   if (!hasHeroSection && config.hero) {
     heroFallback = {
       type: "hero",
-      greeting: config.hero.greeting || `Hey, I'm ${config.author?.name || config.title}`,
+      greeting:
+        config.hero.greeting || `Hey, I'm ${config.author?.name || config.title}`,
       typingTexts: config.hero.typingTexts,
       description: config.hero.description || config.description,
       cta: config.hero.cta,
@@ -46,16 +55,13 @@ async function HomeContent() {
     };
   }
 
-  // Build full sections list
   const allSections: SectionConfigUnion[] = [];
 
   if (heroFallback) {
     allSections.push(heroFallback);
   }
-
   allSections.push(...sections);
 
-  // Auto-append products if not explicitly configured
   if (!hasProductsSection && config.products && config.products.length > 0) {
     allSections.push({
       type: "products",
@@ -65,7 +71,6 @@ async function HomeContent() {
     });
   }
 
-  // Auto-append projects if not explicitly configured
   if (!hasProjectsSection && githubProjects && githubProjects.length > 0) {
     allSections.push({
       type: "projects",
@@ -75,7 +80,6 @@ async function HomeContent() {
     });
   }
 
-  // Auto-append posts if not explicitly configured
   if (!hasPostsSection && posts.length > 0) {
     allSections.push({
       type: "posts",
@@ -86,7 +90,6 @@ async function HomeContent() {
     });
   }
 
-  // Auto-append contact if not explicitly configured
   if (!hasContactSection) {
     allSections.push({
       type: "contact",
@@ -108,7 +111,7 @@ async function HomeContent() {
   );
 }
 
-export default function HomePage() {
+export function HomePageView({ locale }: HomeContentProps = {}) {
   return (
     <Suspense
       fallback={
@@ -125,7 +128,7 @@ export default function HomePage() {
         </div>
       }
     >
-      <HomeContent />
+      <HomeContent locale={locale} />
     </Suspense>
   );
 }

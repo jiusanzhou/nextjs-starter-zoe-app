@@ -23,6 +23,11 @@ interface HeaderProps {
   version?: string;
   navs?: NavItem[];
   moreLabel?: string;
+  /**
+   * Optional slot rendered in the header's right area, before the theme toggle.
+   * Used for the language switcher when i18n is enabled.
+   */
+  rightSlot?: React.ReactNode;
 }
 
 const iconMap: Record<string, React.ElementType> = {
@@ -38,7 +43,7 @@ function getIconForNav(href: string): React.ElementType {
   return iconMap[path] || FileText;
 }
 
-export function Header({ title, logo, version, navs = [], moreLabel = "More" }: HeaderProps) {
+export function Header({ title, logo, version, navs = [], moreLabel = "More", rightSlot }: HeaderProps) {
   const pathname = usePathname();
 
   return (
@@ -133,6 +138,7 @@ export function Header({ title, logo, version, navs = [], moreLabel = "More" }: 
 
           {/* Right Section */}
           <div className="flex items-center gap-1">
+            {rightSlot}
             <ThemeToggle />
           </div>
         </div>
