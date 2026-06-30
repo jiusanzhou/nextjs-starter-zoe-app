@@ -12,7 +12,7 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import readingTime from 'reading-time';
-import { loadZoeConfig, getProjectRoot, getDefaultLocale, isI18nEnabled } from './zoefile';
+import { loadZoeConfig, getProjectRoot, getDefaultLocale, isI18nEnabled, getLocales } from './zoefile';
 import type { Post, PostMeta, Page, PageMeta, Project, ProjectMeta, GitContentSource } from '@/types';
 
 // 缓存 Git 内容目录
@@ -128,6 +128,11 @@ function scanMarkdownFiles(dir: string): string[] {
 
 /**
  * 解析 Markdown 文件
+ *
+ * 支持文件名 locale 后缀：`xxx.en.md` / `xxx.zh-CN.mdx`
+ * - 文件名匹配 `<base>.<locale>.<ext>` 且 `<locale>` 在 i18n.locales 配置中
+ *   → 推断 lang = locale，slug 用 `<base>`
+ * - frontmatter.lang / frontmatter.slug 仍然优先
  */
 function parseMarkdownFile(filePath: string) {
   const fileContent = fs.readFileSync(filePath, 'utf-8');
@@ -135,8 +140,17 @@ function parseMarkdownFile(filePath: string) {
   const stats = fs.statSync(filePath);
   const reading = readingTime(content);
 
-  // 从文件名生成 slug
-  const fileName = path.basename(filePath, path.extname(filePath));
+  // 从文件名生成 slug（先剥掉 .<locale> 后缀，如果是已配置的 locale）
+  let fileName = path.basename(filePath, path.extname(filePath));
+  let inferredLang: string | undefined;
+  if (isI18nEnabled()) {
+    const supportedLocales = getLocales();
+    const match = fileName.match(/^(.+)\.([a-zA-Z]{2}(?:-[A-Za-z0-9]+)?)$/);
+    if (match && supportedLocales.includes(match[2])) {
+      fileName = match[1];
+      inferredLang = match[2];
+    }
+  }
   const slug = frontmatter.slug || slugify(fileName);
 
   return {
@@ -144,6 +158,7 @@ function parseMarkdownFile(filePath: string) {
     content,
     slug,
     filePath,
+    inferredLang,
     createdAt: frontmatter.date || stats.birthtime.toISOString(),
     modifiedAt: frontmatter.modifiedDate || stats.mtime.toISOString(),
     readingTime: Math.ceil(reading.minutes),
@@ -153,12 +168,16 @@ function parseMarkdownFile(filePath: string) {
 /**
  * 解析 frontmatter 的 lang 字段。
  * - 显式声明 → 直接用
+ * - 缺省 + fallback（如文件名推断）→ 用 fallback
  * - 缺省 + i18n 启用 → 默认 locale
  * - 缺省 + i18n 未启用 → undefined（保留旧语义）
  */
-function resolveContentLang(frontmatterLang: unknown): string | undefined {
+function resolveContentLang(frontmatterLang: unknown, fallback?: string): string | undefined {
   if (typeof frontmatterLang === 'string' && frontmatterLang.trim()) {
     return frontmatterLang.trim();
+  }
+  if (fallback) {
+    return fallback;
   }
   if (isI18nEnabled()) {
     return getDefaultLocale();
@@ -204,7 +223,7 @@ export function getAllPosts(
 
     for (const file of files) {
       const parsed = parseMarkdownFile(file);
-      const { frontmatter, content, slug, createdAt, modifiedAt, readingTime } = parsed;
+      const { frontmatter, content, slug, createdAt, modifiedAt, readingTime, inferredLang } = parsed;
 
       // 处理标签
       const tags = (frontmatter.tags || []).map((tag: string) => ({
@@ -212,7 +231,7 @@ export function getAllPosts(
         slug: slugify(tag),
       }));
 
-      const lang = resolveContentLang(frontmatter.lang);
+      const lang = resolveContentLang(frontmatter.lang, inferredLang);
 
       posts.push({
         slug,
@@ -338,7 +357,7 @@ export function getAllPages(locale?: string): Page[] {
 
     for (const file of files) {
       const parsed = parseMarkdownFile(file);
-      const { frontmatter, content, slug } = parsed;
+      const { frontmatter, content, slug, inferredLang } = parsed;
 
       // 检查文件扩展名是否为 .mdx
       const isMdx = file.endsWith('.mdx');
@@ -351,7 +370,7 @@ export function getAllPages(locale?: string): Page[] {
         container: frontmatter.container,
         isMdx,
         content,
-        lang: resolveContentLang(frontmatter.lang),
+        lang: resolveContentLang(frontmatter.lang, inferredLang),
         translationOf:
           typeof frontmatter.translationOf === 'string' ? frontmatter.translationOf : undefined,
       });
@@ -397,7 +416,7 @@ export function getAllProjects(locale?: string): Project[] {
 
     for (const file of files) {
       const parsed = parseMarkdownFile(file);
-      const { frontmatter, content, slug } = parsed;
+      const { frontmatter, content, slug, inferredLang } = parsed;
 
       projects.push({
         slug,
@@ -409,7 +428,7 @@ export function getAllProjects(locale?: string): Project[] {
         tags: frontmatter.tags || [],
         featured: frontmatter.featured || false,
         content,
-        lang: resolveContentLang(frontmatter.lang),
+        lang: resolveContentLang(frontmatter.lang, inferredLang),
         translationOf:
           typeof frontmatter.translationOf === 'string' ? frontmatter.translationOf : undefined,
       });

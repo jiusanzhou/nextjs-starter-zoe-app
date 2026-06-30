@@ -24,10 +24,23 @@ import { getLabel } from "@/lib/i18n";
 
 interface SiteShellProps {
   locale?: string;
+  /**
+   * 可选：针对当前页面的 per-locale URL 覆盖。
+   * 用于"同一内容存在多语言版本但 slug/路径不同"的场景（如博文翻译）。
+   * - 键：locale（如 "zh-CN", "en"）
+   * - 值：该 locale 对应的完整 path（不含 origin，含 locale 前缀，如 "/en/blog/foo"）
+   *   或 null 表示该 locale 不存在翻译（LanguageSwitcher 将 fallback 到 listing 页）
+   */
+  localePathOverrides?: Record<string, string | null>;
+  /**
+   * 当某 locale 在 overrides 里为 null 时，切换到该 locale 后的 fallback URL（含 locale 前缀）
+   * 默认 fallback 到 locale 根路径（"/" 或 "/<locale>/"）
+   */
+  localeFallbackHref?: Record<string, string>;
   children: React.ReactNode;
 }
 
-export function SiteShell({ locale, children }: SiteShellProps) {
+export function SiteShell({ locale, localePathOverrides, localeFallbackHref, children }: SiteShellProps) {
   const config = loadZoeConfig(locale);
 
   // Demo 模式（_example 内容）
@@ -124,6 +137,8 @@ export function SiteShell({ locale, children }: SiteShellProps) {
               locales={i18nLocales}
               defaultLocale={i18nDefaultLocale!}
               localeNames={i18nLocaleNames}
+              pathOverrides={localePathOverrides}
+              fallbackHrefs={localeFallbackHref}
             />
           ) : undefined
         }
