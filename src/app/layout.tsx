@@ -4,6 +4,8 @@ import { Header, Footer } from "@/components/layout";
 import { ThemeProvider } from "@/components/theme-provider";
 import { GoogleAnalytics, PlausibleAnalytics } from "@/components/analytics";
 import { GoTop } from "@/components/go-top";
+import { ThemeSwitcher } from "@/components/theme-switcher";
+import { DemoBanner } from "@/components/demo-banner";
 import { loadZoeConfig, getSiteMetadata } from "@/lib/zoefile";
 import { getLabel } from "@/lib/i18n";
 import type { ZoeSiteConfig } from "@/types";
@@ -202,6 +204,10 @@ export default function RootLayout({
   const config = loadZoeConfig();
   const themeClass = config.theme ? `theme-${config.theme}` : '';
 
+  // Demo 模式：在 USE_EXAMPLE_CONTENT=true 时启用主题切换器和提示横幅
+  // 用于框架自身的 demo 站（zoe.im/nextjs-starter-zoe-app）展示所有主题
+  const isDemoMode = process.env.USE_EXAMPLE_CONTENT === 'true';
+
   // Build Person/WebSite JSON-LD
   const author = config.author;
   const sameAs: string[] = [];
@@ -274,6 +280,7 @@ export default function RootLayout({
           {config.analytics?.plausibleDomain && (
             <PlausibleAnalytics domain={config.analytics.plausibleDomain} />
           )}
+          {isDemoMode && <DemoBanner />}
           <Header
             title={config.title}
             logo={config.logo}
@@ -298,6 +305,7 @@ export default function RootLayout({
             wechatScanLabel={getLabel(config, 'footer.wechatScan')}
           />
           <GoTop />
+          {isDemoMode && <ThemeSwitcher />}
         </ThemeProvider>
       </body>
     </html>
