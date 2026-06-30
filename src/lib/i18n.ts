@@ -38,6 +38,7 @@ const defaultLabels: Record<string, string> = {
   'blog.archiveDescription': 'All posts organized by year',
   'blog.tagsDescription': 'Browse all topics',
   'blog.writtenBy': 'Written by',
+  'blog.translations': 'Also available in:',
 
   // Projects
   'projects': 'Projects',

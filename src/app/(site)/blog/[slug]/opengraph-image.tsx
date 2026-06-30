@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 import { getAllPosts, getPostBySlug } from "@/lib/content";
-import { loadZoeConfig } from "@/lib/zoefile";
+import { loadZoeConfig, getLocales, isI18nEnabled } from "@/lib/zoefile";
 import { format } from "date-fns";
 
 export const alt = "Blog post cover";
@@ -8,12 +8,41 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 export async function generateStaticParams() {
+  // 包含所有 locale 的 posts，让任一 slug 都能命中
+  if (isI18nEnabled()) {
+    const seen = new Set<string>();
+    const out: { slug: string }[] = [];
+    for (const loc of getLocales()) {
+      for (const p of getAllPosts(false, loc)) {
+        if (!seen.has(p.slug)) {
+          seen.add(p.slug);
+          out.push({ slug: p.slug });
+        }
+      }
+    }
+    return out;
+  }
   const posts = getAllPosts();
   return posts.map((post) => ({ slug: post.slug }));
 }
 
 interface OgImageProps {
   params: Promise<{ slug: string }>;
+}
+
+/**
+ * 在所有 locale 中查找该 slug，返回首个匹配的 post 和它的 lang
+ */
+function findPostAcrossLocales(slug: string) {
+  if (!isI18nEnabled()) {
+    const p = getPostBySlug(slug);
+    return { post: p, locale: undefined as string | undefined };
+  }
+  for (const loc of getLocales()) {
+    const p = getPostBySlug(slug, loc);
+    if (p) return { post: p, locale: loc };
+  }
+  return { post: undefined, locale: undefined };
 }
 
 const MONO =
@@ -23,8 +52,8 @@ const SANS =
 
 export default async function OgImage({ params }: OgImageProps) {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
-  const config = loadZoeConfig();
+  const { post, locale } = findPostAcrossLocales(slug);
+  const config = loadZoeConfig(locale);
 
   const title = post?.title ?? config.title ?? "Blog";
   const description =

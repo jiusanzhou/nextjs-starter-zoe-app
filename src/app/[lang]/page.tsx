@@ -7,6 +7,7 @@ import {
   getSiteMetadata,
   getLocales,
   isI18nEnabled,
+  buildAlternates,
 } from "@/lib/zoefile";
 
 export const revalidate = 3600;
@@ -33,6 +34,7 @@ export async function generateMetadata({ params }: LangHomeProps): Promise<Metad
   return {
     title: site.title,
     description: site.description,
+    alternates: buildAlternates("/"),
     openGraph: {
       title: site.title,
       description: site.description,

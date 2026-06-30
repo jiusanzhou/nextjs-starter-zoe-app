@@ -87,6 +87,22 @@ export function SiteShell({ locale, children }: SiteShellProps) {
           }}
         />
       )}
+      {/*
+        Static export 下根 layout 无法感知 locale，所以 <html lang> 由 root layout
+        写死为默认 locale。这里用一段轻量脚本在客户端修正 documentElement.lang，
+        并同步 <meta http-equiv="content-language">（爬虫和无 JS 客户端的兜底）。
+      */}
+      {currentLocale && (
+        <>
+          <meta httpEquiv="content-language" content={currentLocale} />
+          <script
+            // eslint-disable-next-line react/no-danger
+            dangerouslySetInnerHTML={{
+              __html: `document.documentElement.lang=${JSON.stringify(currentLocale)};`,
+            }}
+          />
+        </>
+      )}
       {isDemoMode && <DemoBanner />}
       <Header
         title={config.title}

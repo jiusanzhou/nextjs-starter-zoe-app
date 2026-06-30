@@ -375,3 +375,59 @@ export function __resetZoeConfigCache() {
   cachedRawConfig = null;
   cachedByLocale.clear();
 }
+
+/**
+ * 构造 Next.js Metadata.alternates 的 languages 映射 + canonical
+ *
+ * @param relativePath 不带 locale 前缀的"中性"路径，例如 "/blog/foo" 或 "/"
+ * @returns { canonical, languages }，可直接展开到 metadata.alternates
+ */
+export function buildAlternates(relativePath: string): {
+  canonical?: string;
+  languages?: Record<string, string>;
+} {
+  if (!isI18nEnabled()) return {};
+  const raw = loadRawConfig();
+  const base = (raw.url || '').replace(/\/$/, '');
+  if (!base) return {};
+
+  const path = relativePath === '/' ? '' : relativePath;
+  const def = getDefaultLocale();
+  const languages: Record<string, string> = {};
+  for (const loc of getLocales()) {
+    languages[loc] = `${base}${getLocalePrefix(loc)}${path}`;
+  }
+  languages['x-default'] = `${base}${getLocalePrefix(def)}${path}`;
+  return {
+    canonical: `${base}${getLocalePrefix(def)}${path}`,
+    languages,
+  };
+}
+
+/**
+ * 为 blog post / page 这种"内容自身就有多 locale 版本"的页面构造 alternates。
+ *
+ * @param translations Map<locale, slug>（来自 getPostTranslations / getAllPages 配对）
+ * @param pathFn       (slug) => relative path（不含 locale 前缀），如 (s) => `/blog/${s}`
+ */
+export function buildAlternatesForTranslations(
+  translations: Map<string, string>,
+  pathFn: (slug: string) => string,
+): { canonical?: string; languages?: Record<string, string> } {
+  if (!isI18nEnabled() || translations.size === 0) return {};
+  const raw = loadRawConfig();
+  const base = (raw.url || '').replace(/\/$/, '');
+  if (!base) return {};
+
+  const def = getDefaultLocale();
+  const languages: Record<string, string> = {};
+  for (const [loc, slug] of translations) {
+    languages[loc] = `${base}${getLocalePrefix(loc)}${pathFn(slug)}`;
+  }
+  const defSlug = translations.get(def);
+  const canonical = defSlug
+    ? `${base}${getLocalePrefix(def)}${pathFn(defSlug)}`
+    : undefined;
+  if (canonical) languages['x-default'] = canonical;
+  return { canonical, languages };
+}
