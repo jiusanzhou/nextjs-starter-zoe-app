@@ -5,7 +5,7 @@ This theme is **content-agnostic**: your repo only needs `zoe-site.yaml` + `cont
 ## The One-Liner
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/jiusanzhou/nextjs-starter-zoe-app/main/scripts/zoe-site.sh | bash -s build
+curl -sSL https://git.io/zoe-site | bash -s build
 ```
 
 Run this in any directory containing `zoe-site.yaml`. The script:
@@ -20,23 +20,21 @@ Run this in any directory containing `zoe-site.yaml`. The script:
 
 ```bash
 # 1. Scaffold a new project
-curl -sSL https://raw.githubusercontent.com/jiusanzhou/nextjs-starter-zoe-app/main/scripts/zoe-site.sh \
-  | bash -s new my-site
+curl -sSL https://git.io/zoe-site | bash -s new my-site
 cd my-site
 
 # 2. Dev server
-curl -sSL .../zoe-site.sh | bash -s dev
+curl -sSL https://git.io/zoe-site | bash -s dev
 
 # 3. Build for production
-curl -sSL .../zoe-site.sh | bash -s build
+curl -sSL https://git.io/zoe-site | bash -s build
 # → out/ contains the static site
 ```
 
 For convenience, save the script locally and put it on `$PATH`:
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/jiusanzhou/nextjs-starter-zoe-app/main/scripts/zoe-site.sh \
-  -o ~/.local/bin/zoe-site && chmod +x ~/.local/bin/zoe-site
+curl -sSL https://git.io/zoe-site -o ~/.local/bin/zoe-site && chmod +x ~/.local/bin/zoe-site
 
 zoe-site dev
 zoe-site build

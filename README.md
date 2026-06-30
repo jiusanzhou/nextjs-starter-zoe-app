@@ -62,24 +62,20 @@ Your repo only needs `zoe-site.yaml` + `content/`. The theme is fetched at build
 
 ```bash
 # Scaffold a new site
-curl -sSL https://raw.githubusercontent.com/jiusanzhou/nextjs-starter-zoe-app/main/scripts/zoe-site.sh \
-  | bash -s new my-site
+curl -sSL https://git.io/zoe-site | bash -s new my-site
 cd my-site
 
 # Dev server (http://localhost:3000)
-curl -sSL https://raw.githubusercontent.com/jiusanzhou/nextjs-starter-zoe-app/main/scripts/zoe-site.sh \
-  | bash -s dev
+curl -sSL https://git.io/zoe-site | bash -s dev
 
 # Build static site → ./out
-curl -sSL https://raw.githubusercontent.com/jiusanzhou/nextjs-starter-zoe-app/main/scripts/zoe-site.sh \
-  | bash -s build
+curl -sSL https://git.io/zoe-site | bash -s build
 ```
 
 For convenience, install the script once:
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/jiusanzhou/nextjs-starter-zoe-app/main/scripts/zoe-site.sh \
-  -o ~/.local/bin/zoe-site && chmod +x ~/.local/bin/zoe-site
+curl -sSL https://git.io/zoe-site -o ~/.local/bin/zoe-site && chmod +x ~/.local/bin/zoe-site
 
 zoe-site dev
 zoe-site build
