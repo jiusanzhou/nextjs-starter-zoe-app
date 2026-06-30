@@ -39,8 +39,32 @@ const iconMap: Record<string, React.ElementType> = {
   about: User,
 };
 
-function getIconForNav(href: string): React.ElementType {
-  const path = href.replace(/^\//, "").split("/")[0].toLowerCase();
+// Normalize pathname for comparison: strip trailing slash, lowercase
+function normalizePath(p: string): string {
+  if (!p) return "/";
+  const noTrail = p.length > 1 && p.endsWith("/") ? p.slice(0, -1) : p;
+  return noTrail || "/";
+}
+
+// Detect locale-prefix-only paths like "/", "/en", "/zh-tw" — these are "home" links
+function isHomePath(p: string): boolean {
+  const n = normalizePath(p);
+  if (n === "/") return true;
+  // Single segment that looks like a locale code (e.g. /en, /zh-CN)
+  return /^\/[a-z]{2}(-[a-zA-Z]{2,4})?$/i.test(n);
+}
+
+export function isNavActive(pathname: string | null, itemHref: string): boolean {
+  if (!pathname) return false;
+  const path = normalizePath(pathname);
+  const href = normalizePath(itemHref);
+  if (path === href) return true;
+  // Home links only match exactly — don't startsWith-match other pages
+  if (isHomePath(href)) return false;
+  return path.startsWith(href + "/");
+}
+
+function getIconForNav(href: string): React.ElementType {  const path = href.replace(/^\//, "").split("/")[0].toLowerCase();
   if (path === "" || path === "home") return Home;
   return iconMap[path] || FileText;
 }
@@ -84,7 +108,7 @@ export function Header({ title, logo, version, navs = [], moreLabel = "More", ho
                     <>
                       <NavigationMenuTrigger
                         className={cn(
-                          pathname === item.href && "bg-accent text-accent-foreground"
+                          isNavActive(pathname, item.href) && "bg-accent text-accent-foreground"
                         )}
                       >
                         {item.href ? (
@@ -126,7 +150,7 @@ export function Header({ title, logo, version, navs = [], moreLabel = "More", ho
                         className={cn(
                           navigationMenuTriggerStyle(),
                           "relative",
-                          pathname === item.href && "bg-accent text-accent-foreground"
+                          isNavActive(pathname, item.href) && "bg-accent text-accent-foreground"
                         )}
                       >
                         {item.title}
@@ -170,8 +194,7 @@ function MobileBottomNav({
       <div className="flex items-center justify-around h-16">
         {visibleNavs.map((item) => {
           const Icon = getIconForNav(item.href);
-          const isActive = pathname === item.href ||
-            (item.href !== "/" && pathname.startsWith(item.href));
+          const isActive = isNavActive(pathname, item.href);
 
           return (
             <Link
@@ -215,9 +238,7 @@ function MoreMenu({
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const isActive = navs.some(
-    (item) => pathname === item.href || pathname.startsWith(item.href)
-  );
+  const isActive = navs.some((item) => isNavActive(pathname, item.href));
 
   // Close on outside click / touch / Escape
   useEffect(() => {
