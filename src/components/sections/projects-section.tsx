@@ -1,5 +1,6 @@
 import { GitHubProjectsList } from "@/components/project-card";
 import { getLabel } from "@/lib/i18n";
+import { getLocalePrefix } from "@/lib/zoefile";
 import type { ProjectsSection, ZoeSiteConfig } from "@/types";
 import type { ProjectFromGitHub } from "@/lib/github-projects";
 
@@ -15,6 +16,9 @@ export function ProjectsSectionComponent({
   siteConfig,
 }: ProjectsSectionProps) {
   if (projects.length === 0) return null;
+
+  const prefix = getLocalePrefix(siteConfig?.lang);
+  const moreHref = `${prefix}/projects`;
 
   return (
     <section className="section-base max-w-5xl mx-auto px-4 py-12 md:py-16 lg:py-20">
@@ -38,6 +42,7 @@ export function ProjectsSectionComponent({
         preview
         limit={config.limit || 6}
         showFilter={false}
+        moreHref={moreHref}
         viewMoreLabel={getLabel(siteConfig, "projects.viewMore")}
         emptyLabel={getLabel(siteConfig, "projects.noProjects")}
       />

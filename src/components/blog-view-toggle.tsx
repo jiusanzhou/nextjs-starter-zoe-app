@@ -7,6 +7,7 @@ import type { PostMeta } from "@/types";
 
 interface BlogViewToggleProps {
   posts: PostMeta[];
+  basePath?: string;
   dateFormat: string;
   minReadLabel: string;
   allPostsLabel: string;
@@ -17,6 +18,7 @@ interface BlogViewToggleProps {
 
 export function BlogViewToggle({
   posts,
+  basePath,
   dateFormat,
   minReadLabel,
   allPostsLabel,
@@ -60,6 +62,7 @@ export function BlogViewToggle({
       <PostsList
         posts={posts}
         mode={mode}
+        basePath={basePath}
         dateFormat={dateFormat}
         minReadLabel={minReadLabel}
         emptyLabel={emptyLabel}

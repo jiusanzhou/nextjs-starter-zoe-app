@@ -162,8 +162,50 @@ export function loadZoeConfig(locale?: string): ZoeSiteConfig {
   // 设置 lang 字段为当前 locale（覆盖默认）
   resolved = { ...resolved, lang: locale };
 
+  // 给所有 href 字段加 locale 前缀（仅非默认 locale 且 routing=prefix-except-default 时）
+  const prefix = getLocalePrefix(locale);
+  if (prefix) {
+    resolved = prefixInternalHrefs(resolved, prefix) as ZoeSiteConfig;
+  }
+
   cachedByLocale.set(locale, resolved);
   return resolved;
+}
+
+/**
+ * 递归把对象/数组中所有 string-typed `href` 字段从 "/foo" 改写为
+ * "<prefix>/foo"。外链 / 锚点 / protocol-relative 保持不变。
+ *
+ * 仅在非默认 locale 下调用——让 yaml 里写 `href: /blog` 的导航自动
+ * 在 EN 站渲染成 `/en/blog`，避免用户手动写 `/en/blog`。
+ */
+function prefixInternalHrefs(value: unknown, prefix: string): unknown {
+  if (value == null) return value;
+  if (typeof value === 'string') return value;
+  if (Array.isArray(value)) {
+    return value.map((v) => prefixInternalHrefs(v, prefix));
+  }
+  if (typeof value === 'object') {
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+      if (k === 'href' && typeof v === 'string') {
+        out[k] = rewriteHref(v, prefix);
+      } else {
+        out[k] = prefixInternalHrefs(v, prefix);
+      }
+    }
+    return out;
+  }
+  return value;
+}
+
+function rewriteHref(href: string, prefix: string): string {
+  if (!href) return href;
+  if (!href.startsWith('/')) return href; // 外链 (http/https/mailto/tel) 或锚点
+  if (href.startsWith('//')) return href; // protocol-relative
+  // 已经带前缀（罕见情况，用户手写过）
+  if (href === prefix || href.startsWith(`${prefix}/`)) return href;
+  return `${prefix}${href === '/' ? '' : href}`;
 }
 
 /**

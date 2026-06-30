@@ -3,6 +3,7 @@ import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProductsList } from "@/components/product-card";
 import { getLabel } from "@/lib/i18n";
+import { getLocalePrefix } from "@/lib/zoefile";
 import type { ProductsSection, ZoeSiteConfig } from "@/types";
 
 interface ProductsSectionProps {
@@ -16,7 +17,9 @@ export function ProductsSectionComponent({ config, siteConfig }: ProductsSection
 
   const limit = config.limit ?? 6;
   const showMore = config.showMore ?? products.length > limit;
-  const moreHref = config.moreHref ?? "/products";
+  // i18n-aware default
+  const prefix = getLocalePrefix(siteConfig?.lang);
+  const moreHref = config.moreHref ?? `${prefix}/products`;
 
   return (
     <section className="section-base max-w-6xl mx-auto px-4 py-12 md:py-16 lg:py-20">

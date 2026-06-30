@@ -1,5 +1,6 @@
 import { PostsList } from "@/components/post-card";
 import { getLabel } from "@/lib/i18n";
+import { getLocalePrefix } from "@/lib/zoefile";
 import type { PostsSection, ZoeSiteConfig } from "@/types";
 import type { PostMeta } from "@/types";
 
@@ -15,6 +16,11 @@ export function PostsSectionComponent({
   siteConfig,
 }: PostsSectionProps) {
   if (posts.length === 0) return null;
+
+  // i18n: 非默认 locale 下，post 卡片链接需要带 locale 前缀
+  const prefix = getLocalePrefix(siteConfig?.lang);
+  const basePath = `${prefix}/blog`;
+  const moreHref = `${prefix}/blog`;
 
   return (
     <section className="section-base max-w-5xl mx-auto px-4 py-12 md:py-16 lg:py-20">
@@ -38,6 +44,8 @@ export function PostsSectionComponent({
         mode={config.mode || "grid"}
         preview
         limit={config.limit || 6}
+        basePath={basePath}
+        moreHref={moreHref}
         viewMoreLabel={getLabel(siteConfig, "blog.viewMore")}
         emptyLabel={getLabel(siteConfig, "blog.noPosts")}
         dateFormat={getLabel(siteConfig, "blog.dateFormat")}

@@ -70,6 +70,7 @@ export function BlogIndexView({ locale }: BlogIndexViewProps = {}) {
           <PostsList
             posts={pinnedPosts}
             mode="grid"
+            basePath={`${prefix}/blog`}
             dateFormat={dateFormat}
             minReadLabel={minReadLabel}
             pinnedSection
@@ -80,6 +81,7 @@ export function BlogIndexView({ locale }: BlogIndexViewProps = {}) {
       <section>
         <BlogViewToggle
           posts={regularPosts}
+          basePath={`${prefix}/blog`}
           dateFormat={dateFormat}
           minReadLabel={minReadLabel}
           allPostsLabel={getLabel(config, "blog.allPosts")}

@@ -23,6 +23,8 @@ interface HeaderProps {
   version?: string;
   navs?: NavItem[];
   moreLabel?: string;
+  /** Optional override for the logo link target. Defaults to "/". */
+  homeHref?: string;
   /**
    * Optional slot rendered in the header's right area, before the theme toggle.
    * Used for the language switcher when i18n is enabled.
@@ -43,7 +45,7 @@ function getIconForNav(href: string): React.ElementType {
   return iconMap[path] || FileText;
 }
 
-export function Header({ title, logo, version, navs = [], moreLabel = "More", rightSlot }: HeaderProps) {
+export function Header({ title, logo, version, navs = [], moreLabel = "More", homeHref = "/", rightSlot }: HeaderProps) {
   const pathname = usePathname();
 
   return (
@@ -52,7 +54,7 @@ export function Header({ title, logo, version, navs = [], moreLabel = "More", ri
       <header className="site-header sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/60 transition-shadow">
         <div className="container flex h-14 sm:h-16 items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group">
+          <Link href={homeHref} className="flex items-center gap-2.5 sm:gap-3 group">
             {logo && (
               <div className="relative h-7 w-7 sm:h-8 sm:w-8 overflow-hidden rounded-lg ring-1 ring-border/50 transition-shadow group-hover:ring-border">
                 {/* eslint-disable-next-line @next/next/no-img-element */}

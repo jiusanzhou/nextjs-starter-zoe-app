@@ -13,7 +13,13 @@ import { GoTop } from "@/components/go-top";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { DemoBanner } from "@/components/demo-banner";
 import { LanguageSwitcher } from "@/components/language-switcher";
-import { loadZoeConfig, isI18nEnabled, getLocales, getDefaultLocale } from "@/lib/zoefile";
+import {
+  loadZoeConfig,
+  isI18nEnabled,
+  getLocales,
+  getDefaultLocale,
+  getLocalePrefix,
+} from "@/lib/zoefile";
 import { getLabel } from "@/lib/i18n";
 
 interface SiteShellProps {
@@ -110,6 +116,7 @@ export function SiteShell({ locale, children }: SiteShellProps) {
         version={config.version}
         navs={config.navs}
         moreLabel={getLabel(config, "header.more")}
+        homeHref={`${getLocalePrefix(locale)}/`}
         rightSlot={
           showLanguageSwitcher && currentLocale ? (
             <LanguageSwitcher
