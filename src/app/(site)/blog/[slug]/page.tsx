@@ -4,10 +4,27 @@ import {
   loadZoeConfig,
   buildAlternatesForTranslations,
   getDefaultLocale,
+  getSiteMetadata,
   isI18nEnabled,
 } from "@/lib/zoefile";
 import { getLabel } from "@/lib/i18n";
 import { BlogPostView } from "@/components/views/blog-post-view";
+
+/**
+ * Build a canonical, single-encoded URL for the dynamic OG image route.
+ * Next.js static export auto-injects `og:image` for dynamic `opengraph-image.tsx`,
+ * but when the slug contains non-ASCII characters (e.g. CJK), the framework
+ * percent-encodes the slug twice (`%E6...` → `%25E6...`), producing a 404.
+ *
+ * By setting `openGraph.images` / `twitter.images` explicitly with a properly
+ * encoded absolute URL, we override Next's auto-injection and ship a working URL.
+ */
+function buildOgImageUrl(slug: string, siteUrl: string | undefined): string | undefined {
+  if (!siteUrl) return undefined;
+  const base = siteUrl.replace(/\/$/, "");
+  // encodeURIComponent encodes once; Next will not re-encode user-provided URLs.
+  return `${base}/blog/${encodeURIComponent(slug)}/opengraph-image-fx5gi7`;
+}
 
 interface PostPageProps {
   params: Promise<{ slug: string }>;
@@ -39,6 +56,13 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
     (s) => `/blog/${s}`,
   );
 
+  // Resolve OG image: post.banner wins; otherwise use the dynamic OG route
+  // with a properly encoded URL (works around Next double-encoding of CJK slugs).
+  const site = getSiteMetadata();
+  const ogImage = post.banner
+    ? post.banner
+    : buildOgImageUrl(post.slug, site.url);
+
   return {
     title: post.title,
     description: post.description || post.excerpt,
@@ -49,13 +73,13 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
       type: "article",
       publishedTime: post.date ? new Date(post.date).toISOString() : undefined,
       modifiedTime: post.modifiedDate ? new Date(post.modifiedDate).toISOString() : undefined,
-      ...(post.banner ? { images: [post.banner] } : {}),
+      ...(ogImage ? { images: [ogImage] } : {}),
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
       description: post.description || post.excerpt,
-      ...(post.banner ? { images: [post.banner] } : {}),
+      ...(ogImage ? { images: [ogImage] } : {}),
     },
   };
 }
