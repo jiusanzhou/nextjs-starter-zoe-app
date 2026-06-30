@@ -4,7 +4,7 @@ import { ArrowLeft, FileEdit } from "lucide-react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { loadZoeConfig } from "@/lib/zoefile";
+import { loadZoeConfig, getDefaultLocale, isI18nEnabled } from "@/lib/zoefile";
 import { getAllPosts } from "@/lib/content";
 import { getLabel } from "@/lib/i18n";
 
@@ -18,7 +18,9 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default function DraftsPage() {
   const config = loadZoeConfig();
-  const allPosts = getAllPosts(true);
+  // Default locale only; non-default drafts are handled by [lang]/blog/drafts (if added).
+  const locale = isI18nEnabled() ? getDefaultLocale() : undefined;
+  const allPosts = getAllPosts(true, locale);
   const drafts = allPosts.filter((post) => !post.published);
 
   return (

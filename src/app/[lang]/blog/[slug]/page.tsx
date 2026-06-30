@@ -64,8 +64,8 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
       title: post.title,
       description: post.description || post.excerpt,
       type: "article",
-      publishedTime: post.date,
-      modifiedTime: post.modifiedDate,
+      publishedTime: post.date ? new Date(post.date).toISOString() : undefined,
+      modifiedTime: post.modifiedDate ? new Date(post.modifiedDate).toISOString() : undefined,
       ...(post.banner ? { images: [post.banner] } : {}),
     },
     twitter: {

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getAllPages, getPageBySlug } from "@/lib";
-import { loadZoeConfig } from "@/lib/zoefile";
+import { loadZoeConfig, getDefaultLocale, isI18nEnabled } from "@/lib/zoefile";
 import { getLabel } from "@/lib/i18n";
 import { MdxPageView } from "@/components/views/mdx-page-view";
 
@@ -11,7 +11,8 @@ interface PageProps {
 export async function generateStaticParams() {
   try {
     // 仅生成默认 locale 的页面（非默认 locale 由 [lang]/[...slug] 负责）
-    const pages = getAllPages();
+    const locale = isI18nEnabled() ? getDefaultLocale() : undefined;
+    const pages = getAllPages(locale);
     if (pages.length === 0) {
       return [{ slug: ["__placeholder__"] }];
     }
@@ -27,7 +28,8 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const slugPath = slug.join("/");
-  const page = getPageBySlug(slugPath);
+  const locale = isI18nEnabled() ? getDefaultLocale() : undefined;
+  const page = getPageBySlug(slugPath, locale);
   const config = loadZoeConfig();
 
   if (!page) {
@@ -42,5 +44,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function DynamicPage({ params }: PageProps) {
   const { slug } = await params;
   const slugPath = slug.join("/");
-  return <MdxPageView slugPath={slugPath} />;
+  const locale = isI18nEnabled() ? getDefaultLocale() : undefined;
+  return <MdxPageView slugPath={slugPath} locale={locale} />;
 }

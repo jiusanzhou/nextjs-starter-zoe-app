@@ -64,6 +64,8 @@ export default async function OgImage({ params }: OgImageProps) {
   );
   const siteUrl = (config.url ?? "https://zoe.im").replace(/^https?:\/\//, "");
   const authorName = config.author?.name ?? config.title ?? "Zoe";
+  const avatarUrl = config.author?.avatar;
+  const avatarInitial = (authorName || "Z").trim().charAt(0).toUpperCase();
   const tagline =
     config.author?.minibio ??
     "AI Infra Engineer · LLM Serving · GPU / RDMA · Indie Hacker";
@@ -109,24 +111,41 @@ export default async function OgImage({ params }: OgImageProps) {
                 "0 0 0 5px white, 0 0 0 6px rgba(15,23,42,0.08), 0 12px 32px rgba(15,23,42,0.18)",
             }}
           >
-            <div
-              style={{
-                width: "100%",
-                height: "100%",
-                borderRadius: "50%",
-                background:
-                  "linear-gradient(135deg, #06b6d4 0%, #6366f1 50%, #ec4899 100%)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "#fff",
-                fontSize: 56,
-                fontWeight: 800,
-                letterSpacing: -2,
-              }}
-            >
-              Z
-            </div>
+            {avatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={avatarUrl}
+                alt={authorName}
+                width={104}
+                height={104}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                  display: "block",
+                }}
+              />
+            ) : (
+              <div
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: "50%",
+                  background:
+                    "linear-gradient(135deg, #06b6d4 0%, #6366f1 50%, #ec4899 100%)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#fff",
+                  fontSize: 56,
+                  fontWeight: 800,
+                  letterSpacing: -2,
+                }}
+              >
+                {avatarInitial}
+              </div>
+            )}
           </div>
 
           {/* identity block */}

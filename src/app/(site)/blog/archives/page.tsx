@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { format } from "date-fns";
 import { getAllPosts } from "@/lib/content";
-import { loadZoeConfig } from "@/lib/zoefile";
+import { loadZoeConfig, getDefaultLocale, isI18nEnabled } from "@/lib/zoefile";
 import { getLabel } from "@/lib/i18n";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -24,7 +24,9 @@ interface YearGroup {
 
 export default function ArchivesPage() {
   const config = loadZoeConfig();
-  const posts = getAllPosts();
+  // Default locale only; [lang]/blog/archives owns the others.
+  const locale = isI18nEnabled() ? getDefaultLocale() : undefined;
+  const posts = getAllPosts(false, locale);
 
   const yearGroups: YearGroup[] = [];
   const yearMap = new Map<number, YearGroup>();
