@@ -112,6 +112,24 @@ async function captureWithFreshTab(url, outFile) {
     // Extra wait: ThemeSwitcher reads ?theme=, mutates <html class>, fonts load, etc.
     await sleep(3000);
 
+    // Reset scroll to top + wait for fonts + disable animations for stable capture
+    await send('Runtime.evaluate', {
+      expression: `(async () => {
+        if (document.fonts && document.fonts.ready) await document.fonts.ready;
+        window.scrollTo(0, 0);
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+        // Kill ongoing CSS transitions/animations
+        const style = document.createElement('style');
+        style.textContent = '*,*::before,*::after{animation:none!important;transition:none!important}';
+        document.head.appendChild(style);
+        return true;
+      })()`,
+      awaitPromise: true,
+    });
+    // One more paint cycle after scroll/animation kill
+    await sleep(500);
+
     const { data: b64 } = await send('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
     fs.writeFileSync(outFile, Buffer.from(b64, 'base64'));
     ws.close();
