@@ -1,0 +1,49 @@
+name: Deploy to Vercel
+
+# Drop this file at .github/workflows/deploy.yml in your content repo.
+# Required secrets: VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  ZOE_THEME_REPO: jiusanzhou/nextjs-starter-zoe-app
+  ZOE_THEME_BRANCH: main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Cache theme
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/zoe-site
+          key: ${{ runner.os }}-zoe-${{ env.ZOE_THEME_REPO }}-${{ env.ZOE_THEME_BRANCH }}
+
+      - name: Build site
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          curl -sSL "https://raw.githubusercontent.com/${ZOE_THEME_REPO}/${ZOE_THEME_BRANCH}/scripts/zoe-site.sh" \
+            | bash -s build
+
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod'
+          working-directory: ./out

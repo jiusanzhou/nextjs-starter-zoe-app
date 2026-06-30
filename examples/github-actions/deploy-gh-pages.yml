@@ -1,0 +1,76 @@
+name: Deploy to GitHub Pages
+
+# Drop this file at .github/workflows/deploy.yml in your content repo.
+# Required: zoe-site.yaml + content/ (or src/content/, posts/) in the repo root.
+# Settings → Pages → Source: GitHub Actions
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+env:
+  # Theme repo (override to use your fork)
+  ZOE_THEME_REPO: jiusanzhou/nextjs-starter-zoe-app
+  ZOE_THEME_BRANCH: main
+  # For user.github.io repos: leave empty
+  # For project pages (user.github.io/repo-name): set to /repo-name
+  ZOE_BASE_PATH: ""
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Cache theme + pnpm store
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/zoe-site
+            ~/.local/share/pnpm/store
+          key: ${{ runner.os }}-zoe-${{ env.ZOE_THEME_REPO }}-${{ env.ZOE_THEME_BRANCH }}-${{ hashFiles('zoe-site.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-zoe-${{ env.ZOE_THEME_REPO }}-${{ env.ZOE_THEME_BRANCH }}-
+
+      - name: Build site
+        env:
+          # Bump GitHub API rate limit for /releases page
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          curl -sSL "https://raw.githubusercontent.com/${ZOE_THEME_REPO}/${ZOE_THEME_BRANCH}/scripts/zoe-site.sh" \
+            | bash -s build
+
+      - name: Add .nojekyll
+        run: touch out/.nojekyll
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

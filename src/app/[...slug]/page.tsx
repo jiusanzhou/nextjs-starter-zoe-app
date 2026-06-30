@@ -11,10 +11,19 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
-  const pages = getAllPages();
-  return pages.map((page) => ({
-    slug: page.slug.split("/").filter(Boolean),
-  }));
+  try {
+    const pages = getAllPages();
+    if (pages.length === 0) {
+      // 占位，避免 output: export 模式下空 params 报错
+      return [{ slug: ['__placeholder__'] }];
+    }
+    return pages.map((page) => ({
+      slug: page.slug.split("/").filter(Boolean),
+    }));
+  } catch (error) {
+    console.warn('[slug] Failed to generate static params:', error);
+    return [{ slug: ['__placeholder__'] }];
+  }
 }
 
 export async function generateMetadata({

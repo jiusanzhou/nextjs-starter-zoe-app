@@ -1,380 +1,361 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
-# zoe-site.sh - Quick install and run script for nextjs-starter-zoe-app
+# zoe-site.sh — One-shot builder for nextjs-starter-zoe-app
 #
-# Usage:
+# Usage (from a user repo containing zoe-site.yaml + content/):
 #   curl -sSL https://raw.githubusercontent.com/jiusanzhou/nextjs-starter-zoe-app/main/scripts/zoe-site.sh | bash
-#   curl -sSL https://raw.githubusercontent.com/jiusanzhou/nextjs-starter-zoe-app/main/scripts/zoe-site.sh | bash -s dev
-#   curl -sSL https://raw.githubusercontent.com/jiusanzhou/nextjs-starter-zoe-app/main/scripts/zoe-site.sh | bash -s build
+#   curl -sSL .../zoe-site.sh | bash -s dev
+#   curl -sSL .../zoe-site.sh | bash -s build
+#   curl -sSL .../zoe-site.sh | bash -s new my-site
 #
+# Environment variables:
+#   ZOE_THEME_REPO      Theme repo (default: jiusanzhou/nextjs-starter-zoe-app)
+#   ZOE_THEME_BRANCH    Branch (default: main)
+#   ZOE_CACHE_DIR       Cache root (default: $HOME/.cache/zoe-site)
+#   ZOE_OUTPUT_DIR      Where to place build output (default: $PWD/out)
+#   ZOE_BASE_PATH       basePath for static export (e.g. /my-repo)
+#   GITHUB_TOKEN        Optional; bumps GitHub API rate limit for /releases
+#
+set -euo pipefail
 
-set -e
-
-THEME_REPO="jiusanzhou/nextjs-starter-zoe-app"
-BRANCH="main"
+THEME_REPO="${ZOE_THEME_REPO:-jiusanzhou/nextjs-starter-zoe-app}"
+BRANCH="${ZOE_THEME_BRANCH:-main}"
 CACHE_DIR="${ZOE_CACHE_DIR:-$HOME/.cache/zoe-site}"
-THEME_DIR="$CACHE_DIR/nextjs-starter-zoe-app"
+THEME_DIR="$CACHE_DIR/$(basename "$THEME_REPO")"
+OUTPUT_DIR_DEFAULT="$(pwd)/out"
+OUTPUT_DIR="${ZOE_OUTPUT_DIR:-$OUTPUT_DIR_DEFAULT}"
 
-# Colors
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-PURPLE='\033[0;35m'
-CYAN='\033[0;36m'
-NC='\033[0m' # No Color
+# Colors (auto-disable when not a TTY)
+if [ -t 1 ]; then
+    RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'
+    BLUE='\033[0;34m'; PURPLE='\033[0;35m'; CYAN='\033[0;36m'; NC='\033[0m'
+else
+    RED=''; GREEN=''; YELLOW=''; BLUE=''; PURPLE=''; CYAN=''; NC=''
+fi
+
+log_info()    { echo -e "${BLUE}[INFO]${NC} $*"; }
+log_success() { echo -e "${GREEN}[OK]${NC} $*"; }
+log_warn()    { echo -e "${YELLOW}[WARN]${NC} $*"; }
+log_error()   { echo -e "${RED}[ERROR]${NC} $*" >&2; }
+log_step()    { echo -e "${CYAN}▶${NC} $*"; }
 
 print_banner() {
+    [ -n "$PURPLE" ] || return 0
     echo -e "${PURPLE}"
-    echo "╔═══════════════════════════════════════════════════════════╗"
-    echo "║                                                           ║"
-    echo "║   🚀 Zoe Site - Next.js Starter                          ║"
-    echo "║                                                           ║"
-    echo "║   A modern, YAML-driven site generator                    ║"
-    echo "║   Based on Next.js + shadcn/ui                            ║"
-    echo "║                                                           ║"
-    echo "╚═══════════════════════════════════════════════════════════╝"
+    echo "╔══════════════════════════════════════════════════════════╗"
+    echo "║  🚀 Zoe Site — Next.js Starter                           ║"
+    echo "║  YAML-driven site generator (Next.js + shadcn/ui)        ║"
+    echo "╚══════════════════════════════════════════════════════════╝"
     echo -e "${NC}"
 }
 
-log_info() {
-    echo -e "${BLUE}[INFO]${NC} $1"
-}
+# ─────────────────────────────────────────────────────────────────────────────
+# Detection
+# ─────────────────────────────────────────────────────────────────────────────
 
-log_success() {
-    echo -e "${GREEN}[SUCCESS]${NC} $1"
-}
+PKG_MANAGER=""
 
-log_warn() {
-    echo -e "${YELLOW}[WARN]${NC} $1"
-}
-
-log_error() {
-    echo -e "${RED}[ERROR]${NC} $1"
-}
-
-# Check if command exists
-check_command() {
-    if ! command -v $1 &> /dev/null; then
-        log_error "$1 is not installed. Please install it first."
-        exit 1
-    fi
-}
-
-# Check dependencies
-check_dependencies() {
-    log_info "Checking dependencies..."
-    check_command "node"
-    check_command "git"
-    
-    # Check for pnpm or npm
+detect_pkg_manager() {
     if command -v pnpm &> /dev/null; then
         PKG_MANAGER="pnpm"
     elif command -v npm &> /dev/null; then
         PKG_MANAGER="npm"
     else
-        log_error "Neither pnpm nor npm found. Please install one of them."
+        log_error "Neither pnpm nor npm found"
         exit 1
     fi
-    
-    log_success "Dependencies OK (using $PKG_MANAGER)"
 }
 
-# Clone or update theme
-setup_theme() {
-    log_info "Setting up theme..."
-    
-    mkdir -p "$CACHE_DIR"
-    
-    if [ -d "$THEME_DIR" ]; then
-        log_info "Updating existing theme..."
-        cd "$THEME_DIR"
-        git fetch origin $BRANCH
-        git checkout $BRANCH
-        git reset --hard origin/$BRANCH
-    else
-        log_info "Cloning theme..."
-        git clone --depth 1 --branch $BRANCH \
-            "https://github.com/$THEME_REPO.git" "$THEME_DIR"
-    fi
-    
-    log_success "Theme ready at $THEME_DIR"
-}
-
-# Find zoe-site.yaml in current directory or parents
-find_config() {
-    local dir="$1"
-    
-    while [ "$dir" != "/" ]; do
-        for ext in yaml yml toml json; do
-            if [ -f "$dir/zoe-site.$ext" ]; then
-                echo "$dir/zoe-site.$ext"
-                return 0
-            fi
-        done
-        dir=$(dirname "$dir")
-    done
-    
-    return 1
-}
-
-# Generate config list
-generate_config_list() {
-    local context_dir="$1"
-    local config_list="$THEME_DIR/config-list.txt"
-    
-    log_info "Looking for zoe-site config..."
-    
-    local configs=()
-    
-    for ext in yaml yml toml json; do
-        if [ -f "$context_dir/zoe-site.$ext" ]; then
-            configs+=("$context_dir/zoe-site.$ext")
+check_dependencies() {
+    log_step "Checking dependencies"
+    local bin
+    for bin in node git; do
+        if ! command -v "$bin" &> /dev/null; then
+            log_error "$bin not installed"
+            exit 1
         fi
     done
-    
-    if [ ${#configs[@]} -eq 0 ]; then
-        log_warn "No zoe-site config found in $context_dir"
-        log_info "Using default configuration"
-        echo "" > "$config_list"
-    else
-        log_success "Found config: ${configs[*]}"
-        printf '%s\n' "${configs[@]}" > "$config_list"
-    fi
+    detect_pkg_manager
+    log_success "node=$(node -v) git=$(git --version | cut -d' ' -f3) pkg=$PKG_MANAGER"
 }
 
-# Install dependencies
-install_deps() {
-    cd "$THEME_DIR"
-    
-    if [ -f "pnpm-lock.yaml" ] && command -v pnpm &> /dev/null; then
-        PKG_MANAGER="pnpm"
-    elif [ -f "package-lock.json" ]; then
-        PKG_MANAGER="npm"
-    fi
-    
-    log_info "Installing dependencies with $PKG_MANAGER..."
-    
-    if [ "$PKG_MANAGER" = "pnpm" ]; then
-        pnpm install --frozen-lockfile 2>/dev/null || pnpm install
+# ─────────────────────────────────────────────────────────────────────────────
+# Theme setup
+# ─────────────────────────────────────────────────────────────────────────────
+
+setup_theme() {
+    log_step "Preparing theme: $THEME_REPO@$BRANCH"
+    mkdir -p "$CACHE_DIR"
+
+    if [ -d "$THEME_DIR/.git" ]; then
+        log_info "Updating cached theme at $THEME_DIR"
+        (cd "$THEME_DIR" && \
+            git fetch --depth 1 origin "$BRANCH" && \
+            git checkout -q "$BRANCH" && \
+            git reset --hard "origin/$BRANCH")
     else
-        npm ci 2>/dev/null || npm install
+        rm -rf "$THEME_DIR"
+        log_info "Cloning theme into $THEME_DIR"
+        git clone --depth 1 --branch "$BRANCH" \
+            "https://github.com/$THEME_REPO.git" "$THEME_DIR"
     fi
-    
+    log_success "Theme ready"
+}
+
+install_deps() {
+    log_step "Installing dependencies ($PKG_MANAGER)"
+    (cd "$THEME_DIR" && {
+        if [ "$PKG_MANAGER" = "pnpm" ]; then
+            pnpm install --frozen-lockfile 2>/dev/null || pnpm install
+        else
+            npm ci 2>/dev/null || npm install
+        fi
+    })
     log_success "Dependencies installed"
 }
 
-# Sync git content
-sync_git_content() {
-    cd "$THEME_DIR"
-    
-    if [ "$PKG_MANAGER" = "pnpm" ]; then
-        pnpm sync-git 2>/dev/null || true
-    else
-        npm run sync-git 2>/dev/null || true
-    fi
-}
+# ─────────────────────────────────────────────────────────────────────────────
+# User content injection
+# ─────────────────────────────────────────────────────────────────────────────
 
-# Run dev server
-cmd_dev() {
-    log_info "Starting development server..."
-    cd "$THEME_DIR"
-    
-    if [ "$PKG_MANAGER" = "pnpm" ]; then
-        pnpm dev
-    else
-        npm run dev
-    fi
-}
-
-# Run build
-cmd_build() {
-    log_info "Building site..."
-    cd "$THEME_DIR"
-    
-    if [ "$PKG_MANAGER" = "pnpm" ]; then
-        pnpm build
-    else
-        npm run build
-    fi
-    
-    log_success "Build complete! Output in $THEME_DIR/.next"
-    
-    # Copy to current directory if requested
-    if [ "$COPY_OUTPUT" = "true" ]; then
-        local output_dir="${OUTPUT_DIR:-./out}"
-        log_info "Exporting static files to $output_dir..."
-        
-        if [ "$PKG_MANAGER" = "pnpm" ]; then
-            pnpm next export -o "$output_dir" 2>/dev/null || \
-            cp -r "$THEME_DIR/out" "$output_dir" 2>/dev/null || \
-            log_warn "Static export not available, use 'next start' for production"
+# Find the user's zoe-site.yaml in cwd, return absolute path or empty
+find_user_config() {
+    local dir; dir="$(pwd)"
+    for ext in yaml yml json; do
+        if [ -f "$dir/zoe-site.$ext" ]; then
+            echo "$dir/zoe-site.$ext"
+            return 0
         fi
-    fi
+    done
+    return 1
 }
 
-# Run production server
-cmd_start() {
-    log_info "Starting production server..."
-    cd "$THEME_DIR"
-    
-    if [ "$PKG_MANAGER" = "pnpm" ]; then
-        pnpm start
+# Detect content directories in cwd (content/, src/content/, posts/)
+detect_content_dirs() {
+    local dir; dir="$(pwd)"
+    local found=()
+    for candidate in content src/content posts pages; do
+        if [ -d "$dir/$candidate" ]; then
+            found+=("$dir/$candidate")
+        fi
+    done
+    # Comma-joined
+    local IFS=','
+    echo "${found[*]}"
+}
+
+# Export environment for Next.js build
+export_user_env() {
+    local context="$(pwd)"
+    local user_config; user_config="$(find_user_config || true)"
+    local content_dirs; content_dirs="$(detect_content_dirs)"
+
+    if [ -n "$user_config" ]; then
+        log_success "Found user config: $user_config"
+        export ZOE_CONFIG_PATH="$user_config"
     else
-        npm run start
+        log_warn "No zoe-site.yaml in $context (will use theme defaults)"
+    fi
+
+    if [ -n "$content_dirs" ]; then
+        log_success "Found content dirs: $content_dirs"
+        export ZOE_CONTENT_DIRS="$content_dirs"
+    fi
+
+    if [ -n "${ZOE_BASE_PATH:-}" ]; then
+        export PAGES_BASE_PATH="$ZOE_BASE_PATH"
+        export NEXT_PUBLIC_BASE_PATH="$ZOE_BASE_PATH"
+        log_info "basePath: $ZOE_BASE_PATH"
     fi
 }
 
-# Create new project
-cmd_new() {
-    local project_name="${1:-my-zoe-site}"
-    
-    log_info "Creating new project: $project_name"
-    
-    if [ -d "$project_name" ]; then
-        log_error "Directory $project_name already exists"
+# ─────────────────────────────────────────────────────────────────────────────
+# Commands
+# ─────────────────────────────────────────────────────────────────────────────
+
+cmd_dev() {
+    export_user_env
+    log_step "Starting dev server"
+    (cd "$THEME_DIR" && \
+        if [ "$PKG_MANAGER" = "pnpm" ]; then pnpm dev; else npm run dev; fi)
+}
+
+cmd_build() {
+    export_user_env
+    log_step "Building static site"
+    (cd "$THEME_DIR" && \
+        if [ "$PKG_MANAGER" = "pnpm" ]; then pnpm build; else npm run build; fi)
+
+    # Copy build output to user-visible location
+    local theme_out="$THEME_DIR/out"
+    if [ ! -d "$theme_out" ]; then
+        log_error "Build output not found at $theme_out"
+        log_warn "Static export may be disabled — check next.config.ts (need output: 'export')"
         exit 1
     fi
-    
-    mkdir -p "$project_name"
-    cd "$project_name"
-    
-    # Create default config
-    cat > zoe-site.yaml << 'EOF'
-# Zoe Site Configuration
+
+    mkdir -p "$OUTPUT_DIR"
+    log_step "Copying output → $OUTPUT_DIR"
+    # rsync if available, else cp -r
+    if command -v rsync &> /dev/null; then
+        rsync -a --delete "$theme_out/" "$OUTPUT_DIR/"
+    else
+        rm -rf "$OUTPUT_DIR"
+        cp -r "$theme_out" "$OUTPUT_DIR"
+    fi
+
+    # Build summary
+    local file_count; file_count=$(find "$OUTPUT_DIR" -type f | wc -l | tr -d ' ')
+    local total_size; total_size=$(du -sh "$OUTPUT_DIR" | cut -f1)
+    log_success "Build complete"
+    echo ""
+    echo -e "  ${CYAN}Output:${NC}  $OUTPUT_DIR"
+    echo -e "  ${CYAN}Files:${NC}   $file_count"
+    echo -e "  ${CYAN}Size:${NC}    $total_size"
+    echo ""
+}
+
+cmd_start() {
+    cmd_build
+    log_step "Serving production build at http://localhost:3000"
+    (cd "$THEME_DIR" && \
+        if [ "$PKG_MANAGER" = "pnpm" ]; then pnpm start; else npm start; fi)
+}
+
+cmd_new() {
+    local name="${1:-my-zoe-site}"
+    log_step "Creating new project: $name"
+
+    if [ -d "$name" ]; then
+        log_error "Directory '$name' already exists"
+        exit 1
+    fi
+
+    mkdir -p "$name/content/posts" "$name/content/pages"
+
+    cat > "$name/zoe-site.yaml" <<'EOF'
 title: My Site
-description: A site built with nextjs-starter-zoe-app
+description: Built with nextjs-starter-zoe-app
 url: https://example.com
 lang: zh-CN
-
-version: "1.0"
+theme: vercel
 
 author:
   name: Your Name
   email: you@example.com
 
 navs:
-  - title: 首页
+  - title: Home
     href: /
-  - title: 博客
+  - title: Blog
     href: /blog
-  - title: 关于
+  - title: About
     href: /about
 
 blog:
-  title: 博客
-  description: 我的博客文章
+  title: Blog
+  description: Latest posts
 
-theme: default
-
-contentDirs:
-  - content
+contentDirs: [content]
 
 rss:
   enabled: true
   path: /rss.xml
 EOF
-    
-    # Create content directories
-    mkdir -p content/{posts,pages,projects}
-    
-    # Create sample post
-    cat > content/posts/hello-world.md << 'EOF'
+
+    cat > "$name/content/posts/hello-world.md" <<'EOF'
 ---
 title: Hello World
-description: 我的第一篇文章
 date: 2024-01-01
-tags:
-  - 入门
+tags: [intro]
 published: true
 ---
 
 # Hello World
 
-欢迎来到我的网站！
-
-这是使用 **nextjs-starter-zoe-app** 创建的第一篇文章。
+Welcome to your new site, built with `nextjs-starter-zoe-app`.
 EOF
-    
-    # Create about page
-    cat > content/pages/about.md << 'EOF'
+
+    cat > "$name/content/pages/about.md" <<'EOF'
 ---
-title: 关于
-description: 关于我
+title: About
 ---
 
-# 关于我
+# About
 
-这是关于页面。
+This is the about page.
 EOF
-    
-    log_success "Project created: $project_name"
+
+    cat > "$name/.gitignore" <<'EOF'
+node_modules/
+out/
+.next/
+.cache/
+.env.local
+.DS_Store
+EOF
+
+    log_success "Project created at ./$name"
     echo ""
     echo -e "${CYAN}Next steps:${NC}"
-    echo "  cd $project_name"
-    echo "  curl -sSL https://raw.githubusercontent.com/jiusanzhou/nextjs-starter-zoe-app/main/scripts/zoe-site.sh | bash -s dev"
+    echo "  cd $name"
+    echo "  curl -sSL https://raw.githubusercontent.com/$THEME_REPO/$BRANCH/scripts/zoe-site.sh | bash -s dev"
     echo ""
 }
 
-# Show help
 cmd_help() {
-    echo "Usage: zoe-site.sh [command] [options]"
-    echo ""
-    echo "Commands:"
-    echo "  dev       Start development server"
-    echo "  build     Build for production"
-    echo "  start     Start production server"
-    echo "  new       Create new project"
-    echo "  help      Show this help"
-    echo ""
-    echo "Examples:"
-    echo "  # Start dev server in current directory"
-    echo "  curl -sSL https://git.io/zoe-site | bash"
-    echo ""
-    echo "  # Create new project"
-    echo "  curl -sSL https://git.io/zoe-site | bash -s new my-site"
-    echo ""
-    echo "  # Build site"
-    echo "  curl -sSL https://git.io/zoe-site | bash -s build"
-    echo ""
-    echo "Environment variables:"
-    echo "  ZOE_CACHE_DIR   Cache directory (default: ~/.cache/zoe-site)"
-    echo ""
+    cat <<EOF
+Usage: zoe-site.sh [command] [args]
+
+Commands:
+  dev               Start dev server (http://localhost:3000)
+  build             Build static site → \$ZOE_OUTPUT_DIR (default: ./out)
+  start             Build + serve production
+  new <name>        Scaffold a new project
+  help              Show this help
+
+Environment:
+  ZOE_THEME_REPO     Theme repo (default: $THEME_REPO)
+  ZOE_THEME_BRANCH   Branch (default: $BRANCH)
+  ZOE_CACHE_DIR      Cache dir (default: \$HOME/.cache/zoe-site)
+  ZOE_OUTPUT_DIR     Output dir (default: \$PWD/out)
+  ZOE_BASE_PATH      basePath for sub-path deploy (e.g. /my-repo)
+  GITHUB_TOKEN       Bumps /releases API rate limit
+
+Examples:
+  # Build in current repo (zoe-site.yaml + content/)
+  curl -sSL https://raw.githubusercontent.com/$THEME_REPO/$BRANCH/scripts/zoe-site.sh | bash -s build
+
+  # Scaffold new
+  curl -sSL .../zoe-site.sh | bash -s new my-site
+
+  # GitHub Pages sub-path
+  ZOE_BASE_PATH=/my-repo curl -sSL .../zoe-site.sh | bash -s build
+EOF
 }
 
+# ─────────────────────────────────────────────────────────────────────────────
 # Main
+# ─────────────────────────────────────────────────────────────────────────────
+
 main() {
     print_banner
-    
-    local cmd="${1:-dev}"
+
+    local cmd="${1:-help}"
     shift || true
-    
+
     case "$cmd" in
         new)
             cmd_new "$@"
             ;;
-        help|--help|-h)
+        help|--help|-h|"")
             cmd_help
             ;;
         dev|build|start)
             check_dependencies
             setup_theme
-            generate_config_list "$(pwd)"
             install_deps
-            sync_git_content
-            
-            case "$cmd" in
-                dev)
-                    cmd_dev
-                    ;;
-                build)
-                    cmd_build
-                    ;;
-                start)
-                    cmd_build
-                    cmd_start
-                    ;;
-            esac
+            "cmd_$cmd" "$@"
             ;;
         *)
             log_error "Unknown command: $cmd"

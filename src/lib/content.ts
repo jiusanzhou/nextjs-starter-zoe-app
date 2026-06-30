@@ -39,21 +39,41 @@ function getGitContentDirs(): string[] {
  * 获取内容目录路径（包含 Git 内容）
  * 开发模式下使用 _example/content 作为 fallback（用户内容优先）
  */
+/**
+ * 获取所有内容目录
+ *
+ * CI 模式（设置了 `ZOE_CONTENT_DIRS`）：
+ *   完全使用环境变量指定的绝对路径，theme 自带的 content 被忽略
+ *
+ * 常规模式：
+ *   1. zoe-site.yaml 里的 `contentDirs`（相对 theme root，或绝对路径）
+ *   2. Git 同步的内容目录
+ *   3. _example/content（仅 dev / USE_EXAMPLE_CONTENT=true）
+ */
 function getContentDirs(): string[] {
   const config = loadZoeConfig();
   const root = getProjectRoot();
-  
-  // 默认使用配置的目录（优先级最高）
+
+  // CI 模式：环境变量优先且唯一
+  const envDirs = (process.env.ZOE_CONTENT_DIRS || '')
+    .split(',')
+    .map(s => s.trim())
+    .filter(Boolean);
+  if (envDirs.length > 0) {
+    return envDirs;
+  }
+
+  // 常规模式
   const dirs = config.contentDirs || ['content'];
-  const localDirs = dirs.map(dir => path.join(root, dir));
-  
+  const localDirs = dirs.map(dir => path.isAbsolute(dir) ? dir : path.join(root, dir));
+
   // 合并 Git 内容目录
   const gitDirs = getGitContentDirs();
-  
+
   // 开发模式下，_example 作为 fallback（排在最后）
   const useExample = process.env.NODE_ENV === 'development' || process.env.USE_EXAMPLE_CONTENT === 'true';
   const exampleContentDir = path.join(root, '_example/content');
-  
+
   const fallbackDirs: string[] = [];
   if (useExample && fs.existsSync(exampleContentDir)) {
     const hasContent = fs.readdirSync(exampleContentDir).some(name => {
@@ -64,7 +84,7 @@ function getContentDirs(): string[] {
       fallbackDirs.push(exampleContentDir);
     }
   }
-  
+
   return [...localDirs, ...gitDirs, ...fallbackDirs];
 }
 

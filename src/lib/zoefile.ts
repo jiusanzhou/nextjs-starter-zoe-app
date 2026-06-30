@@ -52,39 +52,88 @@ function deepMerge<T extends Record<string, unknown>>(target: T, source: Partial
 
 /**
  * 加载 zoe-site.yaml 配置文件
- * 开发模式下会合并 _example/zoe-site.yaml 的配置
+ *
+ * CI 模式（设置了 `ZOE_CONFIG_PATH` 或 `ZOE_CONFIG_LIST`）：
+ *   完全使用外部注入的配置，theme 自带的 zoe-site.yaml 被忽略。
+ *
+ * 常规模式：
+ *   1. `_example/zoe-site.yaml`（仅 dev / USE_EXAMPLE_CONTENT=true）
+ *   2. theme 根目录的 `zoe-site.yaml`
  */
 export function loadZoeConfig(): ZoeSiteConfig {
-  if (cachedConfig) {
+  // 开发模式下禁用缓存，方便编辑 zoe-site.yaml 时实时生效
+  const isDev = process.env.NODE_ENV === 'development';
+  if (cachedConfig && !isDev) {
     return cachedConfig;
   }
 
   const root = getProjectRoot();
-  const configPath = path.join(root, 'zoe-site.yaml');
-  
-  if (!fs.existsSync(configPath)) {
-    throw new Error(`Configuration file not found: ${configPath}`);
+  const externalList = readExternalConfigList();
+
+  // 收集所有要合并的配置路径
+  const layers: string[] = [];
+
+  if (externalList.length > 0) {
+    // CI 模式：仅使用外部配置
+    layers.push(...externalList);
+  } else {
+    // 常规模式
+    const useExample = process.env.NODE_ENV === 'development' || process.env.USE_EXAMPLE_CONTENT === 'true';
+    const exampleConfigPath = path.join(root, '_example/zoe-site.yaml');
+    if (useExample && fs.existsSync(exampleConfigPath)) {
+      layers.push(exampleConfigPath);
+    }
+    const themeConfigPath = path.join(root, 'zoe-site.yaml');
+    if (fs.existsSync(themeConfigPath)) {
+      layers.push(themeConfigPath);
+    }
   }
 
-  const fileContent = fs.readFileSync(configPath, 'utf-8');
-  let config = yaml.load(fileContent) as ZoeSiteConfig;
+  if (layers.length === 0) {
+    throw new Error(`Configuration file not found. Set ZOE_CONFIG_PATH or place zoe-site.yaml at ${root}`);
+  }
 
-  // 开发模式下合并 _example/zoe-site.yaml
-  const useExample = process.env.NODE_ENV === 'development' || process.env.USE_EXAMPLE_CONTENT === 'true';
-  const exampleConfigPath = path.join(root, '_example/zoe-site.yaml');
-  
-  if (useExample && fs.existsSync(exampleConfigPath)) {
-    const exampleContent = fs.readFileSync(exampleConfigPath, 'utf-8');
-    const exampleConfig = yaml.load(exampleContent) as Record<string, unknown>;
-    
-    // _example 配置作为基础，根目录配置覆盖
-    config = deepMerge(exampleConfig, config as unknown as Record<string, unknown>) as unknown as ZoeSiteConfig;
+  // 依次 deep merge
+  let config: Record<string, unknown> = {};
+  for (const filePath of layers) {
+    const fileContent = fs.readFileSync(filePath, 'utf-8');
+    const layer = yaml.load(fileContent) as Record<string, unknown>;
+    if (layer && typeof layer === 'object') {
+      config = deepMerge(config, layer);
+    }
   }
 
   // 处理变量替换，例如 ${zoe.title}
   cachedConfig = processVariables(config, config);
-  
+
   return cachedConfig;
+}
+
+/**
+ * 读取外部注入的配置清单
+ * - ZOE_CONFIG_PATH=/abs/path/to/zoe-site.yaml (单文件)
+ * - ZOE_CONFIG_LIST=/abs/path/to/config-list.txt (多文件清单，每行一个绝对路径)
+ */
+function readExternalConfigList(): string[] {
+  const result: string[] = [];
+
+  const single = process.env.ZOE_CONFIG_PATH;
+  if (single && fs.existsSync(single)) {
+    result.push(single);
+  }
+
+  const listFile = process.env.ZOE_CONFIG_LIST;
+  if (listFile && fs.existsSync(listFile)) {
+    const lines = fs.readFileSync(listFile, 'utf-8')
+      .split('\n')
+      .map(l => l.trim())
+      .filter(l => l && !l.startsWith('#'));
+    for (const line of lines) {
+      if (fs.existsSync(line)) result.push(line);
+    }
+  }
+
+  return result;
 }
 
 /**
