@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { HomePageView } from "@/components/views/home-view";
-import { buildAlternates } from "@/lib/zoefile";
+import { buildAlternates, getDefaultLocale } from "@/lib/zoefile";
 
 export const revalidate = 3600;
 
@@ -11,5 +11,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default function HomePage() {
-  return <HomePageView />;
+  // i18n: default route must explicitly request default locale,
+  // otherwise getPostsMeta() returns posts from all locales (cross-locale leak).
+  return <HomePageView locale={getDefaultLocale()} />;
 }
