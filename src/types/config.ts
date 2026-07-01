@@ -228,6 +228,17 @@ export interface FooterLink {
 export interface ZoeSiteConfig {
   title: string;
   description?: string;
+  /**
+   * Optional short slogan/tagline. Used on the homepage `<title>` as
+   * `${title} — ${slogan}` for SEO and social sharing. Non-home pages
+   * still render as `${page title} | ${title}`.
+   *
+   * Keep it short (≤ 60 chars total including title) so it doesn't get
+   * truncated in Google SERP snippets.
+   *
+   * Example: "AI Infra · 造 AI Ops 工具搭被动收入"
+   */
+  slogan?: string;
   url?: string;
   logo?: string;
   /**

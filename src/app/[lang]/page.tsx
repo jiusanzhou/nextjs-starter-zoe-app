@@ -31,12 +31,15 @@ export async function generateMetadata({ params }: LangHomeProps): Promise<Metad
     return {};
   }
   const site = getSiteMetadata(lang);
+  const homeTitle = site.slogan ? `${site.title} — ${site.slogan}` : site.title;
   return {
-    title: site.title,
+    // `absolute` opts out of the root `%s | Title` template so we don't end up
+    // with "Zoe | Zoe" on non-default locale homepages.
+    title: { absolute: homeTitle },
     description: site.description,
     alternates: buildAlternates("/"),
     openGraph: {
-      title: site.title,
+      title: homeTitle,
       description: site.description,
       locale: site.lang,
     },

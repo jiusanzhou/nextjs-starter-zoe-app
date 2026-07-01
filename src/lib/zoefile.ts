@@ -289,6 +289,7 @@ export function getSiteMetadata(locale?: string) {
   return {
     title: config.title,
     description: config.description || '',
+    slogan: config.slogan || '',
     url: config.url || '',
     logo: config.logo,
     image: config.image,

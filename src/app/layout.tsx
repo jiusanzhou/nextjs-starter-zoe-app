@@ -47,9 +47,16 @@ export async function generateMetadata(): Promise<Metadata> {
       ];
   const appleIcon = customIconSrc || "/apple-touch-icon.png";
 
+  // Homepage `<title>` = "Title — Slogan" when a slogan is configured;
+  // per-page titles still use the `%s | Title` template so we don't
+  // leak the slogan onto every blog post.
+  const homeTitle = site.slogan
+    ? `${site.title} — ${site.slogan}`
+    : site.title;
+
   return {
     title: {
-      default: site.title,
+      default: homeTitle,
       template: `%s | ${site.title}`,
     },
     description: site.description,
@@ -67,7 +74,7 @@ export async function generateMetadata(): Promise<Metadata> {
       apple: appleIcon,
     },
     openGraph: {
-      title: site.title,
+      title: homeTitle,
       description: site.description,
       url: site.url,
       siteName: site.title,
@@ -83,7 +90,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: {
       card: "summary_large_image",
-      title: site.title,
+      title: homeTitle,
       description: site.description,
       creator: site.author?.twitter ? `@${site.author.twitter}` : undefined,
       images: site.image
