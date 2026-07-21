@@ -8,7 +8,14 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getAllPages, getPageBySlug } from "@/lib";
-import { loadZoeConfig, isValidLocale, getDefaultLocale, getLocales, isI18nEnabled } from "@/lib/zoefile";
+import {
+  loadZoeConfig,
+  isValidLocale,
+  getDefaultLocale,
+  getLocales,
+  isI18nEnabled,
+  buildAlternatesForTranslations,
+} from "@/lib/zoefile";
 import { getLabel } from "@/lib/i18n";
 import { MdxPageView } from "@/components/views/mdx-page-view";
 
@@ -48,9 +55,24 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!page) {
     return { title: getLabel(config, "page.notFound") };
   }
+
+  const key = page.translationOf || page.slug;
+  const all = getAllPages();
+  const translations = new Map<string, string>();
+  for (const p of all) {
+    if ((p.translationOf || p.slug) === key) {
+      translations.set(p.lang || getDefaultLocale(), p.slug);
+    }
+  }
+  const alternates =
+    translations.size > 0
+      ? buildAlternatesForTranslations(translations, (s) => `/${s}`, lang)
+      : undefined;
+
   return {
     title: page.title,
     description: page.description,
+    alternates,
   };
 }
 

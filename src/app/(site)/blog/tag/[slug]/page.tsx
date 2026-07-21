@@ -44,6 +44,9 @@ export async function generateMetadata({ params }: TagPageProps): Promise<Metada
   return {
     title: `${getLabel(config, 'blog.tagPrefix')}${tag.name}`,
     description: getLabel(config, 'blog.tagDescription', { name: tag.name }),
+    // Tag 页对 Google 意义不大且容易被判 "低质量重复内容"，主动 noindex。
+    // 与 sitemap.ts 中移除 tag 页保持一致。
+    robots: { index: false, follow: true },
   };
 }
 

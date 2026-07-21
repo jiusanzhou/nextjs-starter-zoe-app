@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: getLabel(config, "products"),
     description: getLabel(config, "products.description"),
-    alternates: buildAlternates("/products"),
+    alternates: buildAlternates("/products", lang),
   };
 }
 

@@ -6,7 +6,7 @@ export const revalidate = 3600;
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    alternates: buildAlternates("/"),
+    alternates: buildAlternates("/", getDefaultLocale()),
   };
 }
 

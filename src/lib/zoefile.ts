@@ -420,42 +420,74 @@ export function __resetZoeConfigCache() {
 }
 
 /**
+ * URL 路径规范化工具：
+ *  - 每个 segment 用 encodeURIComponent（保证中文 slug 编码稳定）
+ *  - 始终以 `/` 结尾（配合 next.config trailingSlash: true）
+ *  - `/` 直接返回 `/`
+ */
+function normalizePath(relativePath: string): string {
+  if (!relativePath || relativePath === '/') return '/';
+  const segments = relativePath.split('/').filter(Boolean).map(encodeURIComponent);
+  return '/' + segments.join('/') + '/';
+}
+
+/**
  * 构造 Next.js Metadata.alternates 的 languages 映射 + canonical
  *
- * @param relativePath 不带 locale 前缀的"中性"路径，例如 "/blog/foo" 或 "/"
+ * @param relativePath   不带 locale 前缀的"中性"路径，例如 "/blog/foo" 或 "/"
+ * @param currentLocale  当前页面所属 locale。**必须传**，canonical 指向"自己"而不是硬编码 default。
+ *                       兼容旧调用位（不传时退化为 defaultLocale），但会污染 GSC，应逐步补齐。
  * @returns { canonical, languages }，可直接展开到 metadata.alternates
  */
-export function buildAlternates(relativePath: string): {
+export function buildAlternates(
+  relativePath: string,
+  currentLocale?: string,
+): {
   canonical?: string;
   languages?: Record<string, string>;
 } {
-  if (!isI18nEnabled()) return {};
+  if (!isI18nEnabled()) {
+    // 单语言站也要生成 canonical，避免 root layout 硬编码的 canonical 污染
+    const raw = loadRawConfig();
+    const base = (raw.url || '').replace(/\/$/, '');
+    if (!base) return {};
+    return { canonical: `${base}${normalizePath(relativePath)}` };
+  }
   const raw = loadRawConfig();
   const base = (raw.url || '').replace(/\/$/, '');
   if (!base) return {};
 
-  const path = relativePath === '/' ? '' : relativePath;
+  const normalized = normalizePath(relativePath);
+  const tail = normalized === '/' ? '' : normalized;
   const def = getDefaultLocale();
+  const self = currentLocale || def;
+
   const languages: Record<string, string> = {};
   for (const loc of getLocales()) {
-    languages[loc] = `${base}${getLocalePrefix(loc)}${path}`;
+    const prefix = getLocalePrefix(loc);
+    languages[loc] = `${base}${prefix}${tail || '/'}`;
+    // 归一到 trailing slash：如果 tail 空，用根 '/'
+    if (!tail) languages[loc] = `${base}${prefix}/`;
   }
-  languages['x-default'] = `${base}${getLocalePrefix(def)}${path}`;
-  return {
-    canonical: `${base}${getLocalePrefix(def)}${path}`,
-    languages,
-  };
+  languages['x-default'] = languages[def];
+
+  const selfPrefix = getLocalePrefix(self);
+  const canonical = `${base}${selfPrefix}${tail || '/'}`;
+
+  return { canonical, languages };
 }
 
 /**
  * 为 blog post / page 这种"内容自身就有多 locale 版本"的页面构造 alternates。
  *
- * @param translations Map<locale, slug>（来自 getPostTranslations / getAllPages 配对）
- * @param pathFn       (slug) => relative path（不含 locale 前缀），如 (s) => `/blog/${s}`
+ * @param translations   Map<locale, slug>（来自 getPostTranslations / getAllPages 配对）
+ * @param pathFn         (slug) => relative path（不含 locale 前缀），如 (s) => `/blog/${s}`
+ * @param currentLocale  当前页面 locale。canonical 指向自己（**必须传**才能得到正确 canonical）
  */
 export function buildAlternatesForTranslations(
   translations: Map<string, string>,
   pathFn: (slug: string) => string,
+  currentLocale?: string,
 ): { canonical?: string; languages?: Record<string, string> } {
   if (!isI18nEnabled() || translations.size === 0) return {};
   const raw = loadRawConfig();
@@ -463,14 +495,24 @@ export function buildAlternatesForTranslations(
   if (!base) return {};
 
   const def = getDefaultLocale();
+  const self = currentLocale || def;
+
   const languages: Record<string, string> = {};
   for (const [loc, slug] of translations) {
-    languages[loc] = `${base}${getLocalePrefix(loc)}${pathFn(slug)}`;
+    const prefix = getLocalePrefix(loc);
+    languages[loc] = `${base}${prefix}${normalizePath(pathFn(slug))}`;
   }
+  // x-default → default-locale 版本；若没有 default 版本，退化到自己
   const defSlug = translations.get(def);
-  const canonical = defSlug
-    ? `${base}${getLocalePrefix(def)}${pathFn(defSlug)}`
-    : undefined;
-  if (canonical) languages['x-default'] = canonical;
+  languages['x-default'] = defSlug
+    ? `${base}${getLocalePrefix(def)}${normalizePath(pathFn(defSlug))}`
+    : languages[self] || Object.values(languages)[0];
+
+  // canonical 指自己
+  const selfSlug = translations.get(self);
+  const canonical = selfSlug
+    ? `${base}${getLocalePrefix(self)}${normalizePath(pathFn(selfSlug))}`
+    : languages[self];
+
   return { canonical, languages };
 }

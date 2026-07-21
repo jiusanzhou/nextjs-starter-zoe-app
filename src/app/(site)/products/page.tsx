@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { loadZoeConfig, buildAlternates } from "@/lib/zoefile";
+import { loadZoeConfig, buildAlternates, getDefaultLocale } from "@/lib/zoefile";
 import { getLabel } from "@/lib/i18n";
 import { ProductsView } from "@/components/views/products-view";
 
@@ -10,7 +10,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: getLabel(config, "products"),
     description: getLabel(config, "products.description"),
-    alternates: buildAlternates("/products"),
+    alternates: buildAlternates("/products", getDefaultLocale()),
   };
 }
 

@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "prebuild": "tsx scripts/sync-git-content.ts",
+    "postbuild": "tsx scripts/generate-seo-redirects.ts",
     "sync-git": "tsx scripts/sync-git-content.ts",
     "capture-themes": "node scripts/capture-themes.mjs",
     "start": "next start",

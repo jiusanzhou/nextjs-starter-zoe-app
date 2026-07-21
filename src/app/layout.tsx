@@ -101,7 +101,10 @@ export async function generateMetadata(): Promise<Metadata> {
             ? [site.logo]
             : undefined,
     },
-    alternates: site.url ? { canonical: site.url } : undefined,
+    // NOTE: 不在 root layout 设 canonical。
+    // 原因：Next.js metadata.alternates.canonical 会**继承**到所有子路由，
+    // 结果全站 canonical 都指首页 → Google 判定全站为首页的重复内容，拒绝索引。
+    // 每个路由自己的 generateMetadata 应该通过 buildAlternates(path, locale) 生成 canonical。
     robots: {
       index: true,
       follow: true,

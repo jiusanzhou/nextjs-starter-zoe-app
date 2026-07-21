@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: LangHomeProps): Promise<Metad
     // with "Zoe | Zoe" on non-default locale homepages.
     title: { absolute: homeTitle },
     description: site.description,
-    alternates: buildAlternates("/"),
+    alternates: buildAlternates("/", lang),
     openGraph: {
       title: homeTitle,
       description: site.description,

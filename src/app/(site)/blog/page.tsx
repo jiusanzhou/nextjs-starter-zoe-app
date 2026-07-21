@@ -13,7 +13,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: config.blog?.title || getLabel(config, "blog"),
     description: config.blog?.description,
-    alternates: buildAlternates("/blog"),
+    alternates: buildAlternates("/blog", getDefaultLocale()),
   };
 }
 

@@ -158,6 +158,38 @@ export interface VerificationConfig {
   other?: Record<string, string | string[]>;
 }
 
+/**
+ * A single redirect rule.
+ * `from` is a path (must start with `/`), `to` is either a path or an absolute URL.
+ */
+export interface RedirectRule {
+  from: string;
+  to: string;
+  /** Optional human-readable label shown briefly before the redirect kicks in. */
+  label?: string;
+}
+
+/**
+ * SEO cleanup / overrides.
+ * See `ZoeSiteConfig.seo` for the full description.
+ */
+export interface SeoConfig {
+  /**
+   * URLs to redirect via a static HTML page containing
+   * `<meta http-equiv="refresh">` + `<link rel="canonical" href="to">`.
+   * Useful on static hosts (GitHub Pages) where real 301 headers aren't possible.
+   */
+  redirects?: RedirectRule[];
+
+  /**
+   * URLs to mark as "permanently gone" via a static HTML page:
+   *   - renders a friendly "this page has been removed" message,
+   *   - includes `<meta name="robots" content="noindex, nofollow">`.
+   * Google will drop these from the index over the next few weeks.
+   */
+  gone?: string[];
+}
+
 export interface ReleaseRepoConfig {
   provider?: 'github' | 'gitee';
   repo: string;
@@ -281,6 +313,33 @@ export interface ZoeSiteConfig {
    *     baidu: code...
    */
   verification?: VerificationConfig;
+
+  /**
+   * SEO-specific overrides / cleanup rules.
+   * Currently supports two kinds of static-site "cleanup":
+   *
+   *   1. `redirects`: emit an HTML page at each `from` path that does a
+   *      `<meta http-equiv="refresh">` to `to`. Useful for old URLs that
+   *      still show up in search results after a site restructure.
+   *   2. `gone`: emit an HTML page at each path that:
+   *        - renders a friendly "this page has been permanently removed" message,
+   *        - includes `<meta name="robots" content="noindex, nofollow">` so
+   *          Google will drop it from the index within a few weeks.
+   *      True HTTP 410 is not possible on static hosts like GitHub Pages;
+   *      this is the best-effort static equivalent.
+   *
+   * These files are generated post-`next build` from a script the site uses.
+   *
+   * Example:
+   *   seo:
+   *     redirects:
+   *       - from: /old-path
+   *         to: /new-path
+   *     gone:
+   *       - /blogs/archives
+   *       - /month
+   */
+  seo?: SeoConfig;
 
   // App Release Configuration (for /releases page)
   releaseRepo?: string | ReleaseRepoConfig[];

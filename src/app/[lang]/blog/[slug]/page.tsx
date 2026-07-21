@@ -55,6 +55,7 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
   const alternates = buildAlternatesForTranslations(
     slugByLocale,
     (s) => `/blog/${s}`,
+    lang,
   );
 
   const site = getSiteMetadata();

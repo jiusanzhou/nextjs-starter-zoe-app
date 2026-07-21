@@ -56,6 +56,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: `${getLabel(config, 'blog.tagPrefix')}${tag.name}`,
     description: getLabel(config, 'blog.tagDescription', { name: tag.name }),
+    // 与 (site)/blog/tag/[slug] 保持一致：noindex, follow
+    robots: { index: false, follow: true },
   };
 }
 

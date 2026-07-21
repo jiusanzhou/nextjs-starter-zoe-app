@@ -61,6 +61,7 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
   const alternates = buildAlternatesForTranslations(
     slugByLocale,
     (s) => `/blog/${s}`,
+    locale || getDefaultLocale(),
   );
 
   // Resolve OG image: post.banner wins; otherwise fall back to the sitewide image.
